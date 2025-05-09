@@ -137,17 +137,17 @@ void PlayScene::Update(float deltaTime) {
         if (enemyWaveData.empty()) {
             if (EnemyGroup->GetObjects().empty()) {
                 // Free resources.
-                /*delete TileMapGroup;
-                delete GroundEffectGroup;
-                delete DebugIndicatorGroup;
-                delete TowerGroup;
-                delete EnemyGroup;
-                delete BulletGroup;
-                delete EffectGroup;
-                delete UIGroup;
-                delete imgTarget;*/
+                // delete TileMapGroup;
+                // delete GroundEffectGroup;
+                // delete DebugIndicatorGroup;
+                // delete TowerGroup;
+                // delete EnemyGroup;
+                // delete BulletGroup;
+                // delete EffectGroup;
+                // delete UIGroup;
+                // delete imgTarget;
                 // Win.
-                Engine::GameEngine::GetInstance().ChangeScene("win-scene");
+                Engine::GameEngine::GetInstance().ChangeScene("win");
             }
             continue;
         }
@@ -297,6 +297,8 @@ void PlayScene::OnKeyDown(int keyCode) {
 }
 void PlayScene::Hit() {
     lives--;
+    // not sure
+    UILives->Text = std::string("Life ") + std::to_string(lives);
     if (lives <= 0) {
         Engine::GameEngine::GetInstance().ChangeScene("lose");
     }
@@ -435,6 +437,9 @@ std::vector<std::vector<int>> PlayScene::CalculateBFSDistance() {
     std::queue<Engine::Point> que;
     // Push end point.
     // BFS from end point.
+    int endX = EndGridPoint.x - 1;
+    int endY = EndGridPoint.y;
+    if (endX < 0 || endX >= MapWidth || endY < 0 || endY >= MapHeight) return map;
     if (mapState[MapHeight - 1][MapWidth - 1] != TILE_DIRT)
         return map;
     que.push(Engine::Point(MapWidth - 1, MapHeight - 1));
@@ -445,6 +450,21 @@ std::vector<std::vector<int>> PlayScene::CalculateBFSDistance() {
         // TODO PROJECT-1 (1/1): Implement a BFS starting from the most right-bottom block in the map.
         //               For each step you should assign the corresponding distance to the most right-bottom block.
         //               mapState[y][x] is TILE_DIRT if it is empty.
+
+        int dist = map[p.y][p.x];
+
+        for (auto dir : directions) {
+            int nx = p.x + dir.x;
+            int ny = p.y + dir.y;
+
+            if (nx >= 0 && nx < MapWidth && ny >= 0 && ny < MapHeight) {
+                if (map[ny][nx] == -1 && mapState[ny][nx] == TILE_DIRT) {
+                    map[ny][nx] = dist + 1;
+                    que.push(Engine::Point(nx, ny));
+                }
+            }
+        }
+
     }
     return map;
 }
