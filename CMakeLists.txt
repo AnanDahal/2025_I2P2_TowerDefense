@@ -27,6 +27,8 @@ add_executable(2025_I2P2_TowerDefense
     Enemy/SoldierEnemy.hpp
     Enemy/TankEnemy.cpp
     Enemy/TankEnemy.hpp
+        Enemy/ArmyEnemy.cpp
+        Enemy/ArmyEnemy.hpp
 
     Engine/Allegro5Exception.cpp
     Engine/Allegro5Exception.hpp
@@ -64,6 +66,8 @@ add_executable(2025_I2P2_TowerDefense
     Scene/StartScene.h
     Scene/WinScene.cpp
     Scene/WinScene.hpp
+        Scene/SettingsScene.cpp
+        Scene/SettingsScene.hpp
 
     Turret/LaserTurret.cpp
     Turret/LaserTurret.hpp
