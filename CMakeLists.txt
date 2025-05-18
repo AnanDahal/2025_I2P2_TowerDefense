@@ -68,6 +68,8 @@ add_executable(2025_I2P2_TowerDefense
     Scene/WinScene.hpp
         Scene/SettingsScene.cpp
         Scene/SettingsScene.hpp
+        Scene/LeaderBoardScene.cpp
+        Scene/LeaderBoardScene.h
 
     Turret/LaserTurret.cpp
     Turret/LaserTurret.hpp
@@ -95,6 +97,8 @@ add_executable(2025_I2P2_TowerDefense
     UI/Component/Slider.hpp
     
     main.cpp
+        Scene/LeaderBoardScene.h
+        Scene/LeaderBoardScene.cpp
 )
 
 IF (WIN32)
