@@ -16,6 +16,7 @@
 #include "UI/Component/ImageButton.hpp"
 #include "UI/Component/Label.hpp"
 #include "UI/Component/Slider.hpp"
+#include <fstream>
 
 
 void LeaderBoardScene::Initialize() {
@@ -31,13 +32,18 @@ void LeaderBoardScene::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH * 3 / 2, 0, 0, 0, 255, 0.5, 0.5));
 
-    bgmInstance = AudioHelper::PlaySample("shopping_bgm.mp3", true, AudioHelper::BGMVolume);
+    // bgmInstance = AudioHelper::PlaySample("shopping_bgm.mp3", true, AudioHelper::BGMVolume);
 }
 void LeaderBoardScene::Terminate() {
-    AudioHelper::StopSample(bgmInstance);
-    bgmInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
-    IScene::Terminate();
+    // AudioHelper::StopSample(bgmInstance);
+    // bgmInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
+    // IScene::Terminate();
 }
+
+// void LeaderBoardScene::Draw() const {
+//
+// }
+
 void LeaderBoardScene::BackOnClick(int stage) {
     Engine::GameEngine::GetInstance().ChangeScene("stage-select");
 }

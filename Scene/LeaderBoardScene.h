@@ -19,6 +19,7 @@ public:
     void Initialize() override;
     void Terminate() override;
     void BackOnClick(int stage);
+    // void Draw() const override;
 };
 
 

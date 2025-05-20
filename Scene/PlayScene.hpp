@@ -31,6 +31,7 @@ protected:
     int lives;
     int money;
     int SpeedMult;
+    int Score;
 
 public:
     static bool DebugMode;
@@ -81,6 +82,7 @@ public:
     void UIBtnClicked(int id);
     bool CheckSpaceValid(int x, int y);
     std::vector<std::vector<int>> CalculateBFSDistance();
+    int GetScore() const;
     // void ModifyReadMapTiles();
 };
 #endif   // PLAYSCENE_HPP

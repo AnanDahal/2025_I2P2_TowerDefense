@@ -54,6 +54,7 @@ void PlayScene::Initialize() {
     deathCountDown = -1;
     lives = 10;
     money = 150;
+    Score = 0;
     SpeedMult = 1;
     // Add groups from bottom to top.
     AddNewObject(TileMapGroup = new Group());
@@ -306,7 +307,9 @@ void PlayScene::Hit() {
 int PlayScene::GetMoney() const {
     return money;
 }
+
 void PlayScene::EarnMoney(int money) {
+    if (money < 0) Score += -money;
     this->money += money;
     UIMoney->Text = std::string("$") + std::to_string(this->money);
 }
@@ -403,6 +406,11 @@ void PlayScene::UIBtnClicked(int id) {
     UIGroup->AddNewObject(preview);
     OnMouseMove(Engine::GameEngine::GetInstance().GetMousePosition().x, Engine::GameEngine::GetInstance().GetMousePosition().y);
 }
+
+int PlayScene::GetScore() const {
+    return Score;
+}
+
 
 bool PlayScene::CheckSpaceValid(int x, int y) {
     if (x < 0 || x >= MapWidth || y < 0 || y >= MapHeight)

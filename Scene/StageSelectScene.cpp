@@ -21,18 +21,18 @@ void StageSelectScene::Initialize() {
     Engine::ImageButton *btn;
 
     btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 - 200, 400, 100);
-    btn->SetOnClickCallback(std::bind(&StageSelectScene::ScoreboardOnClick, this, 1));
+    btn->SetOnClickCallback(std::bind(&StageSelectScene::ScoreboardOnClick, this, 3));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Scores", "pirulen.ttf", 48, halfW, halfH / 2 - 150, 0, 0, 0, 255, 0.5, 0.5));
 
 
     btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 - 50, 400, 100);
-    btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 2));
+    btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 1));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Stage 1", "pirulen.ttf", 48, halfW, halfH / 2, 0, 0, 0, 255, 0.5, 0.5));
 
     btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 100, 400, 100);
-    btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 3));
+    btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 2));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Stage 2", "pirulen.ttf", 48, halfW, halfH / 2 + 150, 0, 0, 0, 255, 0.5, 0.5));
 
@@ -71,7 +71,8 @@ void StageSelectScene::BackOnClick(int stage) {
 void StageSelectScene::PlayOnClick(int stage) {
     PlayScene *scene = dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetScene("play"));
     scene->MapId = stage;
-    Engine::GameEngine::GetInstance().ChangeScene("play");
+    // change the name from win to play for debugging
+    Engine::GameEngine::GetInstance().ChangeScene("win");
 }
 void StageSelectScene::ScoreboardOnClick(int stage) {
     Engine::GameEngine::GetInstance().ChangeScene("scoreboard-scene");
