@@ -72,7 +72,7 @@ void StageSelectScene::PlayOnClick(int stage) {
     PlayScene *scene = dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetScene("play"));
     scene->MapId = stage;
     // change the name from win to play for debugging
-    Engine::GameEngine::GetInstance().ChangeScene("win");
+    Engine::GameEngine::GetInstance().ChangeScene("play");
 }
 void StageSelectScene::ScoreboardOnClick(int stage) {
     Engine::GameEngine::GetInstance().ChangeScene("scoreboard-scene");
