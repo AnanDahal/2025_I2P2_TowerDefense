@@ -19,6 +19,8 @@ add_executable(2025_I2P2_TowerDefense
     Bullet/FireBullet.hpp
     Bullet/LaserBullet.cpp
     Bullet/LaserBullet.hpp
+        Bullet/EnemyBullet.cpp
+        Bullet/EnemyBullet.hpp
 
     # TODO HACKATHON-3 (3/3): Add the new enemy source files here
     Enemy/Enemy.cpp
@@ -62,8 +64,8 @@ add_executable(2025_I2P2_TowerDefense
     Scene/PlayScene.hpp
     Scene/StageSelectScene.cpp
     Scene/StageSelectScene.hpp
-    Scene/StartScene.cpp
-    Scene/StartScene.h
+        Scene/StartScene.cpp
+        Scene/StartScene.hpp
     Scene/WinScene.cpp
     Scene/WinScene.hpp
         Scene/SettingsScene.cpp
@@ -99,6 +101,8 @@ add_executable(2025_I2P2_TowerDefense
     main.cpp
         Scene/LeaderBoardScene.h
         Scene/LeaderBoardScene.cpp
+        Bullet/EnemyBullet.cpp
+        Bullet/EnemyBullet.hpp
 )
 
 IF (WIN32)

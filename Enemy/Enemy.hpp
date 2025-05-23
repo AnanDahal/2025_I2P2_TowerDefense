@@ -19,15 +19,25 @@ protected:
     int money;
     PlayScene *getPlayScene();
     virtual void OnExplode();
+    bool _invisible = false;
+    float _invisibleTime = 0;
+    float _invisibleDuration = 0;
 
 public:
     float reachEndTime;
     std::list<Turret *> lockedTurrets;
     std::list<Bullet *> lockedBullets;
     Enemy(std::string img, float x, float y, float radius, float speed, float hp, int money);
-    void Hit(float damage);
+    virtual void Hit(float damage);
     void UpdatePath(const std::vector<std::vector<int>> &mapDistance);
     void Update(float deltaTime) override;
     void Draw() const override;
+    virtual bool IsTargetable() const {return !_invisible;}
+
+    void SetInvisible(float duration) {
+        _invisible = true;
+        _invisibleTime = 0.0f;
+        _invisibleDuration = duration;
+    }
 };
 #endif   // ENEMY_HPP

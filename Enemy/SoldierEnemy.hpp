@@ -5,5 +5,8 @@
 class SoldierEnemy : public Enemy {
 public:
     SoldierEnemy(int x, int y);
+    void Draw() const override;
+    void Update(float deltaTime) override;
+    void Hit(float damage) override;
 };
 #endif   // SOLDIERENEMY_HPP

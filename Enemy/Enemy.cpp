@@ -83,6 +83,12 @@ void Enemy::UpdatePath(const std::vector<std::vector<int>> &mapDistance) {
     path[0] = PlayScene::EndGridPoint;
 }
 void Enemy::Update(float deltaTime) {
+    if (_invisible) {
+        _invisibleTime += deltaTime;
+        if (_invisibleTime >= _invisibleDuration) {
+            _invisible = false;
+        }
+    }
     // Pre-calculate the velocity.
     float remainSpeed = speed * deltaTime;
     while (remainSpeed != 0) {
@@ -115,6 +121,7 @@ void Enemy::Update(float deltaTime) {
     Sprite::Update(deltaTime);
 }
 void Enemy::Draw() const {
+    if (_invisible) return;
     Sprite::Draw();
     if (PlayScene::DebugMode) {
         // Draw collision radius.

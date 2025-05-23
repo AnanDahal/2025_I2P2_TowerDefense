@@ -12,6 +12,8 @@ class PlayScene;
 class Turret : public Engine::Sprite {
 protected:
     int price;
+    int currentHp;
+    int maxHp;
     float coolDown;
     float reload = 0;
     float rotateRadian = 2 * ALLEGRO_PI;
@@ -20,14 +22,24 @@ protected:
     PlayScene *getPlayScene();
     // Reference: Design Patterns - Factory Method.
     virtual void CreateBullet() = 0;
+    virtual void OnDestroyed();
 
 public:
     bool Enabled = true;
     bool Preview = false;
     Enemy *Target = nullptr;
-    Turret(std::string imgBase, std::string imgTurret, float x, float y, float radius, int price, float coolDown);
+    Turret(std::string imgBase, std::string imgTurret, float x, float y, float radius, int price, float coolDown, int hp);
     void Update(float deltaTime) override;
     void Draw() const override;
     int GetPrice() const;
+
+    void TakeDamage(int damage) {
+        currentHp -= damage;
+        if (currentHp <= 0) {
+            currentHp = 0;
+            Enabled = false;
+            OnDestroyed();
+        }
+    }
 };
 #endif   // TURRET_HPP
