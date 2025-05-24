@@ -5,7 +5,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
-
+#include "Turret/Turret.hpp"          // for dynamic_cast<Turret*>
 #include "Engine/IScene.hpp"
 #include "Engine/Point.hpp"
 
@@ -83,6 +83,10 @@ public:
     bool CheckSpaceValid(int x, int y);
     std::vector<std::vector<int>> CalculateBFSDistance();
     int GetScore() const;
+    // shovel
+    Engine::Sprite* shovelPreview = nullptr;
+    bool Shoveling = false;
+
     // void ModifyReadMapTiles();
 };
 #endif   // PLAYSCENE_HPP

@@ -24,6 +24,7 @@
 #include "UI/Animation/DirtyEffect.hpp"
 #include "UI/Animation/Plane.hpp"
 #include "UI/Component/Label.hpp"
+#include "Turret/Turret.hpp"            // for Turret::GetPrice(), Position, CollisionRadius
 
 // TODO HACKATHON-4 (1/3): Trace how the game handles keyboard input.
 // TODO HACKATHON-4 (2/3): Find the cheat code sequence in this file.
@@ -179,8 +180,14 @@ void PlayScene::Update(float deltaTime) {
     }
     if (preview) {
         preview->Position = Engine::GameEngine::GetInstance().GetMousePosition();
-        // To keep responding when paused.
         preview->Update(deltaTime);
+    }
+
+    // shovel‐preview follows cursor
+    if (Shoveling && shovelPreview) {
+        auto mpos = Engine::GameEngine::GetInstance().GetMousePosition();
+        shovelPreview->Position = mpos;
+        shovelPreview->Update(deltaTime);
     }
 }
 void PlayScene::Draw() const {
@@ -221,6 +228,44 @@ void PlayScene::OnMouseMove(int mx, int my) {
 }
 void PlayScene::OnMouseUp(int button, int mx, int my) {
     IScene::OnMouseUp(button, mx, my);
+
+    // ────── shovel-mode removal ──────
+    if (Shoveling && (button & 1)) {
+        int cellX = mx / BlockSize;
+        int cellY = my / BlockSize;
+
+        // 1) find & remove exactly that turret
+        for (auto obj : TowerGroup->GetObjects()) {
+            Turret* t = dynamic_cast<Turret*>(obj);
+            if (!t) continue;
+            int tx = int(t->Position.x / BlockSize);
+            int ty = int(t->Position.y / BlockSize);
+            if (tx == cellX && ty == cellY) {
+                EarnMoney(t->GetPrice());
+                TowerGroup->RemoveObject(t->GetObjectIterator());
+                // mark tile free
+                mapState[cellY][cellX] = TILE_DIRT;
+                break;
+            }
+        }
+
+        // 2) rebuild BFS distances and re-route all enemies
+        mapDistance = CalculateBFSDistance();
+        for (auto e : EnemyGroup->GetObjects()) {
+            dynamic_cast<Enemy*>(e)->UpdatePath(mapDistance);
+        }
+
+        // 3) immediately clear the shovel icon
+        if (shovelPreview) {
+            UIGroup->RemoveObject(shovelPreview->GetObjectIterator());
+            shovelPreview = nullptr;
+        }
+
+        Shoveling = false;
+        return;
+    }
+
+
     if (!imgTarget->Visible)
         return;
     const int x = mx / BlockSize;
@@ -382,6 +427,27 @@ void PlayScene::ConstructUI() {
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 1));
     UIGroup->AddNewControlObject(btn);
 
+    {
+        const int SHOVEL_ID = -1;
+        const float sx = 1370 + 76 + 76;
+        const float sy = 36;
+
+        // TurretButton’s second parameter is the hover-image
+        auto btn = new TurretButton(
+            "play/floor.png",
+            "play/dirt.png",     // ← correct hover asset
+            Engine::Sprite("play/tool-base.png", sx, sy),
+            Engine::Sprite("play/shovel.png",       sx, sy, 0, 0, 0, 0),
+            sx, sy,
+            0
+        );
+        btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, SHOVEL_ID));
+        UIGroup->AddNewControlObject(btn);
+    }
+
+
+
+
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int shift = 135 + 25;
@@ -391,6 +457,32 @@ void PlayScene::ConstructUI() {
 }
 
 void PlayScene::UIBtnClicked(int id) {
+    // 1) Shovel selected?
+    if (id < 0) {
+        Shoveling = true;
+        imgTarget->Visible = false;
+        // spawn the preview‐shovel if needed
+        if (!shovelPreview) {
+            shovelPreview = new Engine::Sprite("play/shovel.png", 0, 0);
+            shovelPreview->Tint = al_map_rgba(255,255,255,200);
+            UIGroup->AddNewObject(shovelPreview);
+        }
+
+        // cancel any turret‐preview
+        if (preview) {
+            UIGroup->RemoveObject(preview->GetObjectIterator());
+            preview = nullptr;
+        }
+        return;
+    }
+
+    // 2) Any real turret button clears shovel
+    Shoveling = false;
+    if (shovelPreview) {
+        UIGroup->RemoveObject(shovelPreview->GetObjectIterator());
+        shovelPreview = nullptr;
+    }
+
     if (preview)
         UIGroup->RemoveObject(preview->GetObjectIterator());
     if (id == 0 && money >= MachineGunTurret::Price)
