@@ -32,6 +32,13 @@ public:
     void Update(float deltaTime) override;
     void Draw() const override;
     int GetPrice() const;
+    int GetCurrentHp() const { return currentHp; }
+    void SetCurrentHp(int hp) {
+        currentHp = hp;
+        if (currentHp > maxHp) currentHp = maxHp;  // Ensure it doesn't exceed maxHp
+    }
+    int GetMaxHp() const { return maxHp; }
+
 
     void TakeDamage(int damage) {
         currentHp -= damage;

@@ -103,6 +103,10 @@ add_executable(2025_I2P2_TowerDefense
         Scene/LeaderBoardScene.cpp
         Bullet/EnemyBullet.cpp
         Bullet/EnemyBullet.hpp
+        Turret/HealingTurret.hpp
+        Turret/HealingTurret.cpp
+        Bullet/HealingBullet.cpp
+        Bullet/HealingBullet.hpp
 )
 
 IF (WIN32)

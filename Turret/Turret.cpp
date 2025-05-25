@@ -178,6 +178,10 @@ void Turret::OnDestroyed() {
 
     // 4) Play destruction sound
     AudioHelper::PlayAudio("explosion.wav");  // :contentReference[oaicite:1]{index=1}
+    // NEW: frees cell for build but not for enemy pathing
+    int cellX = static_cast<int>(Position.x / PlayScene::BlockSize);
+    int cellY = static_cast<int>(Position.y / PlayScene::BlockSize);
+    scene->FreeTile(cellX, cellY);
 }
 
 

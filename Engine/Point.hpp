@@ -52,7 +52,17 @@ namespace Engine {
         /// Make point act like vector and get the normalized vector.
         /// </summary>
         /// <returns>The normalized vector.</returns>
+        Point& operator+=(const Point& other) {
+            x += other.x;
+            y += other.y;
+            return *this;
+        }
+        /// <summary>
+        /// Make point act like vector and get the normalized vector.
+        /// </summary>
+        /// <returns>The normalized vector.</returns>
         Point Normalize() const;
+
         /// <summary>
         /// Make point act like vector and get the inner product.
         /// </summary>

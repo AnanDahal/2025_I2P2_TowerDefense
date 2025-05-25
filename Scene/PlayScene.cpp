@@ -20,6 +20,7 @@
 #include "PlayScene.hpp"
 #include "Turret/LaserTurret.hpp"
 #include "Turret/MachineGunTurret.hpp"
+#include "Turret/HealingTurret.hpp"
 #include "Turret/TurretButton.hpp"
 #include "UI/Animation/DirtyEffect.hpp"
 #include "UI/Animation/Plane.hpp"
@@ -244,15 +245,9 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
                 EarnMoney(t->GetPrice());
                 TowerGroup->RemoveObject(t->GetObjectIterator());
                 // mark tile free
-                mapState[cellY][cellX] = TILE_DIRT;
+                mapState[cellY][cellX] = TILE_FLOOR;
                 break;
             }
-        }
-
-        // 2) rebuild BFS distances and re-route all enemies
-        mapDistance = CalculateBFSDistance();
-        for (auto e : EnemyGroup->GetObjects()) {
-            dynamic_cast<Enemy*>(e)->UpdatePath(mapDistance);
         }
 
         // 3) immediately clear the shovel icon
@@ -427,6 +422,18 @@ void PlayScene::ConstructUI() {
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 1));
     UIGroup->AddNewControlObject(btn);
 
+    // Add a new button for the Healing Turret in ConstructUI()
+    // In PlayScene.cpp, add the healing turret button and logic if not already done
+
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                       Engine::Sprite("play/tower-base.png", 1370 + 76, 136, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-3.png", 1370 + 76, 136 - 8, 0, 0, 0, 0), 1370 + 76, 136, HealingTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 2)); // Healing turret
+    UIGroup->AddNewControlObject(btn);
+
+
+
+
     {
         const int SHOVEL_ID = -1;
         const float sx = 1370 + 76 + 76;
@@ -489,6 +496,8 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new MachineGunTurret(0, 0);
     else if (id == 1 && money >= LaserTurret::Price)
         preview = new LaserTurret(0, 0);
+    else if (id == 2 && money >= HealingTurret::Price)
+        preview = new HealingTurret(0, 0);
     if (!preview)
         return;
     preview->Position = Engine::GameEngine::GetInstance().GetMousePosition();
@@ -567,4 +576,9 @@ std::vector<std::vector<int>> PlayScene::CalculateBFSDistance() {
 
     }
     return map;
+}
+
+void PlayScene::FreeTile(int gridX, int gridY) {
+    // restore to “floor” so it's buildable again but still blocks enemies
+    mapState[gridY][gridX] = TILE_FLOOR;
 }

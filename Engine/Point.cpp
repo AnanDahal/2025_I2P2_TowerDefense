@@ -39,4 +39,5 @@ namespace Engine {
     Point operator*(const float &lhs, const Point &rhs) {
         return rhs * lhs;
     }
+
 }
