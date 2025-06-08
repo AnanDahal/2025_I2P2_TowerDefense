@@ -27,6 +27,7 @@ protected:
 public:
     bool Enabled = true;
     bool Preview = false;
+    bool buffed = false;
     Enemy *Target = nullptr;
     Turret(std::string imgBase, std::string imgTurret, float x, float y, float radius, int price, float coolDown, int hp);
     void Update(float deltaTime) override;

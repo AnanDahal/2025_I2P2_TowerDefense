@@ -4,8 +4,8 @@
 #include "Turret/Turret.hpp"
 #include "Engine/Collider.hpp"
 
-HealingBullet::HealingBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent)
-    : Bullet("play/bullet-7.png", 0, 0, position, forwardDirection, rotation, parent) {
+HealingBullet::HealingBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff)
+    : Bullet("play/bullet-7.png", 0, 0, position, forwardDirection, rotation, parent, buff) {
     speed = 300;  // Ensure bullet speed is set
     damage = 0;   // No damage, just healing
     // Set velocity to move the bullet forward
