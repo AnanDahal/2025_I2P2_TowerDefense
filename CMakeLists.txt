@@ -97,6 +97,8 @@ add_executable(2025_I2P2_TowerDefense
     UI/Component/Label.hpp
     UI/Component/Slider.cpp
     UI/Component/Slider.hpp
+    UI/Component/ChatBox.cpp
+    UI/Component/ChatBox.hpp
     
     main.cpp
         Scene/LeaderBoardScene.h
