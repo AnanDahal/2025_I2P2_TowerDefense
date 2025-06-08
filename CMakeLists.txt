@@ -107,6 +107,14 @@ add_executable(2025_I2P2_TowerDefense
         Turret/HealingTurret.cpp
         Bullet/HealingBullet.cpp
         Bullet/HealingBullet.hpp
+        Enemy/CarrierEnemy.cpp
+        Enemy/CarrierEnemy.h
+        Bullet/SniperBullet.cpp
+        Bullet/SniperBullet.h
+        Turret/SniperTurret.cpp
+        Turret/SniperTurret.h
+        Turret/BuffTurret.cpp
+        Turret/BuffTurret.h
 )
 
 IF (WIN32)

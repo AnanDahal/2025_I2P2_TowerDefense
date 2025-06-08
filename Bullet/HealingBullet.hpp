@@ -7,7 +7,7 @@ class Turret;
 
 class HealingBullet : public Bullet {
 public:
-    explicit HealingBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent);
+    explicit HealingBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buffed);
     void OnExplode(Turret *turret);  // Healing explosion
     void Update(float deltaTime) override;
 };
