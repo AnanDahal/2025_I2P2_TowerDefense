@@ -374,12 +374,6 @@ void PlayScene::OnKeyDown(int keyCode) {
         paused = !paused;
         SpeedMult = paused ? 0 : 1;
         PauseGroup->Visible = paused;
-
-        if (paused && shovelPreview) {
-            UIGroup->RemoveObject(shovelPreview->GetObjectIterator());
-            shovelPreview = nullptr;
-            Shoveling = false;
-        }
     }
     if (keyCode == ALLEGRO_KEY_Q && money >= MachineGunTurret::Price) {
         // Hotkey for MachineGunTurret.
@@ -567,6 +561,9 @@ void PlayScene::UIBtnClicked(int id) {
 
 void PlayScene::PauseOnClick(int id) {
     //pause sht
+    if (!paused) return;
+    paused = !paused;
+    PauseGroup->Visible = false;
     if (id == 20) {
         paused = false;
         SpeedMult = 1;
