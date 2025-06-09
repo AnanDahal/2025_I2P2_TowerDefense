@@ -34,6 +34,7 @@
 // TODO HACKATHON-5 (2/4): The "LIFE" label are not updated when you lose a life. Try to fix it.
 
 bool PlayScene::DebugMode = false;
+bool PlayScene::paused = false;
 const std::vector<Engine::Point> PlayScene::directions = { Engine::Point(-1, 0), Engine::Point(0, -1), Engine::Point(1, 0), Engine::Point(0, 1) };
 const int PlayScene::MapWidth = 20, PlayScene::MapHeight = 13;
 const int PlayScene::BlockSize = 64;
@@ -68,6 +69,7 @@ void PlayScene::Initialize() {
     AddNewObject(EffectGroup = new Group());
     // Should support buttons.
     AddNewControlObject(UIGroup = new Group());
+    AddNewControlObject(PauseGroup = new Group());
     ReadMap();
     ReadEnemyWave();
     mapDistance = CalculateBFSDistance();
@@ -81,6 +83,26 @@ void PlayScene::Initialize() {
     Engine::Resources::GetInstance().GetBitmap("lose/benjamin-happy.png");
     // Start BGM.
     bgmId = AudioHelper::PlayBGM("play.ogg");
+
+    //pause
+    PauseGroup->Visible = false;
+
+    PauseGroup->AddNewObject(new Engine::Image("play/pauseOverlay.png", 0, 0, MapWidth * BlockSize, MapHeight * BlockSize));
+    // Add pause menu title
+    PauseGroup->AddNewObject(new Engine::Label("PAUSED", "pirulen.ttf", 72, MapWidth * BlockSize / 2, MapHeight * BlockSize / 2 - 100, 255, 255, 255, 255, 0.5, 0.5));
+
+    // Add continue button
+    Engine::ImageButton* btn;
+    btn = new Engine::ImageButton("win/dirt.png", "win/floor.png", MapWidth * BlockSize / 2 - 195, MapHeight * BlockSize / 2, 450, 100, 0.5, 0.5);
+    btn->SetOnClickCallback(std::bind(&PlayScene::PauseOnClick, this, 20));
+    PauseGroup->AddNewControlObject(btn);
+    PauseGroup->AddNewObject(new Engine::Label("Continue", "pirulen.ttf", 48, MapWidth * BlockSize / 2, MapHeight * BlockSize / 2 + 20, 255, 255, 255, 255, 0.5, 0.5));
+
+    // Add return to menu button
+    btn = new Engine::ImageButton("win/dirt.png", "win/floor.png", MapWidth * BlockSize / 2 - 195, MapHeight * BlockSize / 2 + 125, 450, 100, 0.5, 0.5);
+    btn->SetOnClickCallback(std::bind(&PlayScene::PauseOnClick, this, 21));
+    PauseGroup->AddNewControlObject(btn);
+    PauseGroup->AddNewObject(new Engine::Label("STAGES", "pirulen.ttf", 48, MapWidth * BlockSize / 2, MapHeight * BlockSize / 2 + 145, 255, 255, 255, 255, 0.5, 0.5));
 }
 void PlayScene::Terminate() {
     AudioHelper::StopBGM(bgmId);
@@ -134,7 +156,7 @@ void PlayScene::Update(float deltaTime) {
     if (SpeedMult == 0)
         deathCountDown = -1;
     for (int i = 0; i < SpeedMult; i++) {
-        IScene::Update(deltaTime);
+        if (!paused) IScene::Update(deltaTime);
         // Check if we should create new enemy.
         ticks += deltaTime;
         if (enemyWaveData.empty()) {
@@ -310,24 +332,37 @@ void PlayScene::OnKeyDown(int keyCode) {
             auto it1 = keyStrokes.begin();
             auto it2  = code.begin();
 
-            for (auto i = 0; i < code.size(); i++) {
+            while (it1 != keyStrokes.end()) {
                 if (*it1 == *it2) {
                     ++it1;
                     ++it2;
                 }
                 else {
-                    return;
+                    break;
+                }
+                if (it2 == code.end()) {
+                    UIGroup->AddNewObject(new Plane);
+                    this->money += 10000;
+                    UIMoney->Text = std::string("$") + std::to_string(this->money);
                 }
             }
-            this->money += 10000;
-            UIMoney->Text = std::string("$") + std::to_string(this->money);
-            UIGroup->AddNewObject(new Plane());
         }
     }
-    if (keyCode == ALLEGRO_KEY_Q) {
+    if (keyCode == ALLEGRO_KEY_ESCAPE) {
+        paused = !paused;
+        SpeedMult = paused ? 0 : 1;
+        PauseGroup->Visible = paused;
+
+        if (paused && shovelPreview) {
+            UIGroup->RemoveObject(shovelPreview->GetObjectIterator());
+            shovelPreview = nullptr;
+            Shoveling = false;
+        }
+    }
+    if (keyCode == ALLEGRO_KEY_Q && money >= MachineGunTurret::Price) {
         // Hotkey for MachineGunTurret.
         UIBtnClicked(0);
-    } else if (keyCode == ALLEGRO_KEY_W) {
+    } else if (keyCode == ALLEGRO_KEY_W && money >= LaserTurret::Price) {
         // Hotkey for LaserTurret.
         UIBtnClicked(1);
     }
@@ -506,6 +541,19 @@ void PlayScene::UIBtnClicked(int id) {
     preview->Preview = true;
     UIGroup->AddNewObject(preview);
     OnMouseMove(Engine::GameEngine::GetInstance().GetMousePosition().x, Engine::GameEngine::GetInstance().GetMousePosition().y);
+}
+
+void PlayScene::PauseOnClick(int id) {
+    //pause sht
+    if (id == 20) {
+        paused = false;
+        SpeedMult = 1;
+        PauseGroup->Visible = false;
+    }
+    else if (id == 21) {
+        paused = false;
+        Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+    }
 }
 
 int PlayScene::GetScore() const {

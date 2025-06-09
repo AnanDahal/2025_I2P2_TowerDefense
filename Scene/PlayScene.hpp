@@ -51,6 +51,7 @@ public:
     Group *DebugIndicatorGroup;
     Group *BulletGroup;
     Group *TowerGroup;
+    Group *PauseGroup; //added
     Group *EnemyGroup;
     Group *EffectGroup;
     Group *UIGroup;
@@ -81,6 +82,7 @@ public:
     void ReadEnemyWave();
     void ConstructUI();
     void UIBtnClicked(int id);
+    void PauseOnClick(int id);
     bool CheckSpaceValid(int x, int y);
     std::vector<std::vector<int>> CalculateBFSDistance();
     int GetScore() const;
@@ -88,6 +90,9 @@ public:
     Engine::Sprite* shovelPreview = nullptr;
     bool Shoveling = false;
 
+    //pause
+    static bool paused;
+    ALLEGRO_BITMAP* pauseOverlay;
     // void ModifyReadMapTiles();
 };
 #endif   // PLAYSCENE_HPP
