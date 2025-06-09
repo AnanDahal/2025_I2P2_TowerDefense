@@ -6,8 +6,8 @@
 SoldierEnemy::SoldierEnemy(int x, int y) : Enemy("play/enemy-1.png", x, y, 10, 50, 5, 5) {
 }
 
-void SoldierEnemy::Hit(float damage) {
-    Enemy::Hit(damage);
+void SoldierEnemy::Hit(float damage, bool slow) {
+    Enemy::Hit(damage, slow);
     SetInvisible(2.0f);
 }
 

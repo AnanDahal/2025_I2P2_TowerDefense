@@ -14,11 +14,12 @@ PlayScene *Bullet::getPlayScene() {
 }
 void Bullet::OnExplode(Enemy *enemy) {
 }
-Bullet::Bullet(std::string img, float speed, float damage, Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff) : Sprite(img, position.x, position.y), speed(speed), damage(damage), parent(parent) {
+Bullet::Bullet(std::string img, float speed, float damage, Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool slow) : Sprite(img, position.x, position.y), speed(speed), damage(damage), parent(parent) {
     Velocity = forwardDirection.Normalize() * speed;
     Rotation = rotation;
     CollisionRadius = 4;
     isBuffed = buff;
+    isSlow = slow;
 }
 void Bullet::Update(float deltaTime) {
     Sprite::Update(deltaTime);
@@ -32,10 +33,10 @@ void Bullet::Update(float deltaTime) {
         if (Engine::Collider::IsCircleOverlap(Position, CollisionRadius, enemy->Position, enemy->CollisionRadius)) {
             OnExplode(enemy);
             if (isBuffed) {
-                enemy->Hit(2*damage);
+                enemy->Hit(2*damage, isSlow);
             }
             else {
-                enemy->Hit(damage);
+                enemy->Hit(damage, isSlow);
             }
             getPlayScene()->BulletGroup->RemoveObject(objectIterator);
             return;
