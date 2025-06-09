@@ -8,6 +8,7 @@
 #include "Turret/Turret.hpp"          // for dynamic_cast<Turret*>
 #include "Engine/IScene.hpp"
 #include "Engine/Point.hpp"
+#include "UI/Component/ChatBox.hpp"  // for chatbox
 
 class Turret;
 namespace Engine {
@@ -19,6 +20,9 @@ namespace Engine {
 
 class PlayScene final : public Engine::IScene {
 private:
+    // for chatbox
+    std::shared_ptr<Engine::ChatBox> chatBox;
+    // end chatbox
     enum TileType {
         TILE_DIRT,
         TILE_FLOOR,

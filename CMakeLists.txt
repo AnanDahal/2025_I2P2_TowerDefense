@@ -21,6 +21,8 @@ add_executable(2025_I2P2_TowerDefense
     Bullet/LaserBullet.hpp
         Bullet/EnemyBullet.cpp
         Bullet/EnemyBullet.hpp
+        Bullet/SniperBullet.cpp
+        Bullet/SniperBullet.h
 
     # TODO HACKATHON-3 (3/3): Add the new enemy source files here
     Enemy/Enemy.cpp
@@ -31,7 +33,8 @@ add_executable(2025_I2P2_TowerDefense
     Enemy/TankEnemy.hpp
         Enemy/ArmyEnemy.cpp
         Enemy/ArmyEnemy.hpp
-
+        Enemy/CarrierEnemy.cpp
+        Enemy/CarrierEnemy.h
     Engine/Allegro5Exception.cpp
     Engine/Allegro5Exception.hpp
     Engine/AudioHelper.cpp
@@ -77,6 +80,10 @@ add_executable(2025_I2P2_TowerDefense
     Turret/LaserTurret.hpp
     Turret/MachineGunTurret.cpp
     Turret/MachineGunTurret.hpp
+        Turret/BuffTurret.cpp
+        Turret/BuffTurret.h
+        Turret/SniperTurret.cpp
+        Turret/SniperTurret.h
     Turret/Turret.cpp
     Turret/Turret.hpp
     Turret/TurretButton.cpp
@@ -97,6 +104,8 @@ add_executable(2025_I2P2_TowerDefense
     UI/Component/Label.hpp
     UI/Component/Slider.cpp
     UI/Component/Slider.hpp
+    UI/Component/ChatBox.cpp
+    UI/Component/ChatBox.hpp
     
     main.cpp
         Scene/LeaderBoardScene.h
@@ -107,6 +116,14 @@ add_executable(2025_I2P2_TowerDefense
         Turret/HealingTurret.cpp
         Bullet/HealingBullet.cpp
         Bullet/HealingBullet.hpp
+        Enemy/CarrierEnemy.cpp
+        Enemy/CarrierEnemy.h
+        Bullet/SniperBullet.cpp
+        Bullet/SniperBullet.h
+        Turret/SniperTurret.cpp
+        Turret/SniperTurret.h
+        Turret/BuffTurret.cpp
+        Turret/BuffTurret.h
 )
 
 IF (WIN32)

@@ -74,6 +74,20 @@ void PlayScene::Initialize() {
     ReadEnemyWave();
     mapDistance = CalculateBFSDistance();
     ConstructUI();
+
+    // chatbox
+    if (MapId == 1) {
+        int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
+        int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
+        chatBox = std::make_shared<Engine::ChatBox>(
+            w, h,
+            "THIS IS HOW LONG THE TEXT CAN BE, IF YOU WANT TO TYPE A LONG MESSAGE, YOU CAN TYPE IT HERE. "
+        );
+        AddNewControlObject(chatBox.get());
+    }
+
+    // end chatbox
+    
     imgTarget = new Engine::Image("play/target.png", 0, 0);
     imgTarget->Visible = false;
     preview = nullptr;
@@ -113,6 +127,10 @@ void PlayScene::Terminate() {
 void PlayScene::Update(float deltaTime) {
     // If we use deltaTime directly, then we might have Bullet-through-paper problem.
     // Reference: Bullet-Through-Paper
+
+    if (chatBox) chatBox->Update(deltaTime);
+
+    
     if (SpeedMult == 0)
         deathCountDown = -1;
     else if (deathCountDown != -1)
@@ -322,6 +340,10 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
 }
 void PlayScene::OnKeyDown(int keyCode) {
     IScene::OnKeyDown(keyCode);
+
+    if (chatBox) chatBox->OnKeyDown(keyCode);
+
+
     if (keyCode == ALLEGRO_KEY_TAB) {
         DebugMode = !DebugMode;
     } else {
