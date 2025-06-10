@@ -10,6 +10,7 @@
 #include "Scene/StartScene.hpp"
 #include "Scene/SettingsScene.hpp"
 #include "Scene/LeaderBoardScene.h"
+#include "Scene/OpeningScene.h"
 
 int main(int argc, char **argv) {
 	Engine::LOG::SetConfig(true);
@@ -18,6 +19,7 @@ int main(int argc, char **argv) {
     // TODO HACKATHON-2 (2/3): Register Scenes here
 	game.AddNewScene("start", new StartScene());
 	game.AddNewScene("settings", new SettingsScene());
+	game.AddNewScene("opening", new OpeningScene());
     game.AddNewScene("stage-select", new StageSelectScene());
 	game.AddNewScene("play", new PlayScene());
 	game.AddNewScene("lose", new LoseScene());
@@ -26,6 +28,6 @@ int main(int argc, char **argv) {
 
     // TODO HACKATHON-1 (1/1): Change the start scene
 	// lol
-	game.Start("start", 60, 1600, 832);
+	game.Start("opening", 60, 1600, 832);
 	return 0;
 }

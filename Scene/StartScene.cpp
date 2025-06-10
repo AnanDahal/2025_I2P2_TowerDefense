@@ -14,6 +14,7 @@
 #include "Engine/Resources.hpp"
 #include "PlayScene.hpp"
 #include "Scene/StartScene.hpp"
+#include <allegro5/allegro_primitives.h>
 #include "UI/Component/ImageButton.hpp"
 #include "UI/Component/Label.hpp"
 #include "UI/Component/Slider.hpp"
@@ -24,25 +25,72 @@ void StartScene::Initialize() {
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int halfW = w / 2;
     int halfH = h / 2;
+    fadeticks = 0; fadealpha = 0;
+    timer = 0;
+    house = al_load_bitmap("../Resource/images/house.png");
+    AddNewObject(new Engine::Image("bgs/opening1.png", 0, 0, w, h, 0, 0));
+
     Engine::ImageButton *btn;
-
-    AddNewObject(new Engine::Label("Tower Defense", "pirulen.ttf", 120, halfW, halfH / 3 + 50, 10, 255, 255, 255, 0.5, 0.5));
-
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 200, 400, 100);
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png",  250, halfH / 2 + 200, 400, 100);
     btn->SetOnClickCallback(std::bind(&StartScene::PlayOnClick, this, 1));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Play", "pirulen.ttf", 48, halfW, halfH / 2 + 250, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Play", "pirulen.ttf", 48, 450, halfH / 2 + 250, 0, 0, 0, 255, 0.5, 0.5));
 
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH * 3 / 2 - 50, 400, 100);
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", 250, halfH + 120, 400, 100);
     btn->SetOnClickCallback(std::bind(&StartScene::SettingsOnClick, this, 2));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Settings", "pirulen.ttf", 48, halfW, halfH * 3 / 2, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Settings", "pirulen.ttf", 48, 450, halfH + 170, 0, 0, 0, 255, 0.5, 0.5));
+    bgmInstance = AudioHelper::PlaySample("cricket.wav", true, AudioHelper::BGMVolume);
+}
+void StartScene::Draw() const {
+    int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
+    int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
+    int halfW = w / 2;
+    int halfH = h / 2;
+
+    IScene::Draw();
+    ALLEGRO_FONT* titlefont = Engine::Resources::GetInstance().GetFont("pirulen.ttf", 120).get();
+    al_draw_filled_rectangle(70, 90, 1530, 230, al_map_rgba(0,0,0,255/1.75));
+    al_draw_text(titlefont, al_map_rgba(84, 107, 171, 255 - fadealpha), 87.5, 86, 0, "Tower Defense");
+
+    al_draw_tinted_scaled_bitmap(
+        house,
+        al_map_rgba(255, 255, 255, 255 - fadealpha),
+        curX * 142, 94,    // Source X, Y (frame from sprite sheet)
+        141, 93,        // Source width & height (one frame)
+        halfW + 145, halfH + 15,                 // Destination X, Y
+        580, 352,        // Destination width & height (scaled)
+        0                                 // Flags
+    );
+    al_draw_filled_rectangle(0, 0, w, h, al_map_rgba(0,0,0, fadealpha));
 }
 void StartScene::Terminate() {
+    AudioHelper::StopSample(bgmInstance);
+    bgmInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
     IScene::Terminate();
 }
+void StartScene::Update(float deltaTime) {
+    timer++;
+    al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
+
+    if (timer % 15 == 0) {
+        curX = (curX + 1) % 2;
+    }
+    if (fadeticks != 0) {
+        fadeticks++;
+        if (fadealpha <= 255) {
+            fadealpha += 15;
+            if (fadealpha >= 255) {
+                fadealpha = 255;
+            }
+        }
+        if (fadeticks == 40) {
+            Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+        }
+    }
+}
 void StartScene::PlayOnClick(int stage) {
-    Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+    fadeticks = 1;
 }
 void StartScene::SettingsOnClick(int stage) {
     Engine::GameEngine::GetInstance().ChangeScene("settings");
