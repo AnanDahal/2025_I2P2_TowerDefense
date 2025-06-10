@@ -7,6 +7,8 @@
 #include <queue>
 #include <string>
 #include <vector>
+#include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_ttf.h>
 
 #include "Enemy/Enemy.hpp"
 #include "Enemy/SoldierEnemy.hpp"
@@ -42,7 +44,7 @@ const float PlayScene::DangerTime = 7.61;
 const Engine::Point PlayScene::SpawnGridPoint = Engine::Point(-1, 0);
 const Engine::Point PlayScene::EndGridPoint = Engine::Point(MapWidth, MapHeight - 1);
 const std::vector<int> PlayScene::code = {
-    ALLEGRO_KEY_UP, ALLEGRO_KEY_UP, ALLEGRO_KEY_DOWN, ALLEGRO_KEY_DOWN
+    ALLEGRO_KEY_UP, ALLEGRO_KEY_UP, ALLEGRO_KEY_DOWN, ALLEGRO_KEY_DOWN   
     // ,
     // ALLEGRO_KEY_LEFT, ALLEGRO_KEY_RIGHT, ALLEGRO_KEY_LEFT, ALLEGRO_KEY_RIGHT,
     // ALLEGRO_KEY_B, ALLEGRO_KEY_A, ALLEGRO_KEYMOD_SHIFT, ALLEGRO_KEY_ENTER
@@ -53,7 +55,7 @@ Engine::Point PlayScene::GetClientSize() {
 void PlayScene::Initialize() {
     mapState.clear();
     keyStrokes.clear();
-    ticks = 0;
+    ticks = 0;  
     deathCountDown = -1;
     lives = 10;
     money = 150;
@@ -70,8 +72,23 @@ void PlayScene::Initialize() {
     // Should support buttons.
     AddNewControlObject(UIGroup = new Group());
     AddNewControlObject(PauseGroup = new Group());
-    ReadMap();
-    ReadEnemyWave();
+
+    // true type font add ons
+    al_init_ttf_addon();
+
+    // endless generator here
+    endlessMode = (MapId == 2);
+    endlessRound = 0;
+
+    if (endlessMode) {
+        endlessRound = 1;
+        GenerateRandomMap(endlessRound);
+        GenerateEnemyWave(endlessRound);
+    } else {
+        ReadMap();
+        ReadEnemyWave();
+    }
+
     mapDistance = CalculateBFSDistance();
     ConstructUI();
 
@@ -125,22 +142,49 @@ void PlayScene::Terminate() {
     IScene::Terminate();
 }
 void PlayScene::Update(float deltaTime) {
-    // If we use deltaTime directly, then we might have Bullet-through-paper problem.
-    // Reference: Bullet-Through-Paper
+    // --- Round transition effect ---
+    if (roundTransitionState != NONE) {
+        // Update only animation groups so effects finish naturally
+        EffectGroup->Update(deltaTime);
+        BulletGroup->Update(deltaTime);
+        GroundEffectGroup->Update(deltaTime);
+        // Optionally: UIGroup->Update(deltaTime); // If you want UI to animate
+
+        roundTransitionTimer -= deltaTime;
+        if (roundTransitionTimer <= 0) {
+            if (roundTransitionState == WAIT_BEFORE_ROUND_LABEL) {
+                roundTransitionState = SHOW_ROUND_LABEL;
+                roundTransitionTimer = 1.0f; // Show "ROUND X" for 1 second
+            } else if (roundTransitionState == SHOW_ROUND_LABEL) {
+                roundTransitionState = WAIT_AFTER_ROUND_LABEL;
+                roundTransitionTimer = 2.0f; // Wait 2 seconds before spawning enemies
+            } else if (roundTransitionState == WAIT_AFTER_ROUND_LABEL) {
+                roundTransitionState = NONE;
+                // Actually start the next round
+                EnemyGroup->Clear();
+                GenerateRandomMap(nextRoundNumber);
+                mapDistance = CalculateBFSDistance();
+                // enemyWaveData.clear();
+                GenerateEnemyWave(nextRoundNumber);
+                EarnMoney(100 * nextRoundNumber / 2);
+                if (roundLabel) roundLabel->Text = "Round: " + std::to_string(nextRoundNumber);
+            }
+        }
+        return; // Skip normal update while in transition
+    }
 
     if (chatBox) chatBox->Update(deltaTime);
 
-    
     if (SpeedMult == 0)
         deathCountDown = -1;
     else if (deathCountDown != -1)
         SpeedMult = 1;
+
     // Calculate danger zone.
     std::vector<float> reachEndTimes;
     for (auto &it : EnemyGroup->GetObjects()) {
         reachEndTimes.push_back(dynamic_cast<Enemy *>(it)->reachEndTime);
     }
-    // Can use Heap / Priority-Queue instead. But since we won't have too many enemies, sorting is fast enough.
     std::sort(reachEndTimes.begin(), reachEndTimes.end());
     float newDeathCountDown = -1;
     int danger = lives;
@@ -151,7 +195,6 @@ void PlayScene::Update(float deltaTime) {
                 // Death Countdown
                 float pos = DangerTime - it;
                 if (it > deathCountDown) {
-                    // Restart Death Count Down BGM.
                     AudioHelper::StopSample(deathBGMInstance);
                     if (SpeedMult != 0)
                         deathBGMInstance = AudioHelper::PlaySample("astronomia.ogg", false, AudioHelper::BGMVolume, pos);
@@ -173,24 +216,24 @@ void PlayScene::Update(float deltaTime) {
     }
     if (SpeedMult == 0)
         deathCountDown = -1;
+
     for (int i = 0; i < SpeedMult; i++) {
         if (!paused) IScene::Update(deltaTime);
         // Check if we should create new enemy.
         ticks += deltaTime;
         if (enemyWaveData.empty()) {
             if (EnemyGroup->GetObjects().empty()) {
-                // Free resources.
-                // delete TileMapGroup;
-                // delete GroundEffectGroup;
-                // delete DebugIndicatorGroup;
-                // delete TowerGroup;
-                // delete EnemyGroup;
-                // delete BulletGroup;
-                // delete EffectGroup;
-                // delete UIGroup;
-                // delete imgTarget;
-                // Win.
-                Engine::GameEngine::GetInstance().ChangeScene("win");
+                if (endlessMode) {
+                    endlessRound++;
+                    RemoveAllTurrets();
+                    EnemyGroup->Clear();
+                    roundTransitionState = WAIT_BEFORE_ROUND_LABEL;
+                    roundTransitionTimer = 1.0f; // Wait 1 second before showing "ROUND X"
+                    nextRoundNumber = endlessRound;
+                    return;                
+                } else {
+                    Engine::GameEngine::GetInstance().ChangeScene("win");
+                }
             }
             continue;
         }
@@ -205,7 +248,6 @@ void PlayScene::Update(float deltaTime) {
             case 1:
                 EnemyGroup->AddNewObject(enemy = new SoldierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
-            // TODO HACKATHON-3 (2/3): Add your new enemy here.
             case 2:
                 EnemyGroup->AddNewObject(enemy = new ArmyEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
@@ -215,16 +257,16 @@ void PlayScene::Update(float deltaTime) {
             default:
                 continue;
         }
+        enemy->Position.x = SpawnCoordinate.x;
+        enemy->Position.y = SpawnCoordinate.y;
+        printf("Spawning enemy at (%.1f, %.1f)\n", enemy->Position.x, enemy->Position.y);
         enemy->UpdatePath(mapDistance);
-        // Compensate the time lost.
         enemy->Update(ticks);
     }
     if (preview) {
         preview->Position = Engine::GameEngine::GetInstance().GetMousePosition();
         preview->Update(deltaTime);
     }
-
-    // shovel‐preview follows cursor
     if (Shoveling && shovelPreview) {
         auto mpos = Engine::GameEngine::GetInstance().GetMousePosition();
         shovelPreview->Position = mpos;
@@ -246,6 +288,20 @@ void PlayScene::Draw() const {
             }
         }
     }
+
+    // --- Round transition overlay ---
+    if (roundTransitionState == SHOW_ROUND_LABEL) {
+        int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
+        int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
+        al_draw_filled_rectangle(0, 0, w, h, al_map_rgb(0, 0, 0));
+        std::string text = "ROUND " + std::to_string(nextRoundNumber);
+        ALLEGRO_FONT* font = al_load_ttf_font("Resource/fonts/pirulen.ttf", 72, 0);
+        if (font) {
+            al_draw_text(font, al_map_rgb(255, 255, 255), w / 2, h / 2 - 36, ALLEGRO_ALIGN_CENTRE, text.c_str());
+            al_destroy_font(font);
+        }
+    }
+
 }
 void PlayScene::OnMouseDown(int button, int mx, int my) {
     if ((button & 1) && !imgTarget->Visible && preview) {
@@ -268,6 +324,7 @@ void PlayScene::OnMouseMove(int mx, int my) {
     imgTarget->Position.y = y * BlockSize;
 }
 void PlayScene::OnMouseUp(int button, int mx, int my) {
+    
     IScene::OnMouseUp(button, mx, my);
 
     // ────── shovel-mode removal ──────
@@ -488,7 +545,10 @@ void PlayScene::ConstructUI() {
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 2)); // Healing turret
     UIGroup->AddNewControlObject(btn);
 
-
+    if (MapId == 2) {
+        roundLabel = new Engine::Label("Round: " + std::to_string(endlessRound), "pirulen.ttf", 32, 1050, 50);
+        UIGroup->AddNewObject(roundLabel);
+    }
 
 
     {
@@ -651,4 +711,87 @@ std::vector<std::vector<int>> PlayScene::CalculateBFSDistance() {
 void PlayScene::FreeTile(int gridX, int gridY) {
     // restore to “floor” so it's buildable again but still blocks enemies
     mapState[gridY][gridX] = TILE_FLOOR;
+}
+
+void PlayScene::GenerateRandomMap(int round) {
+
+    // if (roundTransitionState == WAIT_AFTER_ROUND_LABEL) {
+    //     roundTransitionState = NONE;
+    //     // Actually start the next round
+    //     GenerateRandomMap(nextRoundNumber);
+    //     mapDistance = CalculateBFSDistance(); // <-- ADD THIS LINE!
+    //     GenerateEnemyWave(nextRoundNumber);
+    //     EarnMoney(100 * nextRoundNumber / 2);
+    //     if (roundLabel) roundLabel->Text = "Round: " + std::to_string(nextRoundNumber);
+    // }
+
+    // 1. Fill with floor
+    mapState = std::vector<std::vector<TileType>>(MapHeight, std::vector<TileType>(MapWidth, TILE_FLOOR));
+
+    // 2. Generate a single path from (0,0) to (MapWidth-1, MapHeight-1)
+    int x = 0, y = 0;
+    mapState[y][x] = TILE_DIRT; // <-- FIX: Start is dirt so path is continuous!
+    std::vector<std::pair<int, int>> path;
+    path.emplace_back(x, y);
+
+    // Randomly decide to go right or down at each step, but always reach the end
+    while (x < MapWidth - 1 || y < MapHeight - 1) {
+        bool moveRight = false;
+        if (x == MapWidth - 1) moveRight = false;
+        else if (y == MapHeight - 1) moveRight = true;
+        else moveRight = rand() % 2;
+
+        if (moveRight) x++;
+        else y++;
+        path.emplace_back(x, y);
+    }
+
+    // Mark the path as TILE_DIRT (enemy path), rest is TILE_FLOOR (tower buildable)
+    for (auto& p : path) {
+        mapState[p.second][p.first] = TILE_DIRT;
+    }
+
+    // 3. Rebuild tile images
+    TileMapGroup->Clear();
+    for (int i = 0; i < MapHeight; i++) {
+        for (int j = 0; j < MapWidth; j++) {
+            if (mapState[i][j] == TILE_FLOOR)
+                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+            else
+                TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+        }
+    }
+    mapDistance = CalculateBFSDistance();
+}
+
+void PlayScene::GenerateEnemyWave(int round) {
+    // Example: Increase difficulty each round
+    enemyWaveData.clear();
+    int numSoldiers = 5 + round * 2;
+    int numArmies = round / 2;
+    int numTanks = round / 3;
+    float wait = std::max(0.5f, 2.0f - round * 0.05f); // Faster spawns as round increases
+
+    for (int i = 0; i < numSoldiers; ++i)
+        enemyWaveData.emplace_back(1, wait);
+    for (int i = 0; i < numArmies; ++i)
+        enemyWaveData.emplace_back(2, wait + 0.2f);
+    for (int i = 0; i < numTanks; ++i)
+        enemyWaveData.emplace_back(3, wait + 0.4f);
+}
+
+void PlayScene::RemoveAllTurrets() {
+    // Remove all turrets from the TowerGroup and mark mapState as not occupied
+    for (auto obj : TowerGroup->GetObjects()) {
+        Turret* t = dynamic_cast<Turret*>(obj);
+        if (t) {
+            int tx = int(t->Position.x / BlockSize);
+            int ty = int(t->Position.y / BlockSize);
+            if (tx >= 0 && tx < MapWidth && ty >= 0 && ty < MapHeight)
+                mapState[ty][tx] = TILE_FLOOR;
+            EarnMoney(t->GetPrice()); // Refund turret price
+        }
+    }
+    TowerGroup->Clear();
+    if (roundLabel) roundLabel->Text = "Round: " + std::to_string(endlessRound);
 }

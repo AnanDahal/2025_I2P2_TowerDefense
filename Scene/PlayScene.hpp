@@ -9,6 +9,14 @@
 #include "Engine/IScene.hpp"
 #include "Engine/Point.hpp"
 #include "UI/Component/ChatBox.hpp"  // for chatbox
+#include <map>
+
+enum RoundTransitionState {
+    NONE,
+    WAIT_BEFORE_ROUND_LABEL,
+    SHOW_ROUND_LABEL,
+    WAIT_AFTER_ROUND_LABEL
+};
 
 class Turret;
 namespace Engine {
@@ -36,6 +44,11 @@ protected:
     int money;
     int SpeedMult;
     int Score;
+    bool endlessMode = false;
+    int endlessRound = 0;
+    RoundTransitionState roundTransitionState = NONE;
+    float roundTransitionTimer = 0.0f;
+    int nextRoundNumber = 0;
 
 public:
     static bool DebugMode;
@@ -88,15 +101,20 @@ public:
     void UIBtnClicked(int id);
     void PauseOnClick(int id);
     bool CheckSpaceValid(int x, int y);
+    void GenerateRandomMap(int round);
+    void GenerateEnemyWave(int round);
+    void RemoveAllTurrets();
     std::vector<std::vector<int>> CalculateBFSDistance();
     int GetScore() const;
     // shovel
     Engine::Sprite* shovelPreview = nullptr;
     bool Shoveling = false;
+    Engine::Label* roundLabel = nullptr;
 
     //pause
     static bool paused;
     ALLEGRO_BITMAP* pauseOverlay;
+    std::map<std::pair<int, int>, std::pair<int, int>> parent; // For reconstructing the path
     // void ModifyReadMapTiles();
 };
 #endif   // PLAYSCENE_HPP

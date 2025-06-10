@@ -52,6 +52,43 @@ void Enemy::Hit(float damage) {
 void Enemy::UpdatePath(const std::vector<std::vector<int>> &mapDistance) {
     int x = static_cast<int>(floor(Position.x / PlayScene::BlockSize));
     int y = static_cast<int>(floor(Position.y / PlayScene::BlockSize));
+
+    printf("Enemy UpdatePath at (%d, %d)\n", x, y);
+
+    // Special case: spawn at (-1, 0)
+    if (x == -1 && y == 0) {
+        Engine::Point pos(0, 0);
+        int num = mapDistance[0][0];
+        if (num == -1) {
+            num = 0;
+            Engine::LOG(Engine::ERROR) << "Enemy path finding error";
+        }
+        path = std::vector<Engine::Point>(num + 2);
+        path[num + 1] = pos;
+        int cx = 0, cy = 0;
+        while (num != 0) {
+            std::vector<Engine::Point> nextHops;
+            for (auto &dir : PlayScene::directions) {
+                int nx = cx + dir.x;
+                int ny = cy + dir.y;
+                if (nx < 0 || nx >= PlayScene::MapWidth || ny < 0 || ny >= PlayScene::MapHeight || mapDistance[ny][nx] != num - 1)
+                    continue;
+                nextHops.emplace_back(nx, ny);
+            }
+            std::random_device dev;
+            std::mt19937 rng(dev());
+            std::uniform_int_distribution<std::mt19937::result_type> dist(0, nextHops.size() - 1);
+            Engine::Point next = nextHops[dist(rng)];
+            path[num] = next;
+            cx = next.x;
+            cy = next.y;
+            num--;
+        }
+        path[0] = PlayScene::EndGridPoint;
+        return;
+    }
+
+    // Normal case (already on the map)
     if (x < 0) x = 0;
     if (x >= PlayScene::MapWidth) x = PlayScene::MapWidth - 1;
     if (y < 0) y = 0;
@@ -72,7 +109,6 @@ void Enemy::UpdatePath(const std::vector<std::vector<int>> &mapDistance) {
                 continue;
             nextHops.emplace_back(x, y);
         }
-        // Choose arbitrary one.
         std::random_device dev;
         std::mt19937 rng(dev());
         std::uniform_int_distribution<std::mt19937::result_type> dist(0, nextHops.size() - 1);
