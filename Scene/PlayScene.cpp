@@ -96,6 +96,7 @@ void PlayScene::Initialize() {
     ConstructUI();
 
     // chatbox
+
     if (MapId == 1) {
         int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
         int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
@@ -122,8 +123,19 @@ void PlayScene::Terminate() {
     AudioHelper::StopBGM(bgmId);
     AudioHelper::StopSample(deathBGMInstance);
     deathBGMInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
+
+    // Properly remove and destroy chatbox
+    if (chatBox) {
+        // Defensive: Remove from UIGroup if present
+        if (UIGroup) {
+            UIGroup->RemoveObject(chatBox->GetObjectIterator());
+        }
+        chatBox->Terminate();
+        chatBox.reset();
+    }
     IScene::Terminate();
 }
+
 void PlayScene::Update(float deltaTime) {
     // --- Round transition effect ---
     if (roundTransitionState != NONE) {
@@ -155,7 +167,17 @@ void PlayScene::Update(float deltaTime) {
         return; // Skip all enemy spawn/update code during transition!
     }
 
-    if (chatBox) chatBox->Update(deltaTime);
+    if (chatBox) {
+        chatBox->Update(deltaTime);
+        if (chatBox->finished) {
+            if (UIGroup) {
+                UIGroup->RemoveObject(chatBox->GetObjectIterator());
+            }
+            
+            chatBox->Terminate();
+            chatBox.reset();
+        }
+    }
 
     if (SpeedMult == 0)
         deathCountDown = -1;
@@ -385,7 +407,9 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
 void PlayScene::OnKeyDown(int keyCode) {
     IScene::OnKeyDown(keyCode);
 
-    if (chatBox) chatBox->OnKeyDown(keyCode);
+    if (chatBox) {
+        chatBox->OnKeyDown(keyCode);
+    }
 
 
     if (keyCode == ALLEGRO_KEY_TAB) {
@@ -431,7 +455,20 @@ void PlayScene::Hit() {
     // not sure
     UILives->Text = std::string("Life ") + std::to_string(lives);
     if (lives <= 0) {
-        Engine::GameEngine::GetInstance().ChangeScene("lose");
+        if(endlessMode)
+        {
+            // If in endless mode, reset the round and money.
+            endlessMode = false;
+            endlessRound = 1;
+            EarnMoney(-money);
+            money = 0;
+            Engine::GameEngine::GetInstance().ChangeScene("win");
+        }
+        else
+        {
+            Engine::GameEngine::GetInstance().ChangeScene("lose");
+        }
+        
     }
 }
 int PlayScene::GetMoney() const {

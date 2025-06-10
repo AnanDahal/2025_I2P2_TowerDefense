@@ -65,5 +65,12 @@ namespace Engine {
             currentCharIndex = chatText.length();
             std::cout << "[ChatBox] Space pressed, showing all text.\n";
         }
+
+        if (keycode == ALLEGRO_KEY_ENTER && currentCharIndex >= chatText.length()) {
+            finished = true;
+        }
+    }
+
+    void ChatBox::Terminate() {
     }
 }
