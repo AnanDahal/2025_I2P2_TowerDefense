@@ -82,7 +82,7 @@ void PlayScene::Initialize() {
     al_init_ttf_addon();
 
     // endless generator here
-    endlessMode = (MapId == 2);
+    endlessMode = (MapId == 2); // MapId 2 is for endless mode
     endlessRound = 0;
 
     if (endlessMode) {
