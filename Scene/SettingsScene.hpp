@@ -14,6 +14,7 @@ public:
     void Initialize() override;
     void Terminate() override;
     void BackOnClick(int stage);
+    void LogInOnClick(int stage);
     void BGMSlideOnValueChanged(float value);
     void SFXSlideOnValueChanged(float value);
 };
