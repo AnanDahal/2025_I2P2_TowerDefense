@@ -109,7 +109,7 @@ void PlayScene::Initialize() {
     }
 
     // end chatbox
-    
+
     imgTarget = new Engine::Image("play/target.png", 0, 0);
     imgTarget->Visible = false;
     preview = nullptr;
@@ -149,33 +149,32 @@ void PlayScene::Terminate() {
 void PlayScene::Update(float deltaTime) {
     // --- Round transition effect ---
     if (roundTransitionState != NONE) {
-        // Update only animation groups so effects finish naturally
+        // Only update effects, not enemies!
         EffectGroup->Update(deltaTime);
         BulletGroup->Update(deltaTime);
         GroundEffectGroup->Update(deltaTime);
-        // Optionally: UIGroup->Update(deltaTime); // If you want UI to animate
+        // Optionally: UIGroup->Update(deltaTime);
 
         roundTransitionTimer -= deltaTime;
         if (roundTransitionTimer <= 0) {
             if (roundTransitionState == WAIT_BEFORE_ROUND_LABEL) {
                 roundTransitionState = SHOW_ROUND_LABEL;
-                roundTransitionTimer = 1.0f; // Show "ROUND X" for 1 second
+                roundTransitionTimer = 1.0f;
             } else if (roundTransitionState == SHOW_ROUND_LABEL) {
                 roundTransitionState = WAIT_AFTER_ROUND_LABEL;
-                roundTransitionTimer = 2.0f; // Wait 2 seconds before spawning enemies
+                roundTransitionTimer = 2.0f;
             } else if (roundTransitionState == WAIT_AFTER_ROUND_LABEL) {
                 roundTransitionState = NONE;
-                // Actually start the next round
                 EnemyGroup->Clear();
                 GenerateRandomMap(nextRoundNumber);
                 mapDistance = CalculateBFSDistance();
-                // enemyWaveData.clear();
                 GenerateEnemyWave(nextRoundNumber);
                 EarnMoney(100 * nextRoundNumber / 2);
+                ticks = 0; // Reset spawn timer!
                 if (roundLabel) roundLabel->Text = "Round: " + std::to_string(nextRoundNumber);
             }
         }
-        return; // Skip normal update while in transition
+        return; // Skip all enemy spawn/update code during transition!
     }
 
     if (chatBox) chatBox->Update(deltaTime);
@@ -722,23 +721,12 @@ void PlayScene::FreeTile(int gridX, int gridY) {
 }
 
 void PlayScene::GenerateRandomMap(int round) {
-
-    // if (roundTransitionState == WAIT_AFTER_ROUND_LABEL) {
-    //     roundTransitionState = NONE;
-    //     // Actually start the next round
-    //     GenerateRandomMap(nextRoundNumber);
-    //     mapDistance = CalculateBFSDistance(); // <-- ADD THIS LINE!
-    //     GenerateEnemyWave(nextRoundNumber);
-    //     EarnMoney(100 * nextRoundNumber / 2);
-    //     if (roundLabel) roundLabel->Text = "Round: " + std::to_string(nextRoundNumber);
-    // }
-
     // 1. Fill with floor
     mapState = std::vector<std::vector<TileType>>(MapHeight, std::vector<TileType>(MapWidth, TILE_FLOOR));
 
-    // 2. Generate a single path from (0,0) to (MapWidth-1, MapHeight-1)
+    // 2. Generate a single winding path from (0,0) to (MapWidth-1, MapHeight-1)
     int x = 0, y = 0;
-    mapState[y][x] = TILE_DIRT; // <-- FIX: Start is dirt so path is continuous!
+    mapState[y][x] = TILE_DIRT;
     std::vector<std::pair<int, int>> path;
     path.emplace_back(x, y);
 
@@ -769,7 +757,6 @@ void PlayScene::GenerateRandomMap(int round) {
                 TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
         }
     }
-    mapDistance = CalculateBFSDistance();
 }
 
 void PlayScene::GenerateEnemyWave(int round) {
