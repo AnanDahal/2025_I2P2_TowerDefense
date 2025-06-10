@@ -14,6 +14,8 @@
 #include "Enemy/SoldierEnemy.hpp"
 #include "Enemy/ArmyEnemy.hpp"
 #include "Enemy/TankEnemy.hpp"
+#include "Enemy/CarrierEnemy.h"
+#include "Enemy/BiggerCarrierEnemy.h"
 #include "Engine/AudioHelper.hpp"
 #include "Engine/GameEngine.hpp"
 #include "Engine/Group.hpp"
@@ -23,6 +25,9 @@
 #include "Turret/LaserTurret.hpp"
 #include "Turret/MachineGunTurret.hpp"
 #include "Turret/HealingTurret.hpp"
+#include "Turret/SniperTurret.h"
+#include "Turret/BuffTurret.h"
+#include "Turret/SlowTurret.h"
 #include "Turret/TurretButton.hpp"
 #include "UI/Animation/DirtyEffect.hpp"
 #include "UI/Animation/Plane.hpp"
@@ -254,6 +259,12 @@ void PlayScene::Update(float deltaTime) {
             case 3:
                 EnemyGroup->AddNewObject(enemy = new TankEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
+            case 4:
+                EnemyGroup->AddNewObject(enemy = new CarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
+                break;
+            case 5:
+                EnemyGroup->AddNewObject(enemy = new BiggerCarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
+                break;
             default:
                 continue;
         }
@@ -431,12 +442,6 @@ void PlayScene::OnKeyDown(int keyCode) {
         paused = !paused;
         SpeedMult = paused ? 0 : 1;
         PauseGroup->Visible = paused;
-
-        if (paused && shovelPreview) {
-            UIGroup->RemoveObject(shovelPreview->GetObjectIterator());
-            shovelPreview = nullptr;
-            Shoveling = false;
-        }
     }
     if (keyCode == ALLEGRO_KEY_Q && money >= MachineGunTurret::Price) {
         // Hotkey for MachineGunTurret.
@@ -627,6 +632,9 @@ void PlayScene::UIBtnClicked(int id) {
 
 void PlayScene::PauseOnClick(int id) {
     //pause sht
+    if (!paused) return;
+    paused = !paused;
+    PauseGroup->Visible = false;
     if (id == 20) {
         paused = false;
         SpeedMult = 1;
