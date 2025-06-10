@@ -13,6 +13,7 @@ public:
     explicit SettingsScene() = default;
     void Initialize() override;
     void Terminate() override;
+    void Draw() const override;
     void BackOnClick(int stage);
     void LogInOnClick(int stage);
     void BGMSlideOnValueChanged(float value);

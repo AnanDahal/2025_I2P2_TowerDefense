@@ -102,6 +102,7 @@ void LogInScene::SubmitName() {
 }
 
 void LogInScene::Draw() const {
+    al_clear_to_color(al_map_rgb(0, 0, 0));
     IScene::Draw(); // Draw all existing objects first
 
     // Draw text box rectangle
