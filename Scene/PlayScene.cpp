@@ -41,7 +41,6 @@
 // TODO HACKATHON-5 (2/4): The "LIFE" label are not updated when you lose a life. Try to fix it.
 
 bool PlayScene::DebugMode = false;
-bool PlayScene::paused = false;
 const std::vector<Engine::Point> PlayScene::directions = { Engine::Point(-1, 0), Engine::Point(0, -1), Engine::Point(1, 0), Engine::Point(0, 1) };
 const int PlayScene::MapWidth = 20, PlayScene::MapHeight = 13;
 const int PlayScene::BlockSize = 64;
@@ -76,7 +75,6 @@ void PlayScene::Initialize() {
     AddNewObject(EffectGroup = new Group());
     // Should support buttons.
     AddNewControlObject(UIGroup = new Group());
-    AddNewControlObject(PauseGroup = new Group());
 
     // true type font add ons
     al_init_ttf_addon();
@@ -109,7 +107,7 @@ void PlayScene::Initialize() {
     }
 
     // end chatbox
-    
+
     imgTarget = new Engine::Image("play/target.png", 0, 0);
     imgTarget->Visible = false;
     preview = nullptr;
@@ -119,26 +117,6 @@ void PlayScene::Initialize() {
     Engine::Resources::GetInstance().GetBitmap("lose/benjamin-happy.png");
     // Start BGM.
     bgmId = AudioHelper::PlayBGM("play.ogg");
-
-    //pause
-    PauseGroup->Visible = false;
-
-    PauseGroup->AddNewObject(new Engine::Image("play/pauseOverlay.png", 0, 0, MapWidth * BlockSize, MapHeight * BlockSize));
-    // Add pause menu title
-    PauseGroup->AddNewObject(new Engine::Label("PAUSED", "pirulen.ttf", 72, MapWidth * BlockSize / 2, MapHeight * BlockSize / 2 - 100, 255, 255, 255, 255, 0.5, 0.5));
-
-    // Add continue button
-    Engine::ImageButton* btn;
-    btn = new Engine::ImageButton("win/dirt.png", "win/floor.png", MapWidth * BlockSize / 2 - 195, MapHeight * BlockSize / 2, 450, 100, 0.5, 0.5);
-    btn->SetOnClickCallback(std::bind(&PlayScene::PauseOnClick, this, 20));
-    PauseGroup->AddNewControlObject(btn);
-    PauseGroup->AddNewObject(new Engine::Label("Continue", "pirulen.ttf", 48, MapWidth * BlockSize / 2, MapHeight * BlockSize / 2 + 20, 255, 255, 255, 255, 0.5, 0.5));
-
-    // Add return to menu button
-    btn = new Engine::ImageButton("win/dirt.png", "win/floor.png", MapWidth * BlockSize / 2 - 195, MapHeight * BlockSize / 2 + 125, 450, 100, 0.5, 0.5);
-    btn->SetOnClickCallback(std::bind(&PlayScene::PauseOnClick, this, 21));
-    PauseGroup->AddNewControlObject(btn);
-    PauseGroup->AddNewObject(new Engine::Label("STAGES", "pirulen.ttf", 48, MapWidth * BlockSize / 2, MapHeight * BlockSize / 2 + 145, 255, 255, 255, 255, 0.5, 0.5));
 }
 void PlayScene::Terminate() {
     AudioHelper::StopBGM(bgmId);
@@ -149,33 +127,32 @@ void PlayScene::Terminate() {
 void PlayScene::Update(float deltaTime) {
     // --- Round transition effect ---
     if (roundTransitionState != NONE) {
-        // Update only animation groups so effects finish naturally
+        // Only update effects, not enemies!
         EffectGroup->Update(deltaTime);
         BulletGroup->Update(deltaTime);
         GroundEffectGroup->Update(deltaTime);
-        // Optionally: UIGroup->Update(deltaTime); // If you want UI to animate
+        // Optionally: UIGroup->Update(deltaTime);
 
         roundTransitionTimer -= deltaTime;
         if (roundTransitionTimer <= 0) {
             if (roundTransitionState == WAIT_BEFORE_ROUND_LABEL) {
                 roundTransitionState = SHOW_ROUND_LABEL;
-                roundTransitionTimer = 1.0f; // Show "ROUND X" for 1 second
+                roundTransitionTimer = 1.0f;
             } else if (roundTransitionState == SHOW_ROUND_LABEL) {
                 roundTransitionState = WAIT_AFTER_ROUND_LABEL;
-                roundTransitionTimer = 2.0f; // Wait 2 seconds before spawning enemies
+                roundTransitionTimer = 2.0f;
             } else if (roundTransitionState == WAIT_AFTER_ROUND_LABEL) {
                 roundTransitionState = NONE;
-                // Actually start the next round
                 EnemyGroup->Clear();
                 GenerateRandomMap(nextRoundNumber);
                 mapDistance = CalculateBFSDistance();
-                // enemyWaveData.clear();
                 GenerateEnemyWave(nextRoundNumber);
                 EarnMoney(100 * nextRoundNumber / 2);
+                ticks = 0; // Reset spawn timer!
                 if (roundLabel) roundLabel->Text = "Round: " + std::to_string(nextRoundNumber);
             }
         }
-        return; // Skip normal update while in transition
+        return; // Skip all enemy spawn/update code during transition!
     }
 
     if (chatBox) chatBox->Update(deltaTime);
@@ -223,7 +200,7 @@ void PlayScene::Update(float deltaTime) {
         deathCountDown = -1;
 
     for (int i = 0; i < SpeedMult; i++) {
-        if (!paused) IScene::Update(deltaTime);
+        IScene::Update(deltaTime);
         // Check if we should create new enemy.
         ticks += deltaTime;
         if (enemyWaveData.empty()) {
@@ -396,7 +373,6 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
             preview->Preview = false;
             preview->Tint = al_map_rgba(255, 255, 255, 255);
             TowerGroup->AddNewObject(preview);
-            // To keep responding when paused.
             preview->Update(0);
             // Remove Preview.
             preview = nullptr;
@@ -437,11 +413,6 @@ void PlayScene::OnKeyDown(int keyCode) {
                 }
             }
         }
-    }
-    if (keyCode == ALLEGRO_KEY_ESCAPE) {
-        paused = !paused;
-        SpeedMult = paused ? 0 : 1;
-        PauseGroup->Visible = paused;
     }
     if (keyCode == ALLEGRO_KEY_Q && money >= MachineGunTurret::Price) {
         // Hotkey for MachineGunTurret.
@@ -572,6 +543,15 @@ void PlayScene::ConstructUI() {
         );
         btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, SHOVEL_ID));
         UIGroup->AddNewControlObject(btn);
+
+        Engine::ImageButton *btnn;
+        btnn = new Engine::ImageButton("play/home.png", "play/home.png",  1300, 750, 75, 75);
+        btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 20));
+        AddNewControlObject(btnn);
+
+        btnn = new Engine::ImageButton("play/retry.png", "play/retry.png",  1375, 750, 75, 75);
+        btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 21));
+        AddNewControlObject(btnn);
     }
 
 
@@ -620,6 +600,12 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new LaserTurret(0, 0);
     else if (id == 2 && money >= HealingTurret::Price)
         preview = new HealingTurret(0, 0);
+    else if (id == 20) {
+        Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+    }
+    else if (id == 21) {
+        Engine::GameEngine::GetInstance().ChangeScene("play");
+    }
     if (!preview)
         return;
     preview->Position = Engine::GameEngine::GetInstance().GetMousePosition();
@@ -630,21 +616,6 @@ void PlayScene::UIBtnClicked(int id) {
     OnMouseMove(Engine::GameEngine::GetInstance().GetMousePosition().x, Engine::GameEngine::GetInstance().GetMousePosition().y);
 }
 
-void PlayScene::PauseOnClick(int id) {
-    //pause sht
-    if (!paused) return;
-    paused = !paused;
-    PauseGroup->Visible = false;
-    if (id == 20) {
-        paused = false;
-        SpeedMult = 1;
-        PauseGroup->Visible = false;
-    }
-    else if (id == 21) {
-        paused = false;
-        Engine::GameEngine::GetInstance().ChangeScene("stage-select");
-    }
-}
 
 int PlayScene::GetScore() const {
     return Score;
@@ -722,23 +693,12 @@ void PlayScene::FreeTile(int gridX, int gridY) {
 }
 
 void PlayScene::GenerateRandomMap(int round) {
-
-    // if (roundTransitionState == WAIT_AFTER_ROUND_LABEL) {
-    //     roundTransitionState = NONE;
-    //     // Actually start the next round
-    //     GenerateRandomMap(nextRoundNumber);
-    //     mapDistance = CalculateBFSDistance(); // <-- ADD THIS LINE!
-    //     GenerateEnemyWave(nextRoundNumber);
-    //     EarnMoney(100 * nextRoundNumber / 2);
-    //     if (roundLabel) roundLabel->Text = "Round: " + std::to_string(nextRoundNumber);
-    // }
-
     // 1. Fill with floor
     mapState = std::vector<std::vector<TileType>>(MapHeight, std::vector<TileType>(MapWidth, TILE_FLOOR));
 
-    // 2. Generate a single path from (0,0) to (MapWidth-1, MapHeight-1)
+    // 2. Generate a single winding path from (0,0) to (MapWidth-1, MapHeight-1)
     int x = 0, y = 0;
-    mapState[y][x] = TILE_DIRT; // <-- FIX: Start is dirt so path is continuous!
+    mapState[y][x] = TILE_DIRT;
     std::vector<std::pair<int, int>> path;
     path.emplace_back(x, y);
 
@@ -769,7 +729,6 @@ void PlayScene::GenerateRandomMap(int round) {
                 TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
         }
     }
-    mapDistance = CalculateBFSDistance();
 }
 
 void PlayScene::GenerateEnemyWave(int round) {
