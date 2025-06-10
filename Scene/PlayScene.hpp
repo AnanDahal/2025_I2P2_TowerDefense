@@ -68,7 +68,6 @@ public:
     Group *DebugIndicatorGroup;
     Group *BulletGroup;
     Group *TowerGroup;
-    Group *PauseGroup; //added
     Group *EnemyGroup;
     Group *EffectGroup;
     Group *UIGroup;
@@ -99,7 +98,6 @@ public:
     void ReadEnemyWave();
     void ConstructUI();
     void UIBtnClicked(int id);
-    void PauseOnClick(int id);
     bool CheckSpaceValid(int x, int y);
     void GenerateRandomMap(int round);
     void GenerateEnemyWave(int round);
@@ -111,9 +109,6 @@ public:
     bool Shoveling = false;
     Engine::Label* roundLabel = nullptr;
 
-    //pause
-    static bool paused;
-    ALLEGRO_BITMAP* pauseOverlay;
     std::map<std::pair<int, int>, std::pair<int, int>> parent; // For reconstructing the path
     // void ModifyReadMapTiles();
 };
