@@ -13,10 +13,12 @@ namespace Engine {
         float textSpeed;  // characters per second
         size_t currentCharIndex;
     public:
+        bool finished = false;
         ChatBox(float screenW, float screenH, const std::string& chatText);
         void Draw() const;
         void Update(float deltaTime);
         void OnKeyDown(int keycode) override;
+        void Terminate();
     };
 }
 #endif
