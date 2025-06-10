@@ -36,6 +36,8 @@ add_executable(2025_I2P2_TowerDefense
         Enemy/ArmyEnemy.hpp
         Enemy/CarrierEnemy.cpp
         Enemy/CarrierEnemy.h
+        Enemy/BiggerCarrierEnemy.cpp
+        Enemy/BiggerCarrierEnemy.h
     Engine/Allegro5Exception.cpp
     Engine/Allegro5Exception.hpp
     Engine/AudioHelper.cpp
@@ -131,6 +133,8 @@ add_executable(2025_I2P2_TowerDefense
         Bullet/SlowBullet.h
         Turret/SlowTurret.cpp
         Turret/SlowTurret.h
+        Enemy/BiggerCarrierEnemy.cpp
+        Enemy/BiggerCarrierEnemy.h
 )
 
 IF (WIN32)
