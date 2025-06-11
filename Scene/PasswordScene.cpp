@@ -118,7 +118,7 @@ void PasswordScene::SubmitName() {
         OnStage = 0;
         core_memories = 0;
         endless_score = 0;
-        Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+        Engine::GameEngine::GetInstance().ChangeScene("stage-select"); //FARREL UPDATE THIS WHEN FINISH CUTSCENE
     }
 }
 
