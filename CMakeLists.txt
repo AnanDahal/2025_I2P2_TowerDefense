@@ -38,6 +38,10 @@ add_executable(2025_I2P2_TowerDefense
         Enemy/CarrierEnemy.h
         Enemy/BiggerCarrierEnemy.cpp
         Enemy/BiggerCarrierEnemy.h
+        Enemy/BossEnemy.cpp
+        Enemy/BossEnemy.h
+        Enemy/MiniBossEnemy.cpp
+        Enemy/MiniBossEnemy.h
     Engine/Allegro5Exception.cpp
     Engine/Allegro5Exception.hpp
     Engine/AudioHelper.cpp
@@ -82,6 +86,8 @@ add_executable(2025_I2P2_TowerDefense
         Scene/LeaderBoardScene.h
         scene/LogInScene.cpp
         scene/LogInScene.h
+        scene/PasswordScene.cpp
+        scene/PasswordScene.h
 
     Turret/LaserTurret.cpp
     Turret/LaserTurret.hpp
@@ -141,6 +147,12 @@ add_executable(2025_I2P2_TowerDefense
         Enemy/BiggerCarrierEnemy.h
         Scene/LogInScene.cpp
         Scene/LogInScene.h
+        Scene/PasswordScene.cpp
+        Scene/PasswordScene.h
+        Enemy/BossEnemy.cpp
+        Enemy/BossEnemy.h
+        Enemy/MiniBossEnemy.cpp
+        Enemy/MiniBossEnemy.h
 )
 
 IF (WIN32)
