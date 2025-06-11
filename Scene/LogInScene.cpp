@@ -14,12 +14,13 @@
 #include <fstream>
 #include <algorithm>
 #include "WinScene.hpp"
+#include "Scene/PasswordScene.h"
 #include <ctime>
 #include <allegro5/allegro_primitives.h>
 
 
-using accountEntry = std::tuple<std::string, int, int, int>; // name, stage, memories, endless score
-std::vector<accountEntry> accountEntries;
+// using accountEntry = std::tuple<std::string, int, int, int>; // name, stage, memories, endless score
+// std::vector<accountEntry> accountEntries;
 
 void LogInScene::Initialize() {
     ticks = 0;
@@ -72,33 +73,9 @@ void LogInScene::SubmitName() {
     }).base(), playerName.end());
 
     if (playerName.empty()) return;
-
-    std::ifstream fin("../Resource/accounts.txt");
-
-    std::string name;
-    int stage;
-    int memories;
-    int endless_score;
-    int exists = 0;
-    while (fin >> name >> stage >> memories >> endless_score) {
-        accountEntries.emplace_back(name, stage, memories, endless_score);
-        if (name == playerName) {
-            //do something
-            exists = 1;
-            return;
-        }
-    }
-
-    // Save to accounts
-    if (!exists) {
-        std::ofstream fout("../Resource/accounts.txt", std::ios::app);
-        if (fout) {
-            fout << playerName << " " << 0 << " " << 0 << " " << 0 << "\n"; //name stage memories endless_score
-        }
-    }
-
+    //PasswordScene::SetPlayerName(playerName);
     // Go to stage select
-    Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+    Engine::GameEngine::GetInstance().ChangeScene("password");
 }
 
 void LogInScene::Draw() const {
@@ -132,4 +109,8 @@ void LogInScene::OnKeyDown(int keyCode) {
     if (len == 1) {
         playerName += al_keycode_to_name(keyCode);
     }
+}
+
+std::string LogInScene::getPlayerName() {
+    return playerName;
 }

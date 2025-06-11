@@ -82,6 +82,8 @@ add_executable(2025_I2P2_TowerDefense
         Scene/LeaderBoardScene.h
         scene/LogInScene.cpp
         scene/LogInScene.h
+        scene/PasswordScene.cpp
+        scene/PasswordScene.h
 
     Turret/LaserTurret.cpp
     Turret/LaserTurret.hpp
@@ -141,6 +143,8 @@ add_executable(2025_I2P2_TowerDefense
         Enemy/BiggerCarrierEnemy.h
         Scene/LogInScene.cpp
         Scene/LogInScene.h
+        Scene/PasswordScene.cpp
+        Scene/PasswordScene.h
 )
 
 IF (WIN32)
