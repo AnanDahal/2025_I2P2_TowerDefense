@@ -31,26 +31,26 @@ void StageSelectScene::Initialize() {
     fadeout = false;
     Engine::ImageButton *btn;
 
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 - 200, 400, 100);
+    btn = new Engine::ImageButton("stage-select/trophy.png", "stage-select/trophyhov.png", 300, halfH / 2 - 200, 400, 400);
     btn->SetOnClickCallback(std::bind(&StageSelectScene::ScoreboardOnClick, this, 3));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Scores", "pirulen.ttf", 48, halfW, halfH / 2 - 150, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Scores", "pirulen.ttf", 48, 500, halfH / 2 + 200, 0, 0, 0, 255, 0.5, 0.5));
 
 
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 - 50, 400, 100);
+    btn = new Engine::ImageButton("stage-select/story.png", "stage-select/storyhov.png", halfW - 75, halfH / 2 - 200, 400, 400);
     btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 1));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Story Mode", "pirulen.ttf", 48, halfW, halfH / 2, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Story", "pirulen.ttf", 48, halfW + 125, halfH / 2 + 200, 0, 0, 0, 255, 0.5, 0.5));
 
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 100, 400, 100);
+    btn = new Engine::ImageButton("stage-select/nightmare.png", "stage-select/nightmarehov.png", halfW + 350, halfH / 2 - 200, 400, 400);
     btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 2));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Death Match", "pirulen.ttf", 48, halfW, halfH / 2 + 150, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Nightmare", "pirulen.ttf", 48, halfW + 550, halfH / 2 + 200, 0, 0, 0, 255, 0.5, 0.5));
 
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 350, 400, 100);
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW + 200, halfH / 2 + 325, 200, 100);
     btn->SetOnClickCallback(std::bind(&StageSelectScene::BackOnClick, this, 4));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH / 2 + 400, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW + 300, halfH / 2 + 375, 0, 0, 0, 255, 0.5, 0.5));
 
     bgmInstance = AudioHelper::PlaySample("snore.wav", true, AudioHelper::BGMVolume);
 }
