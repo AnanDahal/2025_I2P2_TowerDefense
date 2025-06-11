@@ -16,7 +16,8 @@ class StartScene final : public Engine::IScene {
     int curX = 0;
     int alpha = 0;
     ALLEGRO_BITMAP *house;
-    std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> bgmInstance;
+    std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> cricketInstance;
+    std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sneakInstance;
 public:
     explicit StartScene() = default;
     void Initialize() override;

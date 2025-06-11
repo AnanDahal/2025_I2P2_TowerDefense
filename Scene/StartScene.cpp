@@ -40,8 +40,8 @@ void StartScene::Initialize() {
     btn->SetOnClickCallback(std::bind(&StartScene::SettingsOnClick, this, 2));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Settings", "pirulen.ttf", 48, 450, halfH + 170, 0, 0, 0, 255, 0.5, 0.5));
-    bgmInstance = AudioHelper::PlaySample("cricket.wav", true, AudioHelper::BGMVolume);
-    bgmInstance = AudioHelper::PlaySample("sneak.wav", true, AudioHelper::BGMVolume);
+    cricketInstance = AudioHelper::PlaySample("cricket.wav", true, AudioHelper::BGMVolume);
+    sneakInstance = AudioHelper::PlaySample("sneak.wav", true, AudioHelper::BGMVolume);
 
 }
 void StartScene::Draw() const {
@@ -67,8 +67,11 @@ void StartScene::Draw() const {
     al_draw_filled_rectangle(0, 0, w, h, al_map_rgba(0,0,0, fadealpha));
 }
 void StartScene::Terminate() {
-    AudioHelper::StopSample(bgmInstance);
-    bgmInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
+    AudioHelper::StopSample(cricketInstance);
+    AudioHelper::StopSample(sneakInstance);
+    cricketInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
+    sneakInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
+
     IScene::Terminate();
 }
 void StartScene::Update(float deltaTime) {

@@ -13,8 +13,8 @@ private:
     int bgX, dbX;
     bool fadeout;
     int changeto, stagenum;
-    std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> bgmInstance;
-
+    std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> snoreInstance;
+    std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> violetInstance;
     ALLEGRO_BITMAP *bg;
     ALLEGRO_BITMAP *db;
 public:

@@ -52,8 +52,8 @@ void StageSelectScene::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW + 300, halfH / 2 + 375, 0, 0, 0, 255, 0.5, 0.5));
 
-    bgmInstance = AudioHelper::PlaySample("snore.wav", true, AudioHelper::BGMVolume);
-    bgmInstance = AudioHelper::PlaySample("violet.wav", true, AudioHelper::BGMVolume);
+    snoreInstance = AudioHelper::PlaySample("snore.wav", true, AudioHelper::BGMVolume);
+    violetInstance = AudioHelper::PlaySample("violet.wav", true, AudioHelper::BGMVolume);
 }
 void StageSelectScene::Draw() const {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
@@ -69,8 +69,10 @@ void StageSelectScene::Draw() const {
     al_draw_filled_rectangle(0, 0, w, h, al_map_rgba(0,0,0,fadealpha));
 }
 void StageSelectScene::Terminate() {
-    AudioHelper::StopSample(bgmInstance);
-    bgmInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
+    AudioHelper::StopSample(snoreInstance);
+    AudioHelper::StopSample(violetInstance);
+    snoreInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
+    violetInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
     IScene::Terminate();
 }
 void StageSelectScene::Update(float deltaTime) {
@@ -119,10 +121,10 @@ void StageSelectScene::ScoreboardOnClick(int stage) {
     changeto = 3;
     fadeout = true;
 }
-void StageSelectScene::BGMSlideOnValueChanged(float value) {
-    AudioHelper::ChangeSampleVolume(bgmInstance, value);
-    AudioHelper::BGMVolume = value;
-}
-void StageSelectScene::SFXSlideOnValueChanged(float value) {
-    AudioHelper::SFXVolume = value;
-}
+// void StageSelectScene::BGMSlideOnValueChanged(float value) {
+//     AudioHelper::ChangeSampleVolume(bgmInstance, value);
+//     AudioHelper::BGMVolume = value;
+// }
+// void StageSelectScene::SFXSlideOnValueChanged(float value) {
+//     AudioHelper::SFXVolume = value;
+// }
