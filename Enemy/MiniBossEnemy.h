@@ -8,17 +8,10 @@
 
 class MiniBossEnemy : public Enemy {
 public:
-    MiniBossEnemy(int x, int y);
-    void Update(float deltaTime) override;
+    MiniBossEnemy(int x, int y, int ph);
 protected:
     void OnExplode() override;
-    bool exploded = false;
-    float spawnTimer = 0.0f;
-    int spawnIndex = 0;
-    int enemy1left = 10;
-    int enemy2left = 10;
-    int phase = 2;
+    int phase;
 };
-
 
 #endif //MINIBOSSENEMY_H

@@ -268,7 +268,7 @@ void PlayScene::Update(float deltaTime) {
                 EnemyGroup->AddNewObject(enemy = new BiggerCarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
             case 6:
-                EnemyGroup->AddNewObject(enemy = new MiniBossEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
+                EnemyGroup->AddNewObject(enemy = new MiniBossEnemy(SpawnCoordinate.x, SpawnCoordinate.y, 2));
                 break;
             case 7:
                 EnemyGroup->AddNewObject(enemy = new BossEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
