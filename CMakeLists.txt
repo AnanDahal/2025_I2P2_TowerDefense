@@ -153,6 +153,10 @@ add_executable(2025_I2P2_TowerDefense
         Enemy/BossEnemy.h
         Enemy/MiniBossEnemy.cpp
         Enemy/MiniBossEnemy.h
+        Bullet/MissEnemyBullet.cpp
+        Bullet/MissEnemyBullet.h
+        Enemy/MissEnemy.cpp
+        Enemy/MissEnemy.h
 )
 
 IF (WIN32)
