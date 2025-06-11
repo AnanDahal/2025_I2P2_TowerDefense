@@ -41,6 +41,8 @@ void StartScene::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Settings", "pirulen.ttf", 48, 450, halfH + 170, 0, 0, 0, 255, 0.5, 0.5));
     bgmInstance = AudioHelper::PlaySample("cricket.wav", true, AudioHelper::BGMVolume);
+    bgmInstance = AudioHelper::PlaySample("sneak.wav", true, AudioHelper::BGMVolume);
+
 }
 void StartScene::Draw() const {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;

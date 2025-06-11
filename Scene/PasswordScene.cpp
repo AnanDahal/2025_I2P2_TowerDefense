@@ -40,7 +40,7 @@ void PasswordScene::Initialize() {
     btn->SetOnClickCallback(std::bind(&PasswordScene::BackOnClick, this, 2));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH * 3 / 2 + 150, 0, 0, 0, 255, 0.5, 0.5));
-    bgmInstance = AudioHelper::PlaySample("select.ogg", true, AudioHelper::BGMVolume);
+    bgmInstance = AudioHelper::PlaySample("sass.wav", true, AudioHelper::BGMVolume);
 
     // Name input section
     AddNewObject(new Engine::Label("Enter your password:", "pirulen.ttf", 24, halfW, halfH / 2, 255, 255, 255, 255, 0.5, 0.5));

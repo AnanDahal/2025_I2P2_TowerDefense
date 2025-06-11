@@ -36,6 +36,8 @@ void OpeningScene::Initialize() {
 
     AddNewObject(new Engine::Image("bgs/opening1.png", 0, 0, w, h, 0, 0));
     bgmInstance = AudioHelper::PlaySample("cricket.wav", true, AudioHelper::BGMVolume);
+    bgmInstance = AudioHelper::PlaySample("sneak.wav", true, AudioHelper::BGMVolume);
+
 }
 void OpeningScene::Draw() const {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
