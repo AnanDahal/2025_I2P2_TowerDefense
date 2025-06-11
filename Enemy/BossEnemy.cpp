@@ -6,6 +6,7 @@
 #include "BiggerCarrierEnemy.h"
 #include "CarrierEnemy.h"
 #include "MiniBossEnemy.h"
+#include "MissEnemy.h"
 #include "TankEnemy.hpp"
 #include "Scene/PlayScene.hpp"
 
@@ -40,7 +41,6 @@ void BossEnemy::OnExplode() {
         boss->UpdatePath(scene->mapDistance);
     }
     else if (phase == 5) {
-        // Spawn CarrierEnemies
         for (int i = 0; i < 30; i++) {
             TankEnemy* tank = new TankEnemy(Position.x + (i * 20), Position.y, false);
             scene->EnemyGroup->AddNewObject(tank);
@@ -59,12 +59,10 @@ void BossEnemy::OnExplode() {
         boss->UpdatePath(scene->mapDistance);
     }
     else if (phase == 4) {
-        // Spawn CarrierEnemies
         for (int i = 0; i < 30; i++) {
-            // TankEnemy* tank = new TankEnemy(Position.x + (i * 20), Position.y);
-            // scene->EnemyGroup->AddNewObject(tank);
-            // tank->UpdatePath(scene->mapDistance);
-            //confuse enemy
+             MissEnemy* misser = new MissEnemy(Position.x + (i * 20), Position.y, false);
+             scene->EnemyGroup->AddNewObject(misser);
+             misser->UpdatePath(scene->mapDistance);
         }
         // Spawn BiggerCarrierEnemies
         for (int i = 0; i < 30; i++) {

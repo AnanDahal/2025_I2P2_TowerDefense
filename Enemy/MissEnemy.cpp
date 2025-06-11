@@ -62,7 +62,7 @@ void MissEnemy::Update(float deltaTime) {
     if (best && shootReload <= 0.0f) {
         auto dir = (best->Position - Position).Normalize();
         float rot = atan2(dir.y, dir.x);
-        scene->BulletGroup->AddNewObject(new MissEnemyBullet(Position,dir,rot));
+        scene->BulletGroup->AddNewObject(new MissEnemyBullet(Position,dir,rot, shootSpeed, shootDamage));
         AudioHelper::PlayAudio("gun.wav");
         shootReload = shootCooldown;
     }

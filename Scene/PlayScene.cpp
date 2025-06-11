@@ -25,6 +25,7 @@
 
 #include "Enemy/BossEnemy.h"
 #include "Enemy/MiniBossEnemy.h"
+#include "Enemy/MissEnemy.h"
 #include "Turret/LaserTurret.hpp"
 #include "Turret/MachineGunTurret.hpp"
 #include "Turret/HealingTurret.hpp"
@@ -268,26 +269,33 @@ void PlayScene::Update(float deltaTime) {
                 EnemyGroup->AddNewObject(enemy = new BiggerCarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y, false));
                 break;
             case 6:
-                EnemyGroup->AddNewObject(enemy = new MiniBossEnemy(SpawnCoordinate.x, SpawnCoordinate.y, 2));
+                EnemyGroup->AddNewObject(enemy = new MissEnemy(SpawnCoordinate.x, SpawnCoordinate.y, false));
                 break;
             case 7:
-                EnemyGroup->AddNewObject(enemy = new BossEnemy(SpawnCoordinate.x, SpawnCoordinate.y, 6));
-                break;
-            case 8:
                 EnemyGroup->AddNewObject(enemy = new SoldierEnemy(SpawnCoordinate.x, SpawnCoordinate.y, true));
                 break;
-            case 9:
+            case 8:
                 EnemyGroup->AddNewObject(enemy = new ArmyEnemy(SpawnCoordinate.x, SpawnCoordinate.y, true));
                 break;
-            case 10:
+            case 9:
                 EnemyGroup->AddNewObject(enemy = new TankEnemy(SpawnCoordinate.x, SpawnCoordinate.y, true));
                 break;
-            case 11:
+            case 10:
                 EnemyGroup->AddNewObject(enemy = new CarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y, true));
                 break;
-            case 12:
+            case 11:
                 EnemyGroup->AddNewObject(enemy = new BiggerCarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y, true));
                 break;
+            case 12:
+                EnemyGroup->AddNewObject(enemy = new MissEnemy(SpawnCoordinate.x, SpawnCoordinate.y, true));
+                break;
+            case 13:
+                EnemyGroup->AddNewObject(enemy = new MiniBossEnemy(SpawnCoordinate.x, SpawnCoordinate.y, 2));
+                break;
+            case 14:
+                EnemyGroup->AddNewObject(enemy = new BossEnemy(SpawnCoordinate.x, SpawnCoordinate.y, 6));
+                break;
+
             default:
                 continue;
         }

@@ -14,7 +14,7 @@ namespace Engine {
 
 class SlowBullet : public Bullet {
 public:
-    explicit SlowBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff);
+    explicit SlowBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool miss);
     void OnExplode(Enemy *enemy) override;
 };
 

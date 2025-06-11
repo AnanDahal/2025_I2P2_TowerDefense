@@ -19,7 +19,7 @@ private:
 
 public:
     // now takes a sprite path
-    MissEnemyBullet(Engine::Point position,Engine::Point direction,float rotation);
+    MissEnemyBullet(Engine::Point position,Engine::Point direction,float rotation, float speed, float damage);
 };
 
 

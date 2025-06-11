@@ -7,14 +7,8 @@
 #include "Turret/Turret.hpp"
 #include "MissEnemyBullet.h"
 
-// PlayScene *EnemyBullet::getPlayScene() {
-//     return dynamic_cast<PlayScene *>(
-//         Engine::GameEngine::GetInstance().GetActiveScene()
-//     );
-// }
-
-MissEnemyBullet::MissEnemyBullet(Engine::Point pos,Engine::Point dir,float rot)
-  : EnemyBullet("play/bullet-8.png", pos, dir, rot, 400.0f, 0)
+MissEnemyBullet::MissEnemyBullet(Engine::Point pos,Engine::Point dir,float rot, float speed, float damage)
+  : EnemyBullet("play/bullet-8.png", pos, dir, rot, speed, damage)
 {
     Velocity        = dir.Normalize() * speed;
     Rotation        = rot;

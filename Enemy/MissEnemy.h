@@ -20,7 +20,7 @@ private:
     float shootRadius   = 250.f;
     float shootCooldown =   2.0f;
     float shootReload   =   0.0f;
-    int   shootDamage   =  100;
+    int   shootDamage   =  0;
     float shootSpeed    = 400.0f;
 
     std::string bulletSprite;

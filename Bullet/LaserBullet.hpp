@@ -10,7 +10,7 @@ namespace Engine {
 
 class LaserBullet : public Bullet {
 public:
-    explicit LaserBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff);
+    explicit LaserBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool miss);
     void OnExplode(Enemy *enemy) override;
 };
 #endif   // LASERBULLET_HPP
