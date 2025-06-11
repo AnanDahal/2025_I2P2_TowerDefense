@@ -11,7 +11,7 @@
 
 
 
-MiniBossEnemy::MiniBossEnemy(int x, int y, int ph) : Enemy("play/enemy-4.png", x, y, 10, 5, 10, 30) {
+MiniBossEnemy::MiniBossEnemy(int x, int y, int ph) : Enemy("play/enemy-4.png", x, y, 10, 5, 500, 30) {
     phase = ph;
 }
 
@@ -24,14 +24,14 @@ void MiniBossEnemy::OnExplode() {
     if (phase == 2) {
         // Spawn CarrierEnemies
         for (int i = 0; i < 10; i++) {
-            CarrierEnemy* carrier = new CarrierEnemy(Position.x + (i * 20), Position.y);
+            CarrierEnemy* carrier = new CarrierEnemy(Position.x + (i * 20), Position.y, false);
             scene->EnemyGroup->AddNewObject(carrier);
             carrier->UpdatePath(scene->mapDistance);
         }
 
         // Spawn BiggerCarrierEnemies
         for (int i = 0; i < 10; i++) {
-            BiggerCarrierEnemy* bigger = new BiggerCarrierEnemy(Position.x + (i * 25), Position.y);
+            BiggerCarrierEnemy* bigger = new BiggerCarrierEnemy(Position.x + (i * 25), Position.y, false);
             scene->EnemyGroup->AddNewObject(bigger);
             bigger->UpdatePath(scene->mapDistance);
         }
@@ -44,14 +44,14 @@ void MiniBossEnemy::OnExplode() {
     else if (phase == 1) {
         // Spawn CarrierEnemies
         for (int i = 0; i < 10; i++) {
-            CarrierEnemy* carrier = new CarrierEnemy(Position.x + (i * 20), Position.y);
+            CarrierEnemy* carrier = new CarrierEnemy(Position.x + (i * 20), Position.y, false);
             scene->EnemyGroup->AddNewObject(carrier);
             carrier->UpdatePath(scene->mapDistance);
         }
 
         // Spawn BiggerCarrierEnemies
         for (int i = 0; i < 10; i++) {
-            BiggerCarrierEnemy* bigger = new BiggerCarrierEnemy(Position.x + (i * 25), Position.y);
+            BiggerCarrierEnemy* bigger = new BiggerCarrierEnemy(Position.x + (i * 25), Position.y, false);
             scene->EnemyGroup->AddNewObject(bigger);
             bigger->UpdatePath(scene->mapDistance);
         }

@@ -9,7 +9,10 @@
 
 
 
-BiggerCarrierEnemy::BiggerCarrierEnemy(int x, int y) : Enemy("play/enemy-6.png", x, y, 10, 15, 100, 80) {
+BiggerCarrierEnemy::BiggerCarrierEnemy(int x, int y, bool fast) : Enemy("play/enemy-6.png", x, y, 10, 15, 100, 80) {
+    if (fast) {
+        speed *= 2;
+    }
 }
 
 void BiggerCarrierEnemy::OnExplode() {
@@ -17,8 +20,8 @@ void BiggerCarrierEnemy::OnExplode() {
 
     PlayScene* scene = getPlayScene();
 
-    CarrierEnemy* soldier1 = new CarrierEnemy(Position.x + 10, Position.y);
-    CarrierEnemy* soldier2 = new CarrierEnemy(Position.x - 10, Position.y);
+    CarrierEnemy* soldier1 = new CarrierEnemy(Position.x + 10, Position.y, false);
+    CarrierEnemy* soldier2 = new CarrierEnemy(Position.x - 10, Position.y, false);
 
     scene->EnemyGroup->AddNewObject(soldier1);
     scene->EnemyGroup->AddNewObject(soldier2);

@@ -23,14 +23,14 @@ void BossEnemy::OnExplode() {
     if (phase == 6) {
         // Spawn CarrierEnemies
         for (int i = 0; i < 50; i++) {
-            SoldierEnemy* soldier = new SoldierEnemy(Position.x + (i * 20), Position.y);
+            SoldierEnemy* soldier = new SoldierEnemy(Position.x + (i * 20), Position.y, false);
             scene->EnemyGroup->AddNewObject(soldier);
             soldier->UpdatePath(scene->mapDistance);
         }
 
         // Spawn BiggerCarrierEnemies
         for (int i = 0; i < 50; i++) {
-            ArmyEnemy* army = new ArmyEnemy(Position.x + (i * 25), Position.y);
+            ArmyEnemy* army = new ArmyEnemy(Position.x + (i * 25), Position.y, false);
             scene->EnemyGroup->AddNewObject(army);
             army->UpdatePath(scene->mapDistance);
         }
@@ -42,14 +42,14 @@ void BossEnemy::OnExplode() {
     else if (phase == 5) {
         // Spawn CarrierEnemies
         for (int i = 0; i < 30; i++) {
-            TankEnemy* tank = new TankEnemy(Position.x + (i * 20), Position.y);
+            TankEnemy* tank = new TankEnemy(Position.x + (i * 20), Position.y, false);
             scene->EnemyGroup->AddNewObject(tank);
             tank->UpdatePath(scene->mapDistance);
         }
 
         // Spawn CarrierEnemies
         for (int i = 0; i < 30; i++) {
-            CarrierEnemy* carrier = new CarrierEnemy(Position.x + (i * 25), Position.y);
+            CarrierEnemy* carrier = new CarrierEnemy(Position.x + (i * 25), Position.y, false);
             scene->EnemyGroup->AddNewObject(carrier);
             carrier->UpdatePath(scene->mapDistance);
         }
@@ -68,7 +68,7 @@ void BossEnemy::OnExplode() {
         }
         // Spawn BiggerCarrierEnemies
         for (int i = 0; i < 30; i++) {
-            BiggerCarrierEnemy* bigger = new BiggerCarrierEnemy(Position.x + (i * 25), Position.y);
+            BiggerCarrierEnemy* bigger = new BiggerCarrierEnemy(Position.x + (i * 25), Position.y, false);
             scene->EnemyGroup->AddNewObject(bigger);
             bigger->UpdatePath(scene->mapDistance);
         }
@@ -79,14 +79,14 @@ void BossEnemy::OnExplode() {
     }
     else if (phase == 3) {
         for (int i = 0; i < 25; i++) {
-             TankEnemy* tank = new TankEnemy(Position.x + (i * 20), Position.y);
-             scene->EnemyGroup->AddNewObject(tank);
-             tank->UpdatePath(scene->mapDistance);
+             CarrierEnemy* carrier = new CarrierEnemy(Position.x + (i * 20), Position.y, true);
+             scene->EnemyGroup->AddNewObject(carrier);
+             carrier->UpdatePath(scene->mapDistance);
             //fast carrier
         }
         // Spawn BiggerCarrierEnemies
         for (int i = 0; i < 25; i++) {
-            BiggerCarrierEnemy* bigger = new BiggerCarrierEnemy(Position.x + (i * 25), Position.y);
+            BiggerCarrierEnemy* bigger = new BiggerCarrierEnemy(Position.x + (i * 25), Position.y, true);
             scene->EnemyGroup->AddNewObject(bigger);
             bigger->UpdatePath(scene->mapDistance);
             //fast bigger carrier
@@ -98,17 +98,15 @@ void BossEnemy::OnExplode() {
     }
     else if (phase == 2) {
         for (int i = 0; i < 30; i++) {
-            TankEnemy* tank = new TankEnemy(Position.x + (i * 20), Position.y);
-            scene->EnemyGroup->AddNewObject(tank);
-            tank->UpdatePath(scene->mapDistance);
-            //fast carrier
-        }
-        // Spawn BiggerCarrierEnemies
-        for (int i = 0; i < 10; i++) {
-            BiggerCarrierEnemy* bigger = new BiggerCarrierEnemy(Position.x + (i * 25), Position.y);
+            BiggerCarrierEnemy* bigger = new BiggerCarrierEnemy(Position.x + (i * 20), Position.y, true);
             scene->EnemyGroup->AddNewObject(bigger);
             bigger->UpdatePath(scene->mapDistance);
-            //fast bigger carrier
+            //fast carrier
+        }
+        for (int i = 0; i < 2; i++) {
+            MiniBossEnemy* mini = new MiniBossEnemy(Position.x + (i * 25), Position.y, 2);
+            scene->EnemyGroup->AddNewObject(mini);
+            mini->UpdatePath(scene->mapDistance);
         }
 
         BossEnemy* boss = new BossEnemy(Position.x, Position.y, 1);
