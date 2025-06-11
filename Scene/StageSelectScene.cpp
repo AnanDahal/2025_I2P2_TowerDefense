@@ -53,6 +53,7 @@ void StageSelectScene::Initialize() {
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW + 300, halfH / 2 + 375, 0, 0, 0, 255, 0.5, 0.5));
 
     bgmInstance = AudioHelper::PlaySample("snore.wav", true, AudioHelper::BGMVolume);
+    bgmInstance = AudioHelper::PlaySample("violet.wav", true, AudioHelper::BGMVolume);
 }
 void StageSelectScene::Draw() const {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;

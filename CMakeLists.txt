@@ -25,6 +25,8 @@ add_executable(2025_I2P2_TowerDefense
         Bullet/SniperBullet.h
         Bullet/SlowBullet.cpp
         Bullet/SlowBullet.h
+        Bullet/MissEnemyBullet.cpp
+        Bullet/MissEnemyBullet.h
     # TODO HACKATHON-3 (3/3): Add the new enemy source files here
     Enemy/Enemy.cpp
     Enemy/Enemy.hpp
@@ -42,6 +44,8 @@ add_executable(2025_I2P2_TowerDefense
         Enemy/BossEnemy.h
         Enemy/MiniBossEnemy.cpp
         Enemy/MiniBossEnemy.h
+        Enemy/MissEnemy.cpp
+        Enemy/MissEnemy.h
     Engine/Allegro5Exception.cpp
     Engine/Allegro5Exception.hpp
     Engine/AudioHelper.cpp
