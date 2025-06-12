@@ -26,6 +26,7 @@
 #include "Enemy/BossEnemy.h"
 #include "Enemy/MiniBossEnemy.h"
 #include "Enemy/MissEnemy.h"
+#include "Turret/BossKillerTurret.h"
 #include "Turret/LaserTurret.hpp"
 #include "Turret/MachineGunTurret.hpp"
 #include "Turret/HealingTurret.hpp"
@@ -33,6 +34,7 @@
 #include "Turret/BuffTurret.h"
 #include "Turret/MissileTurret.h"
 #include "Turret/SlowTurret.h"
+#include "Turret/TankKillerTurret.h"
 #include "Turret/TurretButton.hpp"
 #include "UI/Animation/DirtyEffect.hpp"
 #include "UI/Animation/Plane.hpp"
@@ -60,10 +62,11 @@ const std::vector<int> PlayScene::code = {
 };
 
 bool HealingTurret::isLocked = true;
-bool MissileTurret::isLocked = true;
 bool BuffTurret::isLocked = true;
 bool SlowTurret::isLocked = true;
 bool SniperTurret::isLocked = true;
+bool TankKillerTurret::isLocked = true;
+bool BossKillerTurret::isLocked = true;
 
 Engine::Point PlayScene::GetClientSize() {
     return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);
@@ -624,6 +627,18 @@ void PlayScene::ConstructUI() {
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 6)); // Sniper turret
     UIGroup->AddNewControlObject(btn);
 
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                       Engine::Sprite("play/tower-base.png", 1370 + 76, 136 + 240, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-6.png", 1370 + 76, 136 - 8 + 240, 0, 0, 0, 0), 1370 + 76, 136 + 240, TankKillerTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 7)); // TankKiller turret
+    UIGroup->AddNewControlObject(btn);
+
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                       Engine::Sprite("play/tower-base.png", 1294, 136 + 240, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-5.png", 1294, 136 - 8 + 240, 0, 0, 0, 0), 1294, 136 + 240, TankKillerTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 8)); // TankKiller turret
+    UIGroup->AddNewControlObject(btn);
+
     if (MapId == 2) {
         roundLabel = new Engine::Label("Round: " + std::to_string(endlessRound), "pirulen.ttf", 32, 1050, 50);
         UIGroup->AddNewObject(roundLabel);
@@ -700,7 +715,7 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new LaserTurret(0, 0);
     else if (id == 2 && money >= HealingTurret::Price && !HealingTurret::isLocked)
         preview = new HealingTurret(0, 0);
-    else if (id == 3 && money >= MissileTurret::Price && !MissileTurret::isLocked)
+    else if (id == 3 && money >= MissileTurret::Price)
         preview = new MissileTurret(0, 0);
     else if (id == 4 && money >= BuffTurret::Price && !BuffTurret::isLocked)
         preview = new BuffTurret(0, 0);
@@ -708,6 +723,10 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new SlowTurret(0, 0);
     else if (id == 6 && money >= SniperTurret::Price && !SniperTurret::isLocked)
         preview = new SniperTurret(0, 0);
+    else if (id == 7 && money >= TankKillerTurret::Price && !TankKillerTurret::isLocked)
+        preview = new TankKillerTurret(0, 0);
+    else if (id == 8 && money >= BossKillerTurret::Price && !BossKillerTurret::isLocked)
+        preview = new BossKillerTurret(0, 0);
     else if (id == 20) {
         Engine::GameEngine::GetInstance().ChangeScene("stage-select");
     }
