@@ -92,6 +92,8 @@ add_executable(2025_I2P2_TowerDefense
         scene/LogInScene.h
         scene/PasswordScene.cpp
         scene/PasswordScene.h
+        scene/PowersScene.cpp
+        scene/PowersScene.h
 
     Turret/LaserTurret.cpp
     Turret/LaserTurret.hpp
@@ -103,6 +105,12 @@ add_executable(2025_I2P2_TowerDefense
         Turret/SniperTurret.h
         Turret/SlowTurret.cpp
         Turret/SlowTurret.h
+        Turret/TankKillerTurret.cpp
+        Turret/TankKillerTurret.h
+        Turret/BossKillerTurret.cpp
+        Turret/BossKillerTurret.h
+        Turret/MissileTurret.cpp
+        Turret/MissileTurret.h
     Turret/Turret.cpp
     Turret/Turret.hpp
     Turret/TurretButton.cpp
@@ -175,6 +183,8 @@ add_executable(2025_I2P2_TowerDefense
         Bullet/BossKillerBullet.h
         Turret/BossKillerTurret.cpp
         Turret/BossKillerTurret.h
+        Scene/PowersScene.cpp
+        Scene/PowersScene.h
 )
 
 IF (WIN32)
