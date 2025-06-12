@@ -13,7 +13,6 @@
 #include "Engine/GameEngine.hpp"
 #include "Engine/Point.hpp"
 #include "Engine/IControl.hpp"
-//#include "UI/Component/DialogueManager.h"
 #include "PlayScene.hpp"
 #include "StageSelectScene.hpp"
 
