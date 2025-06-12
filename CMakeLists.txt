@@ -177,6 +177,14 @@ add_executable(2025_I2P2_TowerDefense
         Bullet/TankKillerBullet.h
         Scene/PowersScene.cpp
         Scene/PowersScene.h
+        Scene/BeforeScene.cpp
+        Scene/BeforeScene.h
+        UI/Component/DialogueManager.h
+        UI/Component/DialogueManager.cpp
+        Scene/CampaignScene.cpp
+        Scene/CampaignScene.h
+        Scene/AfterScene.cpp
+        Scene/AfterScene.h
 )
 
 IF (WIN32)

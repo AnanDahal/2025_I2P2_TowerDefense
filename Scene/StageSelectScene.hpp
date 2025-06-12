@@ -26,6 +26,7 @@ public:
     void PlayOnClick(int stage);
     void ScoreboardOnClick(int stage);
     void BackOnClick(int stage);
+    void StoryOnClick(int stage);
     void PowersOnClick(int stage);
 
     void BGMSlideOnValueChanged(float value);
