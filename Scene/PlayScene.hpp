@@ -14,6 +14,7 @@
 extern int OnStage;
 extern int core_memories;
 extern int endless_score;
+extern int whichPower;
 
 enum RoundTransitionState {
     NONE,

@@ -674,11 +674,40 @@ void PlayScene::ConstructUI() {
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 8)); // BossKiller turret
     UIGroup->AddNewControlObject(btn);
 
+    int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
+    int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
+    int halfW = w / 2;
+    int halfH = h / 2;
+
+    Engine::ImageButton *btnn; //CHANGE PNGS
+    if (whichPower == 1) {
+        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 11));
+        AddNewControlObject(btnn);
+    }
+    else if (whichPower == 2) {
+        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 12));
+        AddNewControlObject(btnn);
+    }
+    else if (whichPower == 3) {
+        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 13));
+        AddNewControlObject(btnn);
+    }
+    else if (whichPower == 4) {
+        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 14));
+        AddNewControlObject(btnn);
+    }
+
+
+
+
     if (MapId == 2) {
         roundLabel = new Engine::Label("Round: " + std::to_string(endlessRound), "pirulen.ttf", 32, 1050, 50);
         UIGroup->AddNewObject(roundLabel);
     }
-
 
     {
         const int SHOVEL_ID = -1;
@@ -707,8 +736,6 @@ void PlayScene::ConstructUI() {
         AddNewControlObject(btnn);
     }
 
-    int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
-    int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int shift = 135 + 25;
     dangerIndicator = new Engine::Sprite("play/benjamin.png", w - shift, h - shift);
     dangerIndicator->Tint.a = 0;
@@ -764,6 +791,18 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new BossKillerTurret(0, 0);
     else if (id == 9 && money >= FarmTurret::Price && !FarmTurret::isLocked)
         preview = new FarmTurret(0, 0);
+    else if (id == 11) { //maybe create a cooldown
+        UIGroup->AddNewObject(new Plane);
+    }
+    else if (id == 12) {
+        EarnMoney(1000);
+    }
+    else if (id == 13) {
+        //TIMESTOP
+    }
+    else if (id == 14) {
+        //AI DO A MESSAGE
+    }
     else if (id == 20) {
         Engine::GameEngine::GetInstance().ChangeScene("stage-select");
     }

@@ -13,6 +13,8 @@
 #include "UI/Component/Label.hpp"
 #include "UI/Component/Slider.hpp"
 
+int whichPower = 0;
+
 void PowersScene::Initialize() {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
@@ -63,17 +65,6 @@ void PowersScene::BackOnClick(int stage) {
 }
 
 void PowersScene::ChooseOnClick(int power) {
-    if (power == 1) {
-        //bomb
-    }
-    else if (power == 2) {
-        //money
-    }
-    else if (power == 3) {
-        //money
-    }
-    else if (power == 4) {
-        //AI
-    }
+    whichPower = power;
     Engine::GameEngine::GetInstance().ChangeScene("stage-select");
 }

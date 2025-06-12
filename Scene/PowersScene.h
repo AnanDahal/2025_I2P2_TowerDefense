@@ -8,7 +8,7 @@
 
 #include "Engine/IScene.hpp"
 #include <allegro5/allegro_audio.h>
-
+extern int whichPower;
 class PowersScene final : public Engine::IScene {
 private:
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> bgmInstance;
@@ -21,5 +21,6 @@ public:
     void BackOnClick(int stage);
     void ChooseOnClick(int power);
 };
+
 
 #endif //POWERS_H
