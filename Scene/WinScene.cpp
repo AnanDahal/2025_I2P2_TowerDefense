@@ -24,6 +24,7 @@ void WinScene::Initialize() {
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int halfW = w / 2;
     int halfH = h / 2;
+    al_clear_to_color(al_map_rgb(0, 0, 0));
     AddNewObject(new Engine::Image("win/benjamin-sad.png", halfW, halfH, 0, 0, 0.5, 0.5));
     AddNewObject(new Engine::Label("You Win!", "pirulen.ttf", 48, halfW, halfH / 4 - 10, 255, 255, 255, 255, 0.5, 0.5));
     AddNewObject(new Engine::Label("Enter Name: ", "pirulen.ttf", 32, halfW - 350, halfH / 4 + 65, 255, 255, 255, 255, 0.5, 0.5));

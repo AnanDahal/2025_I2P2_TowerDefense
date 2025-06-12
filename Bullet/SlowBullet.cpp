@@ -14,7 +14,7 @@
 
 class Turret;
 
-SlowBullet::SlowBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff) : Bullet("play/bullet-10.png", 900, 0.5, position, forwardDirection, rotation - ALLEGRO_PI / 2, parent, buff, true) {
+SlowBullet::SlowBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool miss) : Bullet("play/bullet-10.png", 900, 0.5, position, forwardDirection, rotation - ALLEGRO_PI / 2, parent, buff, true, miss) {
 }
 void SlowBullet::OnExplode(Enemy *enemy) {
     std::random_device dev;

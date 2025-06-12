@@ -15,10 +15,15 @@
 #include "PlayScene.hpp"
 #include "Scene/StartScene.hpp"
 #include <allegro5/allegro_primitives.h>
+
+#include "PasswordScene.h"
 #include "UI/Component/ImageButton.hpp"
 #include "UI/Component/Label.hpp"
 #include "UI/Component/Slider.hpp"
 
+int OnStage = 0;
+int core_memories = 0;
+int endless_score = 0;
 // TODO HACKATHON-2 (1/3): You can imitate the 2 files: 'StartScene.hpp', 'StartScene.cpp' to implement your SettingsScene.
 void StartScene::Initialize() {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
@@ -40,7 +45,8 @@ void StartScene::Initialize() {
     btn->SetOnClickCallback(std::bind(&StartScene::SettingsOnClick, this, 2));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Settings", "pirulen.ttf", 48, 450, halfH + 170, 0, 0, 0, 255, 0.5, 0.5));
-    bgmInstance = AudioHelper::PlaySample("cricket.wav", true, AudioHelper::BGMVolume);
+    cricketInstance = AudioHelper::PlaySample("cricket.wav", true, AudioHelper::BGMVolume);
+    sneakInstance = AudioHelper::PlaySample("sneak.wav", true, AudioHelper::BGMVolume);
 }
 void StartScene::Draw() const {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
@@ -65,8 +71,11 @@ void StartScene::Draw() const {
     al_draw_filled_rectangle(0, 0, w, h, al_map_rgba(0,0,0, fadealpha));
 }
 void StartScene::Terminate() {
-    AudioHelper::StopSample(bgmInstance);
-    bgmInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
+    AudioHelper::StopSample(cricketInstance);
+    AudioHelper::StopSample(sneakInstance);
+    cricketInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
+    sneakInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
+
     IScene::Terminate();
 }
 void StartScene::Update(float deltaTime) {

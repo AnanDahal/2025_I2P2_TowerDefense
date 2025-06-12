@@ -35,7 +35,9 @@ void OpeningScene::Initialize() {
     chara = al_load_bitmap("../Resource/images/character_walk.png");
 
     AddNewObject(new Engine::Image("bgs/opening1.png", 0, 0, w, h, 0, 0));
-    bgmInstance = AudioHelper::PlaySample("cricket.wav", true, AudioHelper::BGMVolume);
+    cricketInstance = AudioHelper::PlaySample("cricket.wav", true, AudioHelper::BGMVolume);
+    sneakInstance = AudioHelper::PlaySample("sneak.wav", true, AudioHelper::BGMVolume);
+
 }
 void OpeningScene::Draw() const {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
@@ -77,8 +79,10 @@ void OpeningScene::Draw() const {
     al_draw_filled_rectangle(0, 0, w, h, al_map_rgba(0,0,0, fadealpha));
 }
 void OpeningScene::Terminate() {
-    AudioHelper::StopSample(bgmInstance);
-    bgmInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
+    AudioHelper::StopSample(cricketInstance);
+    AudioHelper::StopSample(sneakInstance);
+    cricketInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
+    sneakInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
     IScene::Terminate();
 }
 void OpeningScene::Update(float deltaTime) {

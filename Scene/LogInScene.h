@@ -9,10 +9,11 @@ private:
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> bgmInstance;
     void SubmitName();
     float ticks;
-    std::string playerName;
+
     Engine::Label* nameLabel = nullptr;
 
 public:
+
     explicit LogInScene() = default;
     void Initialize() override;
     void Terminate() override;
@@ -21,6 +22,8 @@ public:
     void OnKeyDown(int keyCode) override;
     void OnCharPress(int unicode);
     void Draw ()const;
+    static std::string getPlayerName();
 };
+static std::string playerName;
 #endif //LOGINSCENE_H
 

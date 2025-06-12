@@ -9,7 +9,7 @@ class HealingTurret : public Turret {
 public:
     static const int Price;
     HealingTurret(float x, float y);
-
+    static bool isLocked;
     // Override base targeting/shooting entirely
     void Update(float deltaTime) override;
     void CreateBullet() override;

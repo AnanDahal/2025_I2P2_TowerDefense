@@ -9,6 +9,7 @@
 #include "SniperTurret.h"
 #include "Scene/PlayScene.hpp"
 #include "Enemy/Enemy.hpp"
+#include "Scene/PasswordScene.h"
 
 const int SniperTurret::Price = 75;
 
@@ -17,6 +18,13 @@ SniperTurret::SniperTurret(float x, float y)
     // Move center downward, since we the turret head is slightly biased upward.
     Anchor.y += 8.0f / GetBitmapHeight();
     rotateRadian = 4 * ALLEGRO_PI;
+    missThreshold = 0;
+    if (OnStage >= 4) {
+        isLocked = false;
+    }
+    else {
+        isLocked = true;
+    }
 }
 
 void SniperTurret::CreateBullet() {
@@ -37,7 +45,11 @@ void SniperTurret::CreateBullet() {
     float rotation = atan2(direction.y, direction.x);
 
     getPlayScene()->BulletGroup->AddNewObject(
-        new SniperBullet(Position + direction * 36, direction, rotation, this, buffed)
+        new SniperBullet(Position + direction * 36, direction, rotation, this, buffed, missing)
     );
+    missThreshold++;
+    if (missThreshold == 2) {
+        missing = false;
+    }
     AudioHelper::PlayAudio("gun.wav");
 }

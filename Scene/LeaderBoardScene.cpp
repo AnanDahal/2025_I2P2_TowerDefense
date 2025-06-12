@@ -84,6 +84,7 @@ void LeaderBoardScene::ClearScoreObjects() {
 void LeaderBoardScene::DisplayCurrentPage() {
     ClearScoreObjects();
 
+    al_clear_to_color(al_map_rgb(0, 0, 0));
     auto& eng = Engine::GameEngine::GetInstance();
     int w = eng.GetScreenSize().x, h = eng.GetScreenSize().y;
     int halfW = w/2;
@@ -138,6 +139,7 @@ void LeaderBoardScene::DisplayCurrentPage() {
 }
 
 void LeaderBoardScene::Initialize() {
+    bgmInstance = AudioHelper::PlaySample("crown.wav", true, AudioHelper::BGMVolume);
     // Back button
     auto& eng = Engine::GameEngine::GetInstance();
     int w = eng.GetScreenSize().x, h = eng.GetScreenSize().y;
@@ -186,5 +188,7 @@ void LeaderBoardScene::PrevPageOnClick() {
 
 
 void LeaderBoardScene::Terminate() {
+    AudioHelper::StopSample(bgmInstance);
+    bgmInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
     IScene::Terminate();
 }

@@ -14,12 +14,13 @@
 #include <fstream>
 #include <algorithm>
 #include "WinScene.hpp"
+#include "Scene/PasswordScene.h"
 #include <ctime>
 #include <allegro5/allegro_primitives.h>
 
 
-using accountEntry = std::tuple<std::string, int, int, int>; // name, stage, memories, endless score
-std::vector<accountEntry> accountEntries;
+// using accountEntry = std::tuple<std::string, int, int, int>; // name, stage, memories, endless score
+// std::vector<accountEntry> accountEntries;
 
 void LogInScene::Initialize() {
     ticks = 0;
@@ -34,7 +35,7 @@ void LogInScene::Initialize() {
     btn->SetOnClickCallback(std::bind(&LogInScene::BackOnClick, this, 2));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH * 3 / 2 + 150, 0, 0, 0, 255, 0.5, 0.5));
-    bgmInstance = AudioHelper::PlaySample("select.ogg", true, AudioHelper::BGMVolume);
+    bgmInstance = AudioHelper::PlaySample("sass.wav", true, AudioHelper::BGMVolume);
 
     // Name input section
     AddNewObject(new Engine::Label("Enter your name:", "pirulen.ttf", 24, halfW, halfH / 2, 255, 255, 255, 255, 0.5, 0.5));
@@ -72,36 +73,13 @@ void LogInScene::SubmitName() {
     }).base(), playerName.end());
 
     if (playerName.empty()) return;
-
-    std::ifstream fin("../Resource/accounts.txt");
-
-    std::string name;
-    int stage;
-    int memories;
-    int endless_score;
-    int exists = 0;
-    while (fin >> name >> stage >> memories >> endless_score) {
-        accountEntries.emplace_back(name, stage, memories, endless_score);
-        if (name == playerName) {
-            //do something
-            exists = 1;
-            return;
-        }
-    }
-
-    // Save to accounts
-    if (!exists) {
-        std::ofstream fout("../Resource/accounts.txt", std::ios::app);
-        if (fout) {
-            fout << playerName << " " << 0 << " " << 0 << " " << 0 << "\n"; //name stage memories endless_score
-        }
-    }
-
+    //PasswordScene::SetPlayerName(playerName);
     // Go to stage select
-    Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+    Engine::GameEngine::GetInstance().ChangeScene("password");
 }
 
 void LogInScene::Draw() const {
+    al_clear_to_color(al_map_rgb(0, 0, 0));
     IScene::Draw(); // Draw all existing objects first
 
     // Draw text box rectangle
@@ -131,4 +109,8 @@ void LogInScene::OnKeyDown(int keyCode) {
     if (len == 1) {
         playerName += al_keycode_to_name(keyCode);
     }
+}
+
+std::string LogInScene::getPlayerName() {
+    return playerName;
 }

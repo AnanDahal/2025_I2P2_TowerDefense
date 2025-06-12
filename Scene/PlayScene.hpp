@@ -11,6 +11,11 @@
 #include "UI/Component/ChatBox.hpp"  // for chatbox
 #include <map>
 
+extern int OnStage;
+extern int core_memories;
+extern int endless_score;
+extern int whichPower;
+
 enum RoundTransitionState {
     NONE,
     WAIT_BEFORE_ROUND_LABEL,

@@ -25,7 +25,9 @@ class OpeningScene final : public Engine::IScene {
     bool played;
     ALLEGRO_BITMAP *house;
     ALLEGRO_BITMAP *chara;
-    std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> bgmInstance;
+    std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> cricketInstance;
+    std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sneakInstance;
+
 public:
     explicit OpeningScene() = default;
     void Initialize() override;

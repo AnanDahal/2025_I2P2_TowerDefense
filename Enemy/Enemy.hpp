@@ -16,6 +16,7 @@ protected:
     std::vector<Engine::Point> path;
     float speed;
     float hp;
+    float refhp;
     int money;
     PlayScene *getPlayScene();
     virtual void OnExplode();
@@ -25,9 +26,10 @@ protected:
 
 public:
     float reachEndTime;
+    int type;
     std::list<Turret *> lockedTurrets;
     std::list<Bullet *> lockedBullets;
-    Enemy(std::string img, float x, float y, float radius, float speed, float hp, int money);
+    Enemy(std::string img, int type, float x, float y, float radius, float speed, float hp, int money);
     virtual void Hit(float damage, bool slow);
     void UpdatePath(const std::vector<std::vector<int>> &mapDistance);
     void Update(float deltaTime) override;

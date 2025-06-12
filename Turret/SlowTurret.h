@@ -11,6 +11,7 @@ public:
     static const int Price;
     SlowTurret(float x, float y);
     void CreateBullet() override;
+    static bool isLocked;
 };
 
 #endif //SLOWTURRET_H

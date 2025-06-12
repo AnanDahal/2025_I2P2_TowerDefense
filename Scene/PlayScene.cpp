@@ -25,12 +25,20 @@
 #include "Engine/LOG.hpp"
 #include "Engine/Resources.hpp"
 #include "PlayScene.hpp"
+
+#include "Enemy/BossEnemy.h"
+#include "Enemy/MiniBossEnemy.h"
+#include "Enemy/MissEnemy.h"
+#include "Turret/BossKillerTurret.h"
 #include "Turret/LaserTurret.hpp"
 #include "Turret/MachineGunTurret.hpp"
 #include "Turret/HealingTurret.hpp"
 #include "Turret/SniperTurret.h"
 #include "Turret/BuffTurret.h"
+#include "Turret/FarmTurret.h"
+#include "Turret/MissileTurret.h"
 #include "Turret/SlowTurret.h"
+#include "Turret/TankKillerTurret.h"
 #include "Turret/TurretButton.hpp"
 #include "UI/Animation/DirtyEffect.hpp"
 #include "UI/Animation/Plane.hpp"
@@ -56,6 +64,15 @@ const std::vector<int> PlayScene::code = {
     // ALLEGRO_KEY_LEFT, ALLEGRO_KEY_RIGHT, ALLEGRO_KEY_LEFT, ALLEGRO_KEY_RIGHT,
     // ALLEGRO_KEY_B, ALLEGRO_KEY_A, ALLEGRO_KEYMOD_SHIFT, ALLEGRO_KEY_ENTER
 };
+
+bool HealingTurret::isLocked = true;
+bool BuffTurret::isLocked = true;
+bool SlowTurret::isLocked = true;
+bool SniperTurret::isLocked = true;
+bool TankKillerTurret::isLocked = true;
+bool BossKillerTurret::isLocked = true;
+bool FarmTurret::isLocked = true;
+
 Engine::Point PlayScene::GetClientSize() {
     return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);
 }
@@ -130,8 +147,7 @@ void PlayScene::Initialize() {
     // Preload lose scene assets
     deathBGMInstance = Engine::Resources::GetInstance().GetSampleInstance("astronomia.ogg");
     Engine::Resources::GetInstance().GetBitmap("lose/benjamin-happy.png");
-
-    // Start background music
+    // Start BGM.
     bgmId = AudioHelper::PlayBGM("play.ogg");
 }
 
@@ -196,7 +212,10 @@ void PlayScene::Update(float deltaTime) {
     if (chatBox) {
         chatBox->Update(deltaTime);
         if (chatBox->finished) {
-            if (UIGroup) UIGroup->RemoveObject(chatBox->GetObjectIterator());
+            if (UIGroup) {
+                UIGroup->RemoveObject(chatBox->GetObjectIterator());
+            }
+            
             chatBox->Terminate();
             chatBox.reset();
         }
@@ -239,44 +258,52 @@ void PlayScene::Update(float deltaTime) {
         AudioHelper::StopSample(deathBGMInstance);
         dangerIndicator->Tint.a = 0;
     }
+    if (SpeedMult == 0)
+        deathCountDown = -1;
 
-    // --- TIMED Enemy spawn logic (uses each wave’s `wait`) ---
-    ticks += deltaTime * SpeedMult;  // accumulate time (speeded up by SpeedMult)
-    while (!enemyWaveData.empty() && ticks >= enemyWaveData.front().second) {
-        auto wave = enemyWaveData.front();
+    for (int i = 0; i < SpeedMult; i++) {
+        IScene::Update(deltaTime);
+        // Check if we should create new enemy.
+        ticks += deltaTime;
+        if (enemyWaveData.empty()) {
+            if (EnemyGroup->GetObjects().empty()) {
+                if (endlessMode) {
+                    endlessRound++;
+                    RemoveAllTurrets();
+                    EnemyGroup->Clear();
+                    roundTransitionState = WAIT_BEFORE_ROUND_LABEL;
+                    roundTransitionTimer = 1.0f; // Wait 1 second before showing "ROUND X"
+                    nextRoundNumber = endlessRound;
+                    return;                
+                } else {
+                    Engine::GameEngine::GetInstance().ChangeScene("win");
+                }
+            }
+            continue;
+        }
+        auto current = enemyWaveData.front();
+        if (ticks < current.second)
+            continue;
+        ticks -= current.second;
         enemyWaveData.pop_front();
-        ticks -= wave.second;  // consume the wait interval
-
-        // 1) Pick a random entry grid point
-        Engine::Point entry = entryPoints[rand() % entryPoints.size()];
-
-        // 2) Compute off-screen spawn center
-        float spawnX, spawnY;
-        if (entry.x == 0) {                 // left edge → move right
-            spawnX = -BlockSize/2.0f;
-            spawnY = entry.y * BlockSize + BlockSize/2.0f;
-        }
-        else if (entry.x == MapWidth - 1) { // right edge → move left
-            spawnX = MapWidth * BlockSize + BlockSize/2.0f;
-            spawnY = entry.y * BlockSize + BlockSize/2.0f;
-        }
-        else if (entry.y == 0) {            // top edge → move down
-            spawnX = entry.x * BlockSize + BlockSize/2.0f;
-            spawnY = -BlockSize/2.0f;
-        }
-        else {                              // bottom edge → move up
-            spawnX = entry.x * BlockSize + BlockSize/2.0f;
-            spawnY = MapHeight * BlockSize + BlockSize/2.0f;
-        }
-
-        // 3) Instantiate the correct Enemy subclass
-        Enemy* e = nullptr;
-        switch (wave.first) {
-            case 1: EnemyGroup->AddNewObject(e = new SoldierEnemy (spawnX, spawnY)); break;
-            case 2: EnemyGroup->AddNewObject(e = new ArmyEnemy    (spawnX, spawnY)); break;
-            case 3: EnemyGroup->AddNewObject(e = new TankEnemy    (spawnX, spawnY)); break;
-            case 4: EnemyGroup->AddNewObject(e = new CarrierEnemy (spawnX, spawnY)); break;
-            case 5: EnemyGroup->AddNewObject(e = new BiggerCarrierEnemy(spawnX, spawnY)); break;
+        const Engine::Point SpawnCoordinate = Engine::Point(SpawnGridPoint.x * BlockSize + BlockSize / 2, SpawnGridPoint.y * BlockSize + BlockSize / 2);
+        Enemy *enemy;
+        switch (current.first) {
+            case 1:
+                EnemyGroup->AddNewObject(enemy = new SoldierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
+                break;
+            case 2:
+                EnemyGroup->AddNewObject(enemy = new ArmyEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
+                break;
+            case 3:
+                EnemyGroup->AddNewObject(enemy = new TankEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
+                break;
+            case 4:
+                EnemyGroup->AddNewObject(enemy = new CarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
+                break;
+            case 5:
+                EnemyGroup->AddNewObject(enemy = new BiggerCarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
+                break;
             default:
                 printf("[ERROR] Unknown enemy type %d\n", wave.first);
                 continue;
@@ -413,36 +440,34 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
         GroundEffectGroup->AddNewObject(fx);
         fx->Rotation = 0;
         return;
-    }
-
-    // ── 4) Must not block all enemy paths ──
-    if (!CheckSpaceValid(cellX, cellY)) {
-        auto fx = new DirtyEffect(
-            "play/target-invalid.png", 1,
-            cellX * BlockSize + BlockSize/2,
-            cellY * BlockSize + BlockSize/2
-        );
-        GroundEffectGroup->AddNewObject(fx);
-        fx->Rotation = 0;
-        return;
-    }
-
-    // ── 5) Valid! Charge, finalize preview → real turret ──
-    EarnMoney(-preview->GetPrice());
-
-    // Detach and re-position
-    preview->GetObjectIterator()->first = false;
-    UIGroup->RemoveObject(preview->GetObjectIterator());
-    preview->Position.x = cellX * BlockSize + BlockSize/2;
-    preview->Position.y = cellY * BlockSize + BlockSize/2;
-    preview->Enabled = true;
-    preview->Preview = false;
-    preview->Tint    = al_map_rgba(255,255,255,255);
-
-    // Commit and update
-    TowerGroup->AddNewObject(preview);
-    preview->Update(0);
-    mapState[cellY][cellX] = TILE_OCCUPIED;
+    const int x = mx / BlockSize;
+    const int y = my / BlockSize;
+    if (button & 1) {
+        if (mapState[y][x] != TILE_OCCUPIED) {
+            if (!preview)
+                return;
+            // Check if valid.
+            if (!CheckSpaceValid(x, y)) {
+                Engine::Sprite *sprite;
+                GroundEffectGroup->AddNewObject(sprite = new DirtyEffect("play/target-invalid.png", 1, x * BlockSize + BlockSize / 2, y * BlockSize + BlockSize / 2));
+                sprite->Rotation = 0;
+                return;
+            }
+            // Purchase.
+            EarnMoney(-preview->GetPrice());
+            // Remove Preview.
+            preview->GetObjectIterator()->first = false;
+            UIGroup->RemoveObject(preview->GetObjectIterator());
+            // Construct real turret.
+            preview->Position.x = x * BlockSize + BlockSize / 2;
+            preview->Position.y = y * BlockSize + BlockSize / 2;
+            preview->Enabled = true;
+            preview->Preview = false;
+            preview->Tint = al_map_rgba(255, 255, 255, 255);
+            TowerGroup->AddNewObject(preview);
+            preview->Update(0);
+            // Remove Preview.
+            preview = nullptr;
 
     // Clear our preview pointer and refresh the cursor effect
     preview = nullptr;
@@ -575,6 +600,7 @@ void PlayScene::ReadEnemyWave() {
     fin.close();
 }
 void PlayScene::ConstructUI() {
+    //PUT AN IF HERE TO UPDATE ISLOCKED
     // Background
     UIGroup->AddNewObject(new Engine::Image("play/sand.png", 1280, 0, 320, 832));
     // Text
@@ -596,20 +622,93 @@ void PlayScene::ConstructUI() {
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 1));
     UIGroup->AddNewControlObject(btn);
 
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                       Engine::Sprite("play/tower-base.png", 1370 + 76, 136, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-4.png", 1370 + 76, 136 - 8, 0, 0, 0, 0), 1370 + 76, 136, MissileTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 3)); // Missile turret (aoe)
+    UIGroup->AddNewControlObject(btn);
+
     // Add a new button for the Healing Turret in ConstructUI()
     // In PlayScene.cpp, add the healing turret button and logic if not already done
 
+    //SUPPORT TOWERS
     btn = new TurretButton("play/floor.png", "play/dirt.png",
-                       Engine::Sprite("play/tower-base.png", 1370 + 76, 136, 0, 0, 0, 0),
-                       Engine::Sprite("play/turret-3.png", 1370 + 76, 136 - 8, 0, 0, 0, 0), 1370 + 76, 136, HealingTurret::Price);
+                       Engine::Sprite("play/tower-base.png", 1294, 136 + 120, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-3.png", 1294, 136 - 8 + 120, 0, 0, 0, 0), 1294, 136 + 120, FarmTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 9)); // farm turret
+    UIGroup->AddNewControlObject(btn);
+
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                       Engine::Sprite("play/tower-base.png", 1370 + 76, 136 + 120, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-3.png", 1370 + 76, 136 - 8 + 120, 0, 0, 0, 0), 1370 + 76, 136 + 120, HealingTurret::Price);
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 2)); // Healing turret
     UIGroup->AddNewControlObject(btn);
+
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                       Engine::Sprite("play/tower-base.png", 1370, 136 + 120, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-3.png", 1370, 136 - 8 + 120, 0, 0, 0, 0), 1370, 136 + 120, BuffTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 4)); // Buff turret
+    UIGroup->AddNewControlObject(btn);
+
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                       Engine::Sprite("play/tower-base.png", 1370 + 152, 136 + 120, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-6.png", 1370 + 152, 136 - 8 + 120, 0, 0, 0, 0), 1370 + 152, 136 + 120, SlowTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 5)); // slow turret
+    UIGroup->AddNewControlObject(btn);
+
+    //ATTACK TOWERS
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                       Engine::Sprite("play/tower-base.png", 1370 + 152, 136 + 240, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-7.png", 1370 + 152, 136 - 8 + 240, 0, 0, 0, 0), 1370 + 152, 136 + 240, SniperTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 6)); // Sniper turret
+    UIGroup->AddNewControlObject(btn);
+
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                       Engine::Sprite("play/tower-base.png", 1370 + 76, 136 + 240, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-6.png", 1370 + 76, 136 - 8 + 240, 0, 0, 0, 0), 1370 + 76, 136 + 240, TankKillerTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 7)); // TankKiller turret
+    UIGroup->AddNewControlObject(btn);
+
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                       Engine::Sprite("play/tower-base.png", 1294, 136 + 240, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-5.png", 1294, 136 - 8 + 240, 0, 0, 0, 0), 1294, 136 + 240, BossKillerTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 8)); // BossKiller turret
+    UIGroup->AddNewControlObject(btn);
+
+    int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
+    int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
+    int halfW = w / 2;
+    int halfH = h / 2;
+
+    Engine::ImageButton *btnn; //CHANGE PNGS
+    if (whichPower == 1) {
+        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 11));
+        AddNewControlObject(btnn);
+    }
+    else if (whichPower == 2) {
+        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 12));
+        AddNewControlObject(btnn);
+    }
+    else if (whichPower == 3) {
+        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 13));
+        AddNewControlObject(btnn);
+    }
+    else if (whichPower == 4) {
+        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 14));
+        AddNewControlObject(btnn);
+    }
+
+
+
 
     if (MapId == 2) {
         roundLabel = new Engine::Label("Round: " + std::to_string(endlessRound), "pirulen.ttf", 32, 1050, 50);
         UIGroup->AddNewObject(roundLabel);
     }
-
 
     {
         const int SHOVEL_ID = -1;
@@ -638,11 +737,6 @@ void PlayScene::ConstructUI() {
         AddNewControlObject(btnn);
     }
 
-
-
-
-    int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
-    int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int shift = 135 + 25;
     dangerIndicator = new Engine::Sprite("play/benjamin.png", w - shift, h - shift);
     dangerIndicator->Tint.a = 0;
@@ -682,8 +776,34 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new MachineGunTurret(0, 0);
     else if (id == 1 && money >= LaserTurret::Price)
         preview = new LaserTurret(0, 0);
-    else if (id == 2 && money >= HealingTurret::Price)
+    else if (id == 2 && money >= HealingTurret::Price && !HealingTurret::isLocked)
         preview = new HealingTurret(0, 0);
+    else if (id == 3 && money >= MissileTurret::Price)
+        preview = new MissileTurret(0, 0);
+    else if (id == 4 && money >= BuffTurret::Price && !BuffTurret::isLocked)
+        preview = new BuffTurret(0, 0);
+    else if (id == 5 && money >= SlowTurret::Price && !SlowTurret::isLocked)
+        preview = new SlowTurret(0, 0);
+    else if (id == 6 && money >= SniperTurret::Price && !SniperTurret::isLocked)
+        preview = new SniperTurret(0, 0);
+    else if (id == 7 && money >= TankKillerTurret::Price && !TankKillerTurret::isLocked)
+        preview = new TankKillerTurret(0, 0);
+    else if (id == 8 && money >= BossKillerTurret::Price && !BossKillerTurret::isLocked)
+        preview = new BossKillerTurret(0, 0);
+    else if (id == 9 && money >= FarmTurret::Price && !FarmTurret::isLocked)
+        preview = new FarmTurret(0, 0);
+    else if (id == 11) { //maybe create a cooldown
+        UIGroup->AddNewObject(new Plane);
+    }
+    else if (id == 12) {
+        EarnMoney(1000);
+    }
+    else if (id == 13) {
+        //TIMESTOP
+    }
+    else if (id == 14) {
+        //AI DO A MESSAGE
+    }
     else if (id == 20) {
         Engine::GameEngine::GetInstance().ChangeScene("stage-select");
     }

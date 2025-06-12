@@ -28,6 +28,7 @@ public:
     bool Enabled = true;
     bool Preview = false;
     bool buffed = false;
+    bool missing = false;
     Enemy *Target = nullptr;
     Turret(std::string imgBase, std::string imgTurret, float x, float y, float radius, int price, float coolDown, int hp);
     void Update(float deltaTime) override;
@@ -39,9 +40,14 @@ public:
         if (currentHp > maxHp) currentHp = maxHp;  // Ensure it doesn't exceed maxHp
     }
     int GetMaxHp() const { return maxHp; }
-
+    int missThreshold;
 
     void TakeDamage(int damage) {
+        if (damage == 0) {
+            //boolean for missing
+            missing = true;
+            missThreshold = 0;
+        }
         currentHp -= damage;
         if (currentHp <= 0) {
             currentHp = 0;
@@ -49,5 +55,6 @@ public:
             OnDestroyed();
         }
     }
+
 };
 #endif   // TURRET_HPP

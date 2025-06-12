@@ -31,9 +31,10 @@ void Enemy::OnExplode() {
         getPlayScene()->GroundEffectGroup->AddNewObject(new DirtyEffect("play/dirty-" + std::to_string(distId(rng)) + ".png", dist(rng), Position.x, Position.y));
     }
 }
-Enemy::Enemy(std::string img, float x, float y, float radius, float speed, float hp, int money) : Engine::Sprite(img, x, y), speed(speed), hp(hp), money(money) {
+Enemy::Enemy(std::string img, int type,float x, float y, float radius, float speed, float hp, int money) : Engine::Sprite(img, x, y), type(type), speed(speed), hp(hp), money(money) {
     CollisionRadius = radius;
     reachEndTime = 0;
+    refhp = hp;
 }
 void Enemy::Hit(float damage, bool slow) {
     hp -= damage;
@@ -104,6 +105,7 @@ void Enemy::Update(float deltaTime) {
     }
     // Pre-calculate the velocity.
     float remainSpeed = speed * deltaTime;
+    if (type != 0 && type % 2 == 0) remainSpeed *= (refhp - hp <= 1) ? 1 : (refhp - hp) / 2;
     while (remainSpeed != 0) {
         if (path.empty()) {
             // Reach end point.
