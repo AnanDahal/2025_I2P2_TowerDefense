@@ -19,6 +19,7 @@ public:
     void Terminate() override;
     void Draw() const override;
     void BackOnClick(int stage);
+    void ChooseOnClick(int power);
 };
 
 #endif //POWERS_H
