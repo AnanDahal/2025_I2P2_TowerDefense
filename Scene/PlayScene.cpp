@@ -58,6 +58,13 @@ const std::vector<int> PlayScene::code = {
     // ALLEGRO_KEY_LEFT, ALLEGRO_KEY_RIGHT, ALLEGRO_KEY_LEFT, ALLEGRO_KEY_RIGHT,
     // ALLEGRO_KEY_B, ALLEGRO_KEY_A, ALLEGRO_KEYMOD_SHIFT, ALLEGRO_KEY_ENTER
 };
+
+bool HealingTurret::isLocked = true;
+bool MissileTurret::isLocked = true;
+bool BuffTurret::isLocked = true;
+bool SlowTurret::isLocked = true;
+bool SniperTurret::isLocked = true;
+
 Engine::Point PlayScene::GetClientSize() {
     return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);
 }
@@ -674,10 +681,16 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new MachineGunTurret(0, 0);
     else if (id == 1 && money >= LaserTurret::Price)
         preview = new LaserTurret(0, 0);
-    else if (id == 2 && money >= HealingTurret::Price)
+    else if (id == 2 && money >= HealingTurret::Price && !HealingTurret::isLocked)
         preview = new HealingTurret(0, 0);
-    else if (id == 3 && money >= MissileTurret::Price)
+    else if (id == 3 && money >= MissileTurret::Price && !MissileTurret::isLocked)
         preview = new MissileTurret(0, 0);
+    else if (id == 4 && money >= BuffTurret::Price && !BuffTurret::isLocked)
+        preview = new BuffTurret(0, 0);
+    else if (id == 5 && money >= SlowTurret::Price && !SlowTurret::isLocked)
+        preview = new SlowTurret(0, 0);
+    else if (id == 6 && money >= SniperTurret::Price && !SniperTurret::isLocked)
+        preview = new SniperTurret(0, 0);
     else if (id == 20) {
         Engine::GameEngine::GetInstance().ChangeScene("stage-select");
     }
