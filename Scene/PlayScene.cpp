@@ -129,6 +129,8 @@ void PlayScene::Initialize() {
     preview = nullptr;
     UIGroup->AddNewObject(imgTarget);
 
+    Engine::Resources::GetInstance().GetBitmap("play/void.png");
+
     deathBGMInstance = Engine::Resources::GetInstance().GetSampleInstance("astronomia.ogg");
     Engine::Resources::GetInstance().GetBitmap("lose/benjamin-happy.png");
     bgmId = AudioHelper::PlayBGM("play.ogg");
@@ -799,9 +801,6 @@ void PlayScene::GenerateRandomMap(int round) {
     else if (side == 2) { startP = topEdge  [rand() % topEdge  .size()]; endP = bottomEdge[rand() % bottomEdge.size()]; }
     else                { startP = bottomEdge[rand() % bottomEdge.size()]; endP = topEdge   [rand() % topEdge  .size()]; }
 
-    std::cout << "[DEBUG] Start: (" << startP.x << "," << startP.y
-              << ") → End: (" << endP.x << "," << endP.y << ")\n";
-
     // 4. Register entry & BFS target
     entryPoints.clear();
     entryPoints.push_back(startP);
@@ -809,22 +808,9 @@ void PlayScene::GenerateRandomMap(int round) {
     PlayScene::EndGridPoint = endP;
     spawnPoint = startP;
 
-    std::cout
-    << "[DEBUG] GenerateRandomMap: startP=("
-    << startP.x << "," << startP.y << ")  "
-    << "endP=("   << endP.x   << "," << endP.y   << ")\n";
-    std::cout
-    << "[DEBUG]   spawnPoint=("
-    << spawnPoint.x << "," << spawnPoint.y << ")\n";
-
-    // 5. Carve one continuous path, reserving exactly one dirt at start-edge and one at end-edge
-    //    a) Determine orientation of start-edge
+    // 5. Carve one continuous path
     bool isHorizontal = (startP.x == 0 || startP.x == MapWidth - 1);
-
-    //    b) Prepare RNG
     std::mt19937 rng{ std::random_device{}() };
-
-    //    c) First move: step off the start-edge
     std::vector<std::pair<int,int>> moves;
     if (isHorizontal) {
         int dx = (endP.x > startP.x ? 1 : -1);
@@ -833,15 +819,11 @@ void PlayScene::GenerateRandomMap(int round) {
         int dy = (endP.y > startP.y ? 1 : -1);
         moves.emplace_back(0, dy);
     }
-
-    //    d) Compute remaining delta after first move
     Engine::Point cur = startP;
     cur.x += moves[0].first;
     cur.y += moves[0].second;
     int remDX = endP.x - cur.x;
     int remDY = endP.y - cur.y;
-
-    //    e) Last move: step onto the end-edge
     std::pair<int,int> lastMove;
     if (isHorizontal) {
         int dx = (remDX > 0 ? 1 : -1);
@@ -852,22 +834,15 @@ void PlayScene::GenerateRandomMap(int round) {
         lastMove = {0, dy};
         remDY  -= dy;
     }
-
-    //    f) Build the “middle” moves (all remaining Manhattan steps)
     std::vector<std::pair<int,int>> middle;
     for (int i = 0; i < std::abs(remDX); ++i)
         middle.emplace_back(remDX > 0 ? 1 : -1, 0);
     for (int i = 0; i < std::abs(remDY); ++i)
         middle.emplace_back(0, remDY > 0 ? 1 : -1);
-
-    //    g) Shuffle middle steps to create winding corridor
     std::shuffle(middle.begin(), middle.end(), rng);
-
-    //    h) Stitch together: first, then middle, then last
     moves.insert(moves.end(), middle.begin(), middle.end());
     moves.push_back(lastMove);
 
-    //    i) Carve path into mapState
     mapState[startP.y][startP.x] = TILE_DIRT;
     cur = startP;
     for (auto &m : moves) {
@@ -876,22 +851,75 @@ void PlayScene::GenerateRandomMap(int round) {
         mapState[cur.y][cur.x] = TILE_DIRT;
     }
 
-    // 6. Refresh the visual tile map
+    // 6. Randomly sprinkle “void” ponds (cannot overlap the dirt path)
+    if (round >= 6) {
+        // 1 pool for rounds 6–10, 2 pools for 11–15, etc.
+        int voidPoolCount = (round - 6) / 5 + 1;
+        std::uniform_int_distribution<int> sizeDist(4, 8);
+        std::uniform_int_distribution<int> xDist(0, MapWidth - 1);
+        std::uniform_int_distribution<int> yDist(0, MapHeight - 1);
+
+        for (int p = 0; p < voidPoolCount; ++p) {
+            int targetSize = sizeDist(rng);
+            // pick a random FLOOR cell as seed
+            Engine::Point seed;
+            do {
+                seed.x = xDist(rng);
+                seed.y = yDist(rng);
+            } while (mapState[seed.y][seed.x] != TILE_FLOOR);
+            std::vector<Engine::Point> pond{ seed };
+            mapState[seed.y][seed.x] = TILE_VOID;
+
+            // grow outward until targetSize or no more neighbors
+            while ((int)pond.size() < targetSize) {
+                std::vector<Engine::Point> frontier;
+                for (auto &c : pond) {
+                    for (auto &d : PlayScene::directions) {
+                        int nx = c.x + d.x, ny = c.y + d.y;
+                        if (nx >= 0 && nx < MapWidth
+                         && ny >= 0 && ny < MapHeight
+                         && mapState[ny][nx] == TILE_FLOOR)
+                        {
+                            frontier.emplace_back(nx, ny);
+                        }
+                    }
+                }
+                if (frontier.empty()) break;
+                Engine::Point pick = frontier[rng() % frontier.size()];
+                mapState[pick.y][pick.x] = TILE_VOID;
+                pond.push_back(pick);
+            }
+        }
+    }
+
+    // 7. Refresh the visual tile map
     TileMapGroup->Clear();
     for (int y = 0; y < MapHeight; y++) {
         for (int x = 0; x < MapWidth; x++) {
-            const char* img = (mapState[y][x] == TILE_DIRT ? "play/dirt.png" : "play/floor.png");
+            const char* img;
+            if      (mapState[y][x] == TILE_DIRT)  img = "play/dirt.png";
+            else if (mapState[y][x] == TILE_VOID)  img = "play/void.png";
+            else                                   img = "play/floor.png";
             TileMapGroup->AddNewObject(
                 new Engine::Image(img, x * BlockSize, y * BlockSize, BlockSize, BlockSize)
             );
         }
     }
 
-    // 7. Compute BFS distances for enemy pathfinding
+    // 8. Compute BFS distances for enemy pathfinding
     mapDistance = CalculateBFSDistance();
 }
 
-
+/*
+boss
+miniboss
+tank
+bigger carrier
+carrier
+confused enemy
+army
+soldier
+*/
 
 void PlayScene::GenerateEnemyWave(int round) {
     // Example: Increase difficulty each round
@@ -915,7 +943,6 @@ void PlayScene::GenerateEnemyWave(int round) {
         enemyWaveData.emplace_back(2, wait + 0.2f);
     for (int i = 0; i < numSoldiers; ++i)
         enemyWaveData.emplace_back(1, wait);
-
 }
 
 void PlayScene::RemoveAllTurrets() {
