@@ -23,7 +23,6 @@
 #include "Engine/Resources.hpp"
 #include "PlayScene.hpp"
 
-#include "PasswordScene.h"
 #include "Enemy/BossEnemy.h"
 #include "Enemy/MiniBossEnemy.h"
 #include "Enemy/MissEnemy.h"
@@ -32,6 +31,7 @@
 #include "Turret/HealingTurret.hpp"
 #include "Turret/SniperTurret.h"
 #include "Turret/BuffTurret.h"
+#include "Turret/MissileTurret.h"
 #include "Turret/SlowTurret.h"
 #include "Turret/TurretButton.hpp"
 #include "UI/Animation/DirtyEffect.hpp"
@@ -61,12 +61,6 @@ const std::vector<int> PlayScene::code = {
 Engine::Point PlayScene::GetClientSize() {
     return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);
 }
-
-bool HealingTurret::isLocked = true;
-bool BuffTurret::isLocked = true;
-bool SlowTurret::isLocked = true;
-bool SniperTurret::isLocked = true;
-
 void PlayScene::Initialize() {
     mapState.clear();
     keyStrokes.clear();
@@ -184,7 +178,7 @@ void PlayScene::Update(float deltaTime) {
             if (UIGroup) {
                 UIGroup->RemoveObject(chatBox->GetObjectIterator());
             }
-            
+
             chatBox->Terminate();
             chatBox.reset();
         }
@@ -247,7 +241,6 @@ void PlayScene::Update(float deltaTime) {
                     nextRoundNumber = endlessRound;
                     return;                
                 } else {
-                    OnStage++;
                     Engine::GameEngine::GetInstance().ChangeScene("win");
                 }
             }
@@ -262,40 +255,40 @@ void PlayScene::Update(float deltaTime) {
         Enemy *enemy;
         switch (current.first) {
             case 1:
-                EnemyGroup->AddNewObject(enemy = new SoldierEnemy(SpawnCoordinate.x, SpawnCoordinate.y, false));
+                EnemyGroup->AddNewObject(enemy = new SoldierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
             case 2:
-                EnemyGroup->AddNewObject(enemy = new ArmyEnemy(SpawnCoordinate.x, SpawnCoordinate.y, false));
+                EnemyGroup->AddNewObject(enemy = new ArmyEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
             case 3:
-                EnemyGroup->AddNewObject(enemy = new TankEnemy(SpawnCoordinate.x, SpawnCoordinate.y, false));
+                EnemyGroup->AddNewObject(enemy = new TankEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
             case 4:
-                EnemyGroup->AddNewObject(enemy = new CarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y, false));
+                EnemyGroup->AddNewObject(enemy = new CarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
             case 5:
-                EnemyGroup->AddNewObject(enemy = new BiggerCarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y, false));
+                EnemyGroup->AddNewObject(enemy = new BiggerCarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
             case 6:
-                EnemyGroup->AddNewObject(enemy = new MissEnemy(SpawnCoordinate.x, SpawnCoordinate.y, false));
+                EnemyGroup->AddNewObject(enemy = new MissEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
             case 7:
-                EnemyGroup->AddNewObject(enemy = new SoldierEnemy(SpawnCoordinate.x, SpawnCoordinate.y, true));
+                EnemyGroup->AddNewObject(enemy = new SoldierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
             case 8:
-                EnemyGroup->AddNewObject(enemy = new ArmyEnemy(SpawnCoordinate.x, SpawnCoordinate.y, true));
+                EnemyGroup->AddNewObject(enemy = new ArmyEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
             case 9:
-                EnemyGroup->AddNewObject(enemy = new TankEnemy(SpawnCoordinate.x, SpawnCoordinate.y, true));
+                EnemyGroup->AddNewObject(enemy = new TankEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
             case 10:
-                EnemyGroup->AddNewObject(enemy = new CarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y, true));
+                EnemyGroup->AddNewObject(enemy = new CarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
             case 11:
-                EnemyGroup->AddNewObject(enemy = new BiggerCarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y, true));
+                EnemyGroup->AddNewObject(enemy = new BiggerCarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
             case 12:
-                EnemyGroup->AddNewObject(enemy = new MissEnemy(SpawnCoordinate.x, SpawnCoordinate.y, true));
+                EnemyGroup->AddNewObject(enemy = new MissEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
             case 13:
                 EnemyGroup->AddNewObject(enemy = new MiniBossEnemy(SpawnCoordinate.x, SpawnCoordinate.y, 2));
@@ -499,9 +492,6 @@ void PlayScene::Hit() {
         {
             // If in endless mode, reset the round and money.
             endlessMode = false;
-            if (endless_score < endlessRound) {
-                endless_score = endlessRound;
-            }
             endlessRound = 1;
             EarnMoney(-money);
             money = 0;
@@ -601,6 +591,12 @@ void PlayScene::ConstructUI() {
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 2)); // Healing turret
     UIGroup->AddNewControlObject(btn);
 
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                       Engine::Sprite("play/tower-base.png", 1370 + 152, 136, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-4.png", 1370 + 152, 136 - 8, 0, 0, 0, 0), 1370 + 152, 136, MissileTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 3)); // Missile turret (aoe)
+    UIGroup->AddNewControlObject(btn);
+
     if (MapId == 2) {
         roundLabel = new Engine::Label("Round: " + std::to_string(endlessRound), "pirulen.ttf", 32, 1050, 50);
         UIGroup->AddNewObject(roundLabel);
@@ -678,16 +674,10 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new MachineGunTurret(0, 0);
     else if (id == 1 && money >= LaserTurret::Price)
         preview = new LaserTurret(0, 0);
-    else if (id == 2 && money >= HealingTurret::Price && !HealingTurret::isLocked)
-         preview = new HealingTurret(0, 0);
-    else if (id == 3 && money >= BuffTurret::Price && !BuffTurret::isLocked)
-        preview = new BuffTurret(0, 0);
-    else if (id == 4 && money >= SlowTurret::Price && !SlowTurret::isLocked)
-        preview = new SlowTurret(0, 0);
-    else if (id == 5 && money >= BuffTurret::Price && !BuffTurret::isLocked) //FARM
-        preview = new BuffTurret(0, 0);
-    else if (id == 6 && money >= SniperTurret::Price && !SniperTurret::isLocked)
-        preview = new SniperTurret(0, 0);
+    else if (id == 2 && money >= HealingTurret::Price)
+        preview = new HealingTurret(0, 0);
+    else if (id == 3 && money >= MissileTurret::Price)
+        preview = new MissileTurret(0, 0);
     else if (id == 20) {
         Engine::GameEngine::GetInstance().ChangeScene("stage-select");
     }

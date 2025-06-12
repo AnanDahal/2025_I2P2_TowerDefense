@@ -4,7 +4,7 @@
 
 class SoldierEnemy : public Enemy {
 public:
-    SoldierEnemy(int x, int y, bool fast);
+    SoldierEnemy(int x, int y);
     void Draw() const override;
     void Update(float deltaTime) override;
     void Hit(float damage, bool slow) override;

@@ -22,7 +22,7 @@ private:
 
 public:
     // 1) default, uses a hard-coded sprite
-    explicit TankEnemy(int x, int y, bool fast);
+    explicit TankEnemy(int x, int y);
     // 2) full, lets you pass any sprite
     TankEnemy(int x, int y, const std::string &bulletSprite);
 

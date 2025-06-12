@@ -4,7 +4,7 @@
 
 class CarrierEnemy : public Enemy {
 public:
-    CarrierEnemy(int x, int y, bool fast);
+    CarrierEnemy(int x, int y);
 protected:
     void OnExplode() override;
 };

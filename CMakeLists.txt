@@ -161,6 +161,12 @@ add_executable(2025_I2P2_TowerDefense
         Bullet/MissEnemyBullet.h
         Enemy/MissEnemy.cpp
         Enemy/MissEnemy.h
+        Bullet/AOEBullet.cpp
+        Bullet/AOEBullet.h
+        Turret/MissileTurret.cpp
+        Turret/MissileTurret.h
+        Bullet/MissileBullet.cpp
+        Bullet/MissileBullet.h
 )
 
 IF (WIN32)
