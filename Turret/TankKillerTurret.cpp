@@ -35,7 +35,7 @@ void TankKillerTurret::CreateBullet() {
     if (missThreshold == 2) {
         missing = false;
     }
-    AudioHelper::PlayAudio("laser.wav"); //change sound
+    AudioHelper::PlayAudio("op.wav"); //change sound
 }//
 // Created by user on 6/12/2025.
 //

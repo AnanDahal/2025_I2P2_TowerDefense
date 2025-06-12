@@ -32,5 +32,5 @@ void BossKillerTurret::CreateBullet() {
     if (missThreshold == 2) {
         missing = false;
     }
-    AudioHelper::PlayAudio("gun.wav");
+    AudioHelper::PlayAudio("kraber.wav");
 }
