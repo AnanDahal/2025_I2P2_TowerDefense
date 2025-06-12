@@ -287,27 +287,9 @@ void PlayScene::Update(float deltaTime) {
                 EnemyGroup->AddNewObject(enemy = new MissEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
             case 7:
-                EnemyGroup->AddNewObject(enemy = new SoldierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 8:
-                EnemyGroup->AddNewObject(enemy = new ArmyEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 9:
-                EnemyGroup->AddNewObject(enemy = new TankEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 10:
-                EnemyGroup->AddNewObject(enemy = new CarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 11:
-                EnemyGroup->AddNewObject(enemy = new BiggerCarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 12:
-                EnemyGroup->AddNewObject(enemy = new MissEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 13:
                 EnemyGroup->AddNewObject(enemy = new MiniBossEnemy(SpawnCoordinate.x, SpawnCoordinate.y, 2));
                 break;
-            case 14:
+            case 8:
                 EnemyGroup->AddNewObject(enemy = new BossEnemy(SpawnCoordinate.x, SpawnCoordinate.y, 6));
                 break;
 
