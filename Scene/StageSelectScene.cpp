@@ -131,6 +131,7 @@ void StageSelectScene::BackOnClick(int stage) {
 }
 void StageSelectScene::PlayOnClick(int stage) {
     changeto = 2; stagenum = stage;
+    OnStage = 1;
     fadeout = true;
 }
 

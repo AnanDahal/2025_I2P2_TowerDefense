@@ -254,6 +254,7 @@ void PlayScene::Update(float deltaTime) {
                     nextRoundNumber = endlessRound;
                     return;                
                 } else {
+                    OnStage++; //increment OnStage for save file
                     Engine::GameEngine::GetInstance().ChangeScene("win");
                 }
             }
