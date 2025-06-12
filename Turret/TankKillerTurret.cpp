@@ -12,7 +12,7 @@
 #include "Scene/PlayScene.hpp"
 
 const int TankKillerTurret::Price = 250;
-TankKillerTurret::TankKillerTurret(float x, float y) : Turret("play/tower-base.png", "play/turret-6.png", x, y, 300, Price, 1, 200) {
+TankKillerTurret::TankKillerTurret(float x, float y) : Turret("play/tower-base.png", "play/turret-6.png", x, y, 300, Price, 1, 1000) {
     // Move center downward, since we the turret head is slightly biased upward.
     Anchor.y += 8.0f / GetBitmapHeight();
     missThreshold = 0;

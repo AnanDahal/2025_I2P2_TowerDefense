@@ -15,7 +15,7 @@
 #include "Scene/PlayScene.hpp"
 
 const int BuffTurret::Price = 400;
-BuffTurret::BuffTurret(float x, float y) : Turret("play/tower-base.png", "play/turret-3.png", x, y, 300, Price, 1, 400) {
+BuffTurret::BuffTurret(float x, float y) : Turret("play/tower-base.png", "play/turret-3.png", x, y, 300, Price, 1, 600) {
     // Move center downward, since we the turret head is slightly biased upward.
     Anchor.y += 8.0f / GetBitmapHeight();
     if (OnStage >= 3) {
