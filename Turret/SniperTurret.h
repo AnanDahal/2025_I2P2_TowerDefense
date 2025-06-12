@@ -10,5 +10,6 @@ public:
     static const int Price;
     SniperTurret(float x, float y);
     void CreateBullet() override;
+    static bool isLocked;
 };
 #endif //SNIPERTURRET_H

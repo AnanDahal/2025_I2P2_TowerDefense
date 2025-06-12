@@ -22,10 +22,6 @@
 using accountEntry = std::tuple<std::string, std::string, int, int, int>; // name, stage, memories, endless score
 std::vector<accountEntry> accountEntries;
 
-// void PasswordScene::SetPlayerName(std::string name) {
-//     playerName = name;
-// }
-
 void PasswordScene::Initialize() {
     ticks = 0;
     playerName = LogInScene::getPlayerName();

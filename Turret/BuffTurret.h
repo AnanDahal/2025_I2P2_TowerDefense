@@ -12,6 +12,7 @@ public:
     BuffTurret(float x, float y);
     void CreateBullet() override;
     void Update(float deltaTime) override;
+    static bool isLocked;
 };
 
 #endif //BUFFTURRET_H

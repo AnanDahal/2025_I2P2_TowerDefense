@@ -23,6 +23,7 @@
 #include "Engine/Resources.hpp"
 #include "PlayScene.hpp"
 
+#include "PasswordScene.h"
 #include "Enemy/BossEnemy.h"
 #include "Enemy/MiniBossEnemy.h"
 #include "Enemy/MissEnemy.h"
@@ -60,6 +61,12 @@ const std::vector<int> PlayScene::code = {
 Engine::Point PlayScene::GetClientSize() {
     return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);
 }
+
+bool HealingTurret::isLocked = true;
+bool BuffTurret::isLocked = true;
+bool SlowTurret::isLocked = true;
+bool SniperTurret::isLocked = true;
+
 void PlayScene::Initialize() {
     mapState.clear();
     keyStrokes.clear();
@@ -240,6 +247,7 @@ void PlayScene::Update(float deltaTime) {
                     nextRoundNumber = endlessRound;
                     return;                
                 } else {
+                    OnStage++;
                     Engine::GameEngine::GetInstance().ChangeScene("win");
                 }
             }
@@ -491,6 +499,9 @@ void PlayScene::Hit() {
         {
             // If in endless mode, reset the round and money.
             endlessMode = false;
+            if (endless_score < endlessRound) {
+                endless_score = endlessRound;
+            }
             endlessRound = 1;
             EarnMoney(-money);
             money = 0;
@@ -667,8 +678,16 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new MachineGunTurret(0, 0);
     else if (id == 1 && money >= LaserTurret::Price)
         preview = new LaserTurret(0, 0);
-    else if (id == 2 && money >= HealingTurret::Price)
-        preview = new HealingTurret(0, 0);
+    else if (id == 2 && money >= HealingTurret::Price && !HealingTurret::isLocked)
+         preview = new HealingTurret(0, 0);
+    else if (id == 3 && money >= BuffTurret::Price && !BuffTurret::isLocked)
+        preview = new BuffTurret(0, 0);
+    else if (id == 4 && money >= SlowTurret::Price && !SlowTurret::isLocked)
+        preview = new SlowTurret(0, 0);
+    else if (id == 5 && money >= BuffTurret::Price && !BuffTurret::isLocked) //FARM
+        preview = new BuffTurret(0, 0);
+    else if (id == 6 && money >= SniperTurret::Price && !SniperTurret::isLocked)
+        preview = new SniperTurret(0, 0);
     else if (id == 20) {
         Engine::GameEngine::GetInstance().ChangeScene("stage-select");
     }

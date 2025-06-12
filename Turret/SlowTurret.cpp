@@ -7,6 +7,8 @@
 #include "Engine/Group.hpp"
 #include "Engine/Point.hpp"
 #include "SlowTurret.h" //
+
+#include "Scene/PasswordScene.h"
 #include "Scene/PlayScene.hpp"
 
 const int SlowTurret::Price = 100;
@@ -14,6 +16,12 @@ SlowTurret::SlowTurret(float x, float y) : Turret("play/tower-base.png", "play/t
     // Move center downward, since we the turret head is slightly biased upward.
     Anchor.y += 8.0f / GetBitmapHeight();
     missThreshold = 0;
+    if (OnStage >= 3) {
+        isLocked = false;
+    }
+    else {
+        isLocked = true;
+    }
 }
 void SlowTurret::CreateBullet() {
     Engine::Point diff = Engine::Point(cos(Rotation - ALLEGRO_PI / 2), sin(Rotation - ALLEGRO_PI / 2));
