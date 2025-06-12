@@ -139,3 +139,10 @@ void StageSelectScene::BackOnClick(int stage) {
     changeto = 5;
     fadeout = true;
 }
+// void StageSelectScene::BGMSlideOnValueChanged(float value) {
+//     AudioHelper::ChangeSampleVolume(bgmInstance, value);
+//     AudioHelper::BGMVolume = value;
+// }
+// void StageSelectScene::SFXSlideOnValueChanged(float value) {
+//     AudioHelper::SFXVolume = value;
+// }

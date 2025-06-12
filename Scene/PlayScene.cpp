@@ -57,7 +57,7 @@ const float PlayScene::DangerTime = 7.61;
 const Engine::Point PlayScene::SpawnGridPoint = Engine::Point(-1, 0);
 const Engine::Point PlayScene::EndGridPoint = Engine::Point(MapWidth, MapHeight - 1);
 const std::vector<int> PlayScene::code = {
-    ALLEGRO_KEY_UP, ALLEGRO_KEY_UP, ALLEGRO_KEY_DOWN, ALLEGRO_KEY_DOWN
+    ALLEGRO_KEY_UP, ALLEGRO_KEY_UP, ALLEGRO_KEY_DOWN, ALLEGRO_KEY_DOWN   
     // ,
     // ALLEGRO_KEY_LEFT, ALLEGRO_KEY_RIGHT, ALLEGRO_KEY_LEFT, ALLEGRO_KEY_RIGHT,
     // ALLEGRO_KEY_B, ALLEGRO_KEY_A, ALLEGRO_KEYMOD_SHIFT, ALLEGRO_KEY_ENTER
@@ -76,7 +76,7 @@ Engine::Point PlayScene::GetClientSize() {
 void PlayScene::Initialize() {
     mapState.clear();
     keyStrokes.clear();
-    ticks = 0;
+    ticks = 0;  
     deathCountDown = -1;
     lives = 10;
     money = 150;
@@ -360,7 +360,7 @@ void PlayScene::OnMouseMove(int mx, int my) {
     imgTarget->Position.y = y * BlockSize;
 }
 void PlayScene::OnMouseUp(int button, int mx, int my) {
-
+    
     IScene::OnMouseUp(button, mx, my);
 
     // ────── shovel-mode removal ──────
@@ -402,10 +402,16 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
         if (mapState[y][x] != TILE_OCCUPIED) {
             if (!preview)
                 return;
-
-            // Purchase first
+            // Check if valid.
+            if (!CheckSpaceValid(x, y)) {
+                Engine::Sprite *sprite;
+                GroundEffectGroup->AddNewObject(sprite = new DirtyEffect("play/target-invalid.png", 1, x * BlockSize + BlockSize / 2, y * BlockSize + BlockSize / 2));
+                sprite->Rotation = 0;
+                return;
+            }
+            // Purchase.
             EarnMoney(-preview->GetPrice());
-
+            
             // Remove Preview from UI
             preview->GetObjectIterator()->first = false;
             UIGroup->RemoveObject(preview->GetObjectIterator());
@@ -425,81 +431,35 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
                 while (rand_x == 0); // Ensure offset is not 0
                 do rand_y = dist(gen);
                 while (rand_y == 0); // Ensure offset is not 0
-
+                
                 int new_x = x + rand_x;
                 int new_y = y + rand_y;
-
+                
                 new_x = std::max(0, std::min(MapWidth - 1, new_x));
                 new_y = std::max(0, std::min(MapHeight - 1, new_y));
 
-                // Check if the new position is valid WITHOUT marking the original position
-                auto originalState = mapState[y][x]; // Save original state
-
-                // Check if new position is valid
-                if (mapState[new_y][new_x] != TILE_OCCUPIED) {
-                    // Temporarily mark new position as occupied
-                    mapState[new_y][new_x] = TILE_OCCUPIED;
-
-                    // Calculate BFS
-                    std::vector<std::vector<int>> tempMap = CalculateBFSDistance();
-
-                    // Check if path is still valid
-                    bool pathValid = true;
-
-                    // Check if start point is reachable
-                    if (tempMap[0][0] == -1) {
-                        pathValid = false;
-                    }
-
-                    // Check if all enemies have a path
-                    if (pathValid) {
-                        for (auto &it : EnemyGroup->GetObjects()) {
-                            Engine::Point pnt;
-                            pnt.x = floor(it->Position.x / BlockSize);
-                            pnt.y = floor(it->Position.y / BlockSize);
-                            if (pnt.x < 0) pnt.x = 0;
-                            if (pnt.x >= MapWidth) pnt.x = MapWidth - 1;
-                            if (pnt.y < 0) pnt.y = 0;
-                            if (pnt.y >= MapHeight) pnt.y = MapHeight - 1;
-                            if (tempMap[pnt.y][pnt.x] == -1) {
-                                pathValid = false;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Restore new position state
-                    mapState[new_y][new_x] = TILE_FLOOR;
-
-                    if (pathValid) {
-                        finalX = new_x;
-                        finalY = new_y;
-                    }
+                if (CheckSpaceValid(new_x, new_y)) {
+                    preview->Position.x = new_x * BlockSize + BlockSize / 2;
+                    preview->Position.y = new_y * BlockSize + BlockSize / 2;
+                }
+                else {
+                    preview->Position.x = x * BlockSize + BlockSize / 2;
+                    preview->Position.y = y * BlockSize + BlockSize / 2;
                 }
             }
-
-            // Now check if the final position is valid and place the tower
-            if (CheckSpaceValid(finalX, finalY)) {
-                preview->Position.x = finalX * BlockSize + BlockSize / 2;
-                preview->Position.y = finalY * BlockSize + BlockSize / 2;
-                preview->Enabled = true;
-                preview->Preview = false;
-                preview->Tint = al_map_rgba(255, 255, 255, 255);
-                TowerGroup->AddNewObject(preview);
-                preview->Update(0);
-
-                // Mark as occupied
-                mapState[finalY][finalX] = TILE_OCCUPIED;
-            } else {
-                // Refund if placement failed
-                EarnMoney(preview->GetPrice());
-                Engine::Sprite *sprite;
-                GroundEffectGroup->AddNewObject(sprite = new DirtyEffect("play/target-invalid.png", 1, finalX * BlockSize + BlockSize / 2, finalY * BlockSize + BlockSize / 2));
-                sprite->Rotation = 0;
+            else {
+                preview->Position.x = x * BlockSize + BlockSize / 2;
+                preview->Position.y = y * BlockSize + BlockSize / 2;
             }
-
-            // Remove Preview
+            preview->Enabled = true;
+            preview->Preview = false;
+            preview->Tint = al_map_rgba(255, 255, 255, 255);
+            TowerGroup->AddNewObject(preview);
+            preview->Update(0);
+            // Remove Preview.
             preview = nullptr;
+
+            mapState[y][x] = TILE_OCCUPIED;
             OnMouseMove(mx, my);
         }
     }
@@ -568,7 +528,7 @@ void PlayScene::Hit() {
         {
             Engine::GameEngine::GetInstance().ChangeScene("lose");
         }
-
+        
     }
 }
 int PlayScene::GetMoney() const {
