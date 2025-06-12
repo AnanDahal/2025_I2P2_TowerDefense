@@ -103,6 +103,12 @@ add_executable(2025_I2P2_TowerDefense
         Turret/SniperTurret.h
         Turret/SlowTurret.cpp
         Turret/SlowTurret.h
+        Turret/FarmTurret.cpp
+        Turret/FarmTurret.h
+        Turret/TankKillerTurret.cpp
+        Turret/TankKillerTurret.h
+        Turret/BossKillerTurret.cpp
+        Turret/BossKillerTurret.h
     Turret/Turret.cpp
     Turret/Turret.hpp
     Turret/TurretButton.cpp

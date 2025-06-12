@@ -34,6 +34,7 @@
 #include "Turret/HealingTurret.hpp"
 #include "Turret/SniperTurret.h"
 #include "Turret/BuffTurret.h"
+#include "Turret/FarmTurret.h"
 #include "Turret/MissileTurret.h"
 #include "Turret/SlowTurret.h"
 #include "Turret/TankKillerTurret.h"
@@ -69,6 +70,7 @@ bool SlowTurret::isLocked = true;
 bool SniperTurret::isLocked = true;
 bool TankKillerTurret::isLocked = true;
 bool BossKillerTurret::isLocked = true;
+bool FarmTurret::isLocked = true;
 
 Engine::Point PlayScene::GetClientSize() {
     return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);
@@ -137,6 +139,12 @@ void PlayScene::Terminate() {
 
 void PlayScene::Update(float deltaTime) {
     // --- Round transition effect ---
+    if (bombCooldown > 0) {
+        bombCooldown -= deltaTime;
+    }
+    if (moneyRainCooldown > 0) {
+        moneyRainCooldown -= deltaTime;
+    }
     if (roundTransitionState != NONE) {
         // Only update effects, not enemies!
         EffectGroup->Update(deltaTime);
@@ -266,27 +274,9 @@ void PlayScene::Update(float deltaTime) {
                 EnemyGroup->AddNewObject(enemy = new MissEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
                 break;
             case 7:
-                EnemyGroup->AddNewObject(enemy = new SoldierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 8:
-                EnemyGroup->AddNewObject(enemy = new ArmyEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 9:
-                EnemyGroup->AddNewObject(enemy = new TankEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 10:
-                EnemyGroup->AddNewObject(enemy = new CarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 11:
-                EnemyGroup->AddNewObject(enemy = new BiggerCarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 12:
-                EnemyGroup->AddNewObject(enemy = new MissEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 13:
                 EnemyGroup->AddNewObject(enemy = new MiniBossEnemy(SpawnCoordinate.x, SpawnCoordinate.y, 2));
                 break;
-            case 14:
+            case 8:
                 EnemyGroup->AddNewObject(enemy = new BossEnemy(SpawnCoordinate.x, SpawnCoordinate.y, 6));
                 break;
 
@@ -634,6 +624,12 @@ void PlayScene::ConstructUI() {
 
     //SUPPORT TOWERS
     btn = new TurretButton("play/floor.png", "play/dirt.png",
+                       Engine::Sprite("play/tower-base.png", 1294, 136 + 120, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-3.png", 1294, 136 - 8 + 120, 0, 0, 0, 0), 1294, 136 + 120, FarmTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 9)); // farm turret
+    UIGroup->AddNewControlObject(btn);
+
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
                        Engine::Sprite("play/tower-base.png", 1370 + 76, 136 + 120, 0, 0, 0, 0),
                        Engine::Sprite("play/turret-3.png", 1370 + 76, 136 - 8 + 120, 0, 0, 0, 0), 1370 + 76, 136 + 120, HealingTurret::Price);
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 2)); // Healing turret
@@ -666,15 +662,44 @@ void PlayScene::ConstructUI() {
 
     btn = new TurretButton("play/floor.png", "play/dirt.png",
                        Engine::Sprite("play/tower-base.png", 1294, 136 + 240, 0, 0, 0, 0),
-                       Engine::Sprite("play/turret-5.png", 1294, 136 - 8 + 240, 0, 0, 0, 0), 1294, 136 + 240, TankKillerTurret::Price);
-    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 8)); // TankKiller turret
+                       Engine::Sprite("play/turret-5.png", 1294, 136 - 8 + 240, 0, 0, 0, 0), 1294, 136 + 240, BossKillerTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 8)); // BossKiller turret
     UIGroup->AddNewControlObject(btn);
 
-    if (MapId == 7) {
+    int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
+    int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
+    int halfW = w / 2;
+    int halfH = h / 2;
+
+    Engine::ImageButton *btnn; //CHANGE PNGS
+    if (whichPower == 1) {
+        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 11));
+        AddNewControlObject(btnn);
+    }
+    else if (whichPower == 2) {
+        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 12));
+        AddNewControlObject(btnn);
+    }
+    else if (whichPower == 3) {
+        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 13));
+        AddNewControlObject(btnn);
+    }
+    else if (whichPower == 4) {
+        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 14));
+        AddNewControlObject(btnn);
+    }
+
+
+
+
+    if (MapId == 2) {
         roundLabel = new Engine::Label("Round: " + std::to_string(endlessRound), "pirulen.ttf", 32, 1050, 50);
         UIGroup->AddNewObject(roundLabel);
     }
-
 
     {
         const int SHOVEL_ID = -1;
@@ -703,8 +728,6 @@ void PlayScene::ConstructUI() {
         AddNewControlObject(btnn);
     }
 
-    int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
-    int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int shift = 135 + 25;
     dangerIndicator = new Engine::Sprite("play/benjamin.png", w - shift, h - shift);
     dangerIndicator->Tint.a = 0;
@@ -758,6 +781,20 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new TankKillerTurret(0, 0);
     else if (id == 8 && money >= BossKillerTurret::Price && !BossKillerTurret::isLocked)
         preview = new BossKillerTurret(0, 0);
+    else if (id == 9 && money >= FarmTurret::Price && !FarmTurret::isLocked)
+        preview = new FarmTurret(0, 0);
+    else if (id == 11) {
+        if (bombCooldown <= 0) {
+            UIGroup->AddNewObject(new Plane());
+            bombCooldown = bombCooldownTime;
+        }
+    }
+    else if (id == 12) {
+        if (moneyRainCooldown <= 0) {
+            EarnMoney(1000);
+            moneyRainCooldown = moneyRainCooldownTime;
+        }
+    }
     else if (id == 20) {
         if (MapId == 7) Engine::GameEngine::GetInstance().ChangeScene("stage-select");
         else Engine::GameEngine::GetInstance().ChangeScene("campaign");
