@@ -31,6 +31,7 @@
 #include "Turret/HealingTurret.hpp"
 #include "Turret/SniperTurret.h"
 #include "Turret/BuffTurret.h"
+#include "Turret/MissileTurret.h"
 #include "Turret/SlowTurret.h"
 #include "Turret/TurretButton.hpp"
 #include "UI/Animation/DirtyEffect.hpp"
@@ -177,7 +178,7 @@ void PlayScene::Update(float deltaTime) {
             if (UIGroup) {
                 UIGroup->RemoveObject(chatBox->GetObjectIterator());
             }
-            
+
             chatBox->Terminate();
             chatBox.reset();
         }
@@ -590,6 +591,12 @@ void PlayScene::ConstructUI() {
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 2)); // Healing turret
     UIGroup->AddNewControlObject(btn);
 
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                       Engine::Sprite("play/tower-base.png", 1370 + 152, 136, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-4.png", 1370 + 152, 136 - 8, 0, 0, 0, 0), 1370 + 152, 136, MissileTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 3)); // Missile turret (aoe)
+    UIGroup->AddNewControlObject(btn);
+
     if (MapId == 2) {
         roundLabel = new Engine::Label("Round: " + std::to_string(endlessRound), "pirulen.ttf", 32, 1050, 50);
         UIGroup->AddNewObject(roundLabel);
@@ -669,6 +676,8 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new LaserTurret(0, 0);
     else if (id == 2 && money >= HealingTurret::Price)
         preview = new HealingTurret(0, 0);
+    else if (id == 3 && money >= MissileTurret::Price)
+        preview = new MissileTurret(0, 0);
     else if (id == 20) {
         Engine::GameEngine::GetInstance().ChangeScene("stage-select");
     }

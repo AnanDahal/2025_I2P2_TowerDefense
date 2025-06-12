@@ -84,6 +84,7 @@ void LeaderBoardScene::ClearScoreObjects() {
 void LeaderBoardScene::DisplayCurrentPage() {
     ClearScoreObjects();
 
+    al_clear_to_color(al_map_rgb(0, 0, 0));
     auto& eng = Engine::GameEngine::GetInstance();
     int w = eng.GetScreenSize().x, h = eng.GetScreenSize().y;
     int halfW = w/2;
