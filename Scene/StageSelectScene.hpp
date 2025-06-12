@@ -28,7 +28,7 @@ public:
     void BackOnClick(int stage);
     void StoryOnClick(int stage);
     void PowersOnClick(int stage);
-
+    void ShopOnClick(int stage);
     void BGMSlideOnValueChanged(float value);
     void SFXSlideOnValueChanged(float value);
 };

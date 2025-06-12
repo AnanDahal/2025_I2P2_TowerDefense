@@ -14,6 +14,7 @@
 extern int OnStage;
 extern int core_memories;
 extern int endless_score;
+extern int whichPower;
 
 enum RoundTransitionState {
     NONE,
@@ -54,6 +55,9 @@ protected:
     float roundTransitionTimer = 0.0f;
     int nextRoundNumber = 0;
 
+    // for random end pts
+
+
 public:
     static bool DebugMode;
     static const std::vector<Engine::Point> directions;
@@ -61,7 +65,7 @@ public:
     static const int BlockSize;
     static const float DangerTime;
     static const Engine::Point SpawnGridPoint;
-    static const Engine::Point EndGridPoint;
+    static Engine::Point EndGridPoint;
     static const std::vector<int> code;
     int MapId;
     float ticks;
@@ -112,6 +116,10 @@ public:
     Engine::Sprite* shovelPreview = nullptr;
     bool Shoveling = false;
     Engine::Label* roundLabel = nullptr;
+
+    std::vector<Engine::Point> entryPoints; // List of entry points (grid coordinates)
+    Engine::Point endPoint;                 // End point (grid coordinate)
+    Engine::Point spawnPoint;
 
     std::map<std::pair<int, int>, std::pair<int, int>> parent; // For reconstructing the path
     // void ModifyReadMapTiles();
