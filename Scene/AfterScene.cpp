@@ -40,9 +40,10 @@ void AfterScene::Initialize() {
     // Add dialogues based on story ID
     switch (storyid) {
         case 1:
-            AddDialogue("Player", "We did it! Stage 1 complete!");
-            AddDialogue("Ally", "Great job defeating the enemies.");
-            AddDialogue("Player", "Let's move on to the next challenge.");
+            AddDialogue("Hua", "Ughhhh...");
+            AddDialogue("Hua", "What the heck was that dream?");
+            AddDialogue("Hua", "Why'd it feel so...");
+            AddDialogue("Hua", "...real?");
             SetCharacterImage("play/benjamin.png", 300, 400, halfW, halfH);
             break;
             

@@ -46,11 +46,23 @@ void BeforeScene::Initialize() {
 
     // Add dialogues based on story ID
     if (storyid == 1) {
-        AddDialogue("Player", "Hello there.");
-        AddDialogue("Enemy", "You shall not pass.");
-        AddDialogue("Player", "Watch me.");
-        
+        AddDialogue("Narrator", "Once upon a time, there was a panda named Hua and a fox named Tong Tong who shared a living space.");
+        AddDialogue("Hua", "Yo dude, got the berries you asked for right here.");
+        AddDialogue("Tong Tong", "Thanks bro! Love me some berries.");
+        AddDialogue("Tong Tong", "By the way, are you feeling alright?");
+        AddDialogue("Hua", "What do you mean?");
+        AddDialogue("Tong Tong", "Idrk bro your injury yesterday looked pretty serious.");
+        AddDialogue("Hua", "I just had a small accident and bumped my head a little.");
+        AddDialogue("Hua", "Should be chill bro, don't worry.");
+        AddDialogue("Tong Tong", "Alright bro, time to sleep. Goodnight.");
+        AddDialogue("Hua", "Alright Tong Tong, goodnight. Tong tong tong tong sahurrrr!");
+        AddDialogue("Tong Tong", "Hua Hua Hua Hua! Goodnight bro stay safe.");
+
         // Set character image for story 1
+        SetCharacterImage("play/benjamin.png", 300, 400, halfW, halfH);
+    }
+    else if (storyid == 2) {
+        AddDialogue("Narrator", "After work...");
         SetCharacterImage("play/benjamin.png", 300, 400, halfW, halfH);
     }
     else if (storyid == 3) {
