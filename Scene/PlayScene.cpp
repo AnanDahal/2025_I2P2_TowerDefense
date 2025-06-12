@@ -7,6 +7,7 @@
 #include <queue>
 #include <string>
 #include <vector>
+#include <random>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_ttf.h>
 
@@ -421,9 +422,37 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
             // Remove Preview.
             preview->GetObjectIterator()->first = false;
             UIGroup->RemoveObject(preview->GetObjectIterator());
-            // Construct real turret.
-            preview->Position.x = x * BlockSize + BlockSize / 2;
-            preview->Position.y = y * BlockSize + BlockSize / 2;
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<int> dist(-2, 2);
+
+            //trying random
+            if (MapId == 3 || MapId == 4 || MapId == 5) {
+                int rand_x, rand_y;
+                do rand_x = dist(gen);
+                while (rand_x == 0); // Ensure offset is not 0
+                do rand_y = dist(gen);
+                while (rand_y == 0); // Ensure offset is not 0
+
+                int new_x = x + rand_x;
+                int new_y = y + rand_y;
+
+                new_x = std::max(0, std::min(MapWidth - 1, new_x));
+                new_y = std::max(0, std::min(MapHeight - 1, new_y));
+
+                if (CheckSpaceValid(new_x, new_y)) {
+                    preview->Position.x = new_x * BlockSize + BlockSize / 2;
+                    preview->Position.y = new_y * BlockSize + BlockSize / 2;
+                }
+                else {
+                    preview->Position.x = x * BlockSize + BlockSize / 2;
+                    preview->Position.y = y * BlockSize + BlockSize / 2;
+                }
+            }
+            else {
+                preview->Position.x = x * BlockSize + BlockSize / 2;
+                preview->Position.y = y * BlockSize + BlockSize / 2;
+            }
             preview->Enabled = true;
             preview->Preview = false;
             preview->Tint = al_map_rgba(255, 255, 255, 255);
