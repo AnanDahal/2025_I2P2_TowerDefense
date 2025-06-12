@@ -57,61 +57,33 @@ void Enemy::UpdatePath(const std::vector<std::vector<int>> &mapDistance) {
     int x = static_cast<int>(floor(Position.x / PlayScene::BlockSize));
     int y = static_cast<int>(floor(Position.y / PlayScene::BlockSize));
 
-    printf("Enemy UpdatePath at (%d, %d)\n", x, y);
+    // If outside the map, move to the nearest valid tile inside the map
+    int startX = x, startY = y;
+    if (x < 0) startX = 0;
+    if (x >= PlayScene::MapWidth) startX = PlayScene::MapWidth - 1;
+    if (y < 0) startY = 0;
+    if (y >= PlayScene::MapHeight) startY = PlayScene::MapHeight - 1;
 
-    // Special case: spawn at (-1, 0)
-    if (x == -1 && y == 0) {
-        Engine::Point pos(0, 0);
-        int num = mapDistance[0][0];
-        if (num == -1) {
-            num = 0;
-            Engine::LOG(Engine::ERROR) << "Enemy path finding error";
-        }
-        path = std::vector<Engine::Point>(num + 2);
-        path[num + 1] = pos;
-        int cx = 0, cy = 0;
-        while (num != 0) {
-            std::vector<Engine::Point> nextHops;
-            for (auto &dir : PlayScene::directions) {
-                int nx = cx + dir.x;
-                int ny = cy + dir.y;
-                if (nx < 0 || nx >= PlayScene::MapWidth || ny < 0 || ny >= PlayScene::MapHeight || mapDistance[ny][nx] != num - 1)
-                    continue;
-                nextHops.emplace_back(nx, ny);
-            }
-            std::random_device dev;
-            std::mt19937 rng(dev());
-            std::uniform_int_distribution<std::mt19937::result_type> dist(0, nextHops.size() - 1);
-            Engine::Point next = nextHops[dist(rng)];
-            path[num] = next;
-            cx = next.x;
-            cy = next.y;
-            num--;
-        }
-        path[0] = PlayScene::EndGridPoint;
+    // Only proceed if the starting tile is a path tile
+    if (mapDistance[startY][startX] == -1) {
+        Engine::LOG(Engine::ERROR) << "Enemy path finding error";
+        path.clear();
         return;
     }
 
-    // Normal case (already on the map)
-    if (x < 0) x = 0;
-    if (x >= PlayScene::MapWidth) x = PlayScene::MapWidth - 1;
-    if (y < 0) y = 0;
-    if (y >= PlayScene::MapHeight) y = PlayScene::MapHeight - 1;
-    Engine::Point pos(x, y);
-    int num = mapDistance[y][x];
-    if (num == -1) {
-        num = 0;
-        Engine::LOG(Engine::ERROR) << "Enemy path finding error";
-    }
+    int num = mapDistance[startY][startX];
     path = std::vector<Engine::Point>(num + 1);
+    Engine::Point pos(startX, startY);
     while (num != 0) {
         std::vector<Engine::Point> nextHops;
         for (auto &dir : PlayScene::directions) {
-            int x = pos.x + dir.x;
-            int y = pos.y + dir.y;
-            if (x < 0 || x >= PlayScene::MapWidth || y < 0 || y >= PlayScene::MapHeight || mapDistance[y][x] != num - 1)
+            int nx = pos.x + dir.x;
+            int ny = pos.y + dir.y;
+            if (nx < 0 || nx >= PlayScene::MapWidth || ny < 0 || ny >= PlayScene::MapHeight)
                 continue;
-            nextHops.emplace_back(x, y);
+            if (mapDistance[ny][nx] != num - 1)
+                continue;
+            nextHops.emplace_back(nx, ny);
         }
         std::random_device dev;
         std::mt19937 rng(dev());
@@ -122,6 +94,8 @@ void Enemy::UpdatePath(const std::vector<std::vector<int>> &mapDistance) {
     }
     path[0] = PlayScene::EndGridPoint;
 }
+
+
 void Enemy::Update(float deltaTime) {
     if (_invisible) {
         _invisibleTime += deltaTime;

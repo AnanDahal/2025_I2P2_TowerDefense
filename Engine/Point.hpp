@@ -57,6 +57,11 @@ namespace Engine {
             y += other.y;
             return *this;
         }
+
+        bool operator<(const Point& rhs) const {
+            return (x < rhs.x) || (x == rhs.x && y < rhs.y);
+        }
+        
         /// <summary>
         /// Make point act like vector and get the normalized vector.
         /// </summary>
