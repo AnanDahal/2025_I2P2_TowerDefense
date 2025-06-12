@@ -103,6 +103,13 @@ void PlayScene::Initialize() {
     endlessRound = 0;
 
     if (endlessMode) {
+        HealingTurret::isLocked = false;
+        BuffTurret::isLocked = false;
+        SlowTurret::isLocked = false;
+        SniperTurret::isLocked = false;
+        TankKillerTurret::isLocked = false;
+        BossKillerTurret::isLocked = false;
+        FarmTurret::isLocked = false;
         endlessRound = 1;
         GenerateRandomMap(endlessRound);
         GenerateEnemyWave(endlessRound);
@@ -111,6 +118,20 @@ void PlayScene::Initialize() {
         ReadEnemyWave();
     }
 
+    if (MapId >= 3) {
+        HealingTurret::isLocked = false;
+        BuffTurret::isLocked = false;
+        SlowTurret::isLocked = false;
+    }
+    else if (MapId >= 4) {
+        SniperTurret::isLocked = false;
+        TankKillerTurret::isLocked = false;
+        BossKillerTurret::isLocked = false;
+    }
+
+    if (MapId == 3 || MapId == 4) {
+        FarmTurret::isLocked = false;
+    }
     mapDistance = CalculateBFSDistance();
     ConstructUI();
 
@@ -523,7 +544,9 @@ void PlayScene::Hit() {
         {
             // If in endless mode, reset the round and money.
             endlessMode = false;
-            endless_score = endlessRound;
+            if (endlessRound > endless_score) {
+                endless_score = endlessRound;
+            }
             endlessRound = 1;
             EarnMoney(-money);
             money = 0;
