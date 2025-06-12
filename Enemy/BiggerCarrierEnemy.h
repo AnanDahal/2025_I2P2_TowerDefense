@@ -6,7 +6,7 @@
 #define BIGGERCARRIERENEMY_H
 class BiggerCarrierEnemy : public Enemy {
 public:
-    BiggerCarrierEnemy(int x, int y, bool fast);
+    BiggerCarrierEnemy(int x, int y);
 protected:
     void OnExplode() override;
 };

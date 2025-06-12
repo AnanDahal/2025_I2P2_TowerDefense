@@ -27,7 +27,7 @@ private:
 
 public:
     // 1) default, uses a hard-coded sprite
-    explicit MissEnemy(int x, int y, bool fast);
+    explicit MissEnemy(int x, int y);
     // 2) full, lets you pass any sprite
     MissEnemy(int x, int y, const std::string &bulletSprite);
 
