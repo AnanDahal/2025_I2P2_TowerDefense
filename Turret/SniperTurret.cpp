@@ -9,6 +9,7 @@
 #include "SniperTurret.h"
 #include "Scene/PlayScene.hpp"
 #include "Enemy/Enemy.hpp"
+#include "Scene/PasswordScene.h"
 
 const int SniperTurret::Price = 75;
 
@@ -18,6 +19,12 @@ SniperTurret::SniperTurret(float x, float y)
     Anchor.y += 8.0f / GetBitmapHeight();
     rotateRadian = 4 * ALLEGRO_PI;
     missThreshold = 0;
+    if (OnStage >= 4) {
+        isLocked = false;
+    }
+    else {
+        isLocked = true;
+    }
 }
 
 void SniperTurret::CreateBullet() {

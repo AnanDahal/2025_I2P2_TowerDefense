@@ -9,6 +9,10 @@
 #include <memory>
 
 #include "Engine/IScene.hpp"
+extern int OnStage;
+extern int core_memories;
+extern int endless_score;
+
 class StartScene final : public Engine::IScene {
     int fadeticks;
     int timer;

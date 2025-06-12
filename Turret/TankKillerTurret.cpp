@@ -2,41 +2,40 @@
 #include <cmath>
 #include <string>
 
-#include "Bullet/SlowBullet.h"
+#include "Bullet/TankKillerBullet.h"
 #include "Engine/AudioHelper.hpp"
 #include "Engine/Group.hpp"
 #include "Engine/Point.hpp"
-#include "SlowTurret.h" //
+#include "TankKillerTurret.h" //
 
 #include "Scene/PasswordScene.h"
 #include "Scene/PlayScene.hpp"
 
-const int SlowTurret::Price = 100;
-SlowTurret::SlowTurret(float x, float y) : Turret("play/tower-base.png", "play/turret-6.png", x, y, 300, Price, 1, 100) {
+const int TankKillerTurret::Price = 250;
+TankKillerTurret::TankKillerTurret(float x, float y) : Turret("play/tower-base.png", "play/turret-6.png", x, y, 300, Price, 1, 200) {
     // Move center downward, since we the turret head is slightly biased upward.
     Anchor.y += 8.0f / GetBitmapHeight();
     missThreshold = 0;
-    if (OnStage >= 3) {
+    if (OnStage >= 4) {
         isLocked = false;
     }
     else {
         isLocked = true;
     }
 }
-void SlowTurret::CreateBullet() {
+void TankKillerTurret::CreateBullet() {
     Engine::Point diff = Engine::Point(cos(Rotation - ALLEGRO_PI / 2), sin(Rotation - ALLEGRO_PI / 2));
     float rotation = atan2(diff.y, diff.x);
     Engine::Point normalized = diff.Normalize();
     Engine::Point normal = Engine::Point(-normalized.y, normalized.x);
     // Change bullet position to the front of the gun barrel.
-    getPlayScene()->BulletGroup->AddNewObject(new SlowBullet(Position + normalized * 36 - normal * 6, diff, rotation, this, buffed, missing));
-    getPlayScene()->BulletGroup->AddNewObject(new SlowBullet(Position + normalized * 36 + normal * 6, diff, rotation, this, buffed, missing));
+    getPlayScene()->BulletGroup->AddNewObject(new TankKillerBullet(Position + normalized * 36 - normal * 6, diff, rotation, this, buffed, missing));
+    getPlayScene()->BulletGroup->AddNewObject(new TankKillerBullet(Position + normalized * 36 + normal * 6, diff, rotation, this, buffed, missing));
     missThreshold++;
     if (missThreshold == 2) {
         missing = false;
     }
-    AudioHelper::PlayAudio("laser.wav"); //change sound
-}
-//
-// Created by user on 5/16/2025.
+    AudioHelper::PlayAudio("op.wav"); //change sound
+}//
+// Created by user on 6/12/2025.
 //

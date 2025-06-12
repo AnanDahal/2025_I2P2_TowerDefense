@@ -15,10 +15,15 @@
 #include "PlayScene.hpp"
 #include "Scene/StartScene.hpp"
 #include <allegro5/allegro_primitives.h>
+
+#include "PasswordScene.h"
 #include "UI/Component/ImageButton.hpp"
 #include "UI/Component/Label.hpp"
 #include "UI/Component/Slider.hpp"
 
+int OnStage = 0;
+int core_memories = 0;
+int endless_score = 0;
 // TODO HACKATHON-2 (1/3): You can imitate the 2 files: 'StartScene.hpp', 'StartScene.cpp' to implement your SettingsScene.
 void StartScene::Initialize() {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
@@ -42,7 +47,6 @@ void StartScene::Initialize() {
     AddNewObject(new Engine::Label("Settings", "pirulen.ttf", 48, 450, halfH + 170, 0, 0, 0, 255, 0.5, 0.5));
     cricketInstance = AudioHelper::PlaySample("cricket.wav", true, AudioHelper::BGMVolume);
     sneakInstance = AudioHelper::PlaySample("sneak.wav", true, AudioHelper::BGMVolume);
-
 }
 void StartScene::Draw() const {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;

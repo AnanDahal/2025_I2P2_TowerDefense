@@ -13,6 +13,7 @@
 #include "Scene/OpeningScene.h"
 #include "Scene/LogInScene.h"
 #include "Scene/PasswordScene.h"
+#include "Scene/PowersScene.h"
 
 int main(int argc, char **argv) {
 	Engine::LOG::SetConfig(true);
@@ -29,6 +30,7 @@ int main(int argc, char **argv) {
 	game.AddNewScene("scoreboard-scene", new LeaderBoardScene());
 	game.AddNewScene("log-in", new LogInScene());
 	game.AddNewScene("password", new PasswordScene());
+	game.AddNewScene("powers", new PowersScene());
     // TODO HACKATHON-1 (1/1): Change the start scene
 	// lol
 	game.Start("opening", 60, 1600, 832);

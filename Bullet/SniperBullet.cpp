@@ -18,7 +18,7 @@ void SniperBullet::OnExplode(Enemy *enemy) {
     std::mt19937 rng(dev());
     std::uniform_int_distribution<std::mt19937::result_type> dist(2, 5);
     getPlayScene()->GroundEffectGroup->AddNewObject(new DirtyEffect("play/dirty-1.png", dist(rng), enemy->Position.x, enemy->Position.y));
-    if (enemy->type == 1) enemy->Hit(damage, false); //double damage
+    if (enemy->type == 4) enemy->Hit(damage, false); //double damage to bosses
 }
 float SniperBullet::getSpeed() {
     return 1000;

@@ -52,6 +52,11 @@ void StageSelectScene::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW + 300, halfH / 2 + 375, 0, 0, 0, 255, 0.5, 0.5));
 
+    btn = new Engine::ImageButton("stage-select/powers.png", "stage-select/powers.png", -50, halfH / 2 - 200, 400, 400);
+    btn->SetOnClickCallback(std::bind(&StageSelectScene::PowersOnClick, this, 2));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label("Powers", "pirulen.ttf", 48, 150, halfH / 2 + 200, 0, 0, 0, 255, 0.5, 0.5));
+
     snoreInstance = AudioHelper::PlaySample("snore.wav", true, AudioHelper::BGMVolume);
     violetInstance = AudioHelper::PlaySample("violet.wav", true, AudioHelper::BGMVolume);
 }
@@ -106,6 +111,9 @@ void StageSelectScene::Update(float deltaTime) {
             else if (changeto == 3) {
                 Engine::GameEngine::GetInstance().ChangeScene("scoreboard-scene");
             }
+            else if (changeto == 4) {
+                Engine::GameEngine::GetInstance().ChangeScene("powers");
+            }
         }
     }
 }
@@ -115,6 +123,11 @@ void StageSelectScene::BackOnClick(int stage) {
 }
 void StageSelectScene::PlayOnClick(int stage) {
     changeto = 2; stagenum = stage;
+    fadeout = true;
+}
+
+void StageSelectScene::PowersOnClick(int stage) {
+    changeto = 4;
     fadeout = true;
 }
 void StageSelectScene::ScoreboardOnClick(int stage) {

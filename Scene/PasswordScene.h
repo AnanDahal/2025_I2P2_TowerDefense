@@ -4,6 +4,14 @@
 
 #ifndef PASSWORDSCENE_H
 #define PASSWORDSCENE_H
+#include <memory>                          // For shared_ptr
+#include <allegro5/allegro_audio.h>        // For ALLEGRO_SAMPLE_INSTANCE
+#include <string>                          // For std::string
+#include "Engine/IScene.hpp"               // Include your IScene base class
+#include "UI/Component/Label.hpp"          // Include the Label class
+extern int OnStage;
+extern int core_memories;
+extern int endless_score;
 
 class PasswordScene final : public Engine::IScene {
 private:
@@ -26,7 +34,5 @@ public:
     //void SetPlayerName(std::string name);
 
 };
-static int OnStage;
-static int core_memories;
-static int endless_score;
+
 #endif //PASSWORDSCENE_H

@@ -4,10 +4,10 @@
 #include "Scene/PlayScene.hpp"
 #include "Bullet/HealingBullet.hpp"
 #include "Engine/AudioHelper.hpp"
+#include "Scene/PasswordScene.h"
 
 // 1) Define the static Price exactly like the others:
 const int HealingTurret::Price = 200;
-
 // 2) Define the ctor, forwarding to Turret’s base-ctor in the same style:
 HealingTurret::HealingTurret(float x, float y)
     : Turret(
@@ -22,6 +22,12 @@ HealingTurret::HealingTurret(float x, float y)
 {
     // keep the same “center adjustment” pattern your other turrets use
     Anchor.y += 8.0f / GetBitmapHeight();
+    if (OnStage >= 3) {
+        isLocked = false;
+    }
+    else {
+        isLocked = true;
+    }
 }
 
 void HealingTurret::Update(float deltaTime) {
