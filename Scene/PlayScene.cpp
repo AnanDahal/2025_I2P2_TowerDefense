@@ -451,15 +451,29 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
                 preview->Position.x = x * BlockSize + BlockSize / 2;
                 preview->Position.y = y * BlockSize + BlockSize / 2;
             }
-            preview->Enabled = true;
-            preview->Preview = false;
-            preview->Tint = al_map_rgba(255, 255, 255, 255);
-            TowerGroup->AddNewObject(preview);
-            preview->Update(0);
-            // Remove Preview.
-            preview = nullptr;
 
-            mapState[y][x] = TILE_OCCUPIED;
+            // Now check if the final position is valid and place the tower
+            if (CheckSpaceValid(finalX, finalY)) {
+                preview->Position.x = finalX * BlockSize + BlockSize / 2;
+                preview->Position.y = finalY * BlockSize + BlockSize / 2;
+                preview->Enabled = true;
+                preview->Preview = false;
+                preview->Tint = al_map_rgba(255, 255, 255, 255);
+                TowerGroup->AddNewObject(preview);
+                preview->Update(0);
+
+                // Mark as occupied
+                mapState[finalY][finalX] = TILE_OCCUPIED;
+            } else {
+                // Refund if placement failed
+                EarnMoney(preview->GetPrice());
+                Engine::Sprite *sprite;
+                GroundEffectGroup->AddNewObject(sprite = new DirtyEffect("play/target-invalid.png", 1, finalX * BlockSize + BlockSize / 2, finalY * BlockSize + BlockSize / 2));
+                sprite->Rotation = 0;
+            }
+
+            // Remove Preview
+            preview = nullptr;
             OnMouseMove(mx, my);
         }
     }
