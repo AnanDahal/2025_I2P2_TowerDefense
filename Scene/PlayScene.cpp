@@ -136,6 +136,21 @@ void PlayScene::Initialize() {
     Engine::Resources::GetInstance().GetBitmap("lose/benjamin-happy.png");
     // Start BGM.
     bgmId = AudioHelper::PlayBGM("sleepy.wav");
+
+    if (OnStage >= 3) {
+        HealingTurret::isLocked = false;
+        BuffTurret::isLocked = false;
+        SlowTurret::isLocked = true;
+    }
+    else if (OnStage >= 4) {
+        SniperTurret::isLocked = false;
+        TankKillerTurret::isLocked = false;
+        BossKillerTurret::isLocked = false;
+    }
+
+    if (OnStage == 3 || OnStage == 4) {
+        FarmTurret::isLocked = false;
+    }
 }
 void PlayScene::Terminate() {
     AudioHelper::StopBGM(bgmId);
@@ -292,7 +307,6 @@ void PlayScene::Update(float deltaTime) {
             case 8:
                 EnemyGroup->AddNewObject(enemy = new BossEnemy(SpawnCoordinate.x, SpawnCoordinate.y, 6));
                 break;
-
             default:
                 continue;
         }
