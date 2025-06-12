@@ -523,6 +523,7 @@ void PlayScene::Hit() {
         {
             // If in endless mode, reset the round and money.
             endlessMode = false;
+            endless_score = endlessRound;
             endlessRound = 1;
             EarnMoney(-money);
             money = 0;
