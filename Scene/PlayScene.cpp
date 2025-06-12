@@ -33,6 +33,7 @@
 #include "Turret/HealingTurret.hpp"
 #include "Turret/SniperTurret.h"
 #include "Turret/BuffTurret.h"
+#include "Turret/FarmTurret.h"
 #include "Turret/MissileTurret.h"
 #include "Turret/SlowTurret.h"
 #include "Turret/TankKillerTurret.h"
@@ -68,6 +69,7 @@ bool SlowTurret::isLocked = true;
 bool SniperTurret::isLocked = true;
 bool TankKillerTurret::isLocked = true;
 bool BossKillerTurret::isLocked = true;
+bool FarmTurret::isLocked = true;
 
 Engine::Point PlayScene::GetClientSize() {
     return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);
@@ -600,6 +602,7 @@ void PlayScene::ReadEnemyWave() {
     fin.close();
 }
 void PlayScene::ConstructUI() {
+    //PUT AN IF HERE TO UPDATE ISLOCKED
     // Background
     UIGroup->AddNewObject(new Engine::Image("play/sand.png", 1280, 0, 320, 832));
     // Text
@@ -631,6 +634,12 @@ void PlayScene::ConstructUI() {
     // In PlayScene.cpp, add the healing turret button and logic if not already done
 
     //SUPPORT TOWERS
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                       Engine::Sprite("play/tower-base.png", 1294, 136 + 120, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-3.png", 1294, 136 - 8 + 120, 0, 0, 0, 0), 1294, 136 + 120, FarmTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 9)); // farm turret
+    UIGroup->AddNewControlObject(btn);
+
     btn = new TurretButton("play/floor.png", "play/dirt.png",
                        Engine::Sprite("play/tower-base.png", 1370 + 76, 136 + 120, 0, 0, 0, 0),
                        Engine::Sprite("play/turret-3.png", 1370 + 76, 136 - 8 + 120, 0, 0, 0, 0), 1370 + 76, 136 + 120, HealingTurret::Price);
@@ -664,8 +673,8 @@ void PlayScene::ConstructUI() {
 
     btn = new TurretButton("play/floor.png", "play/dirt.png",
                        Engine::Sprite("play/tower-base.png", 1294, 136 + 240, 0, 0, 0, 0),
-                       Engine::Sprite("play/turret-5.png", 1294, 136 - 8 + 240, 0, 0, 0, 0), 1294, 136 + 240, TankKillerTurret::Price);
-    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 8)); // TankKiller turret
+                       Engine::Sprite("play/turret-5.png", 1294, 136 - 8 + 240, 0, 0, 0, 0), 1294, 136 + 240, BossKillerTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 8)); // BossKiller turret
     UIGroup->AddNewControlObject(btn);
 
     if (MapId == 2) {
@@ -756,6 +765,8 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new TankKillerTurret(0, 0);
     else if (id == 8 && money >= BossKillerTurret::Price && !BossKillerTurret::isLocked)
         preview = new BossKillerTurret(0, 0);
+    else if (id == 9 && money >= FarmTurret::Price && !FarmTurret::isLocked)
+        preview = new FarmTurret(0, 0);
     else if (id == 20) {
         Engine::GameEngine::GetInstance().ChangeScene("stage-select");
     }
