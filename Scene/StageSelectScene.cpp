@@ -57,6 +57,11 @@ void StageSelectScene::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Powers", "pirulen.ttf", 48, 150, halfH / 2 + 200, 0, 0, 0, 255, 0.5, 0.5));
 
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW + 500, halfH / 2 + 325, 200, 100);
+    btn->SetOnClickCallback(std::bind(&StageSelectScene::ShopOnClick, this, 5));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label("Shop", "pirulen.ttf", 48, halfW + 600, halfH / 2 + 375, 0, 0, 0, 255, 0.5, 0.5));
+
     snoreInstance = AudioHelper::PlaySample("snore.wav", true, AudioHelper::BGMVolume);
     violetInstance = AudioHelper::PlaySample("violet.wav", true, AudioHelper::BGMVolume);
 }
@@ -114,6 +119,9 @@ void StageSelectScene::Update(float deltaTime) {
             else if (changeto == 4) {
                 Engine::GameEngine::GetInstance().ChangeScene("powers");
             }
+            else if (changeto == 5) {
+                Engine::GameEngine::GetInstance().ChangeScene("shop");
+            }
         }
     }
 }
@@ -132,6 +140,10 @@ void StageSelectScene::PowersOnClick(int stage) {
 }
 void StageSelectScene::ScoreboardOnClick(int stage) {
     changeto = 3;
+    fadeout = true;
+}
+void StageSelectScene::ShopOnClick(int stage) {
+    changeto = 5;
     fadeout = true;
 }
 // void StageSelectScene::BGMSlideOnValueChanged(float value) {
