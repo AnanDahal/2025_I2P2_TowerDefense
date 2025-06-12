@@ -39,6 +39,6 @@ int main(int argc, char **argv) {
 	game.AddNewScene("after", new AfterScene());  // Add the AfterScene
 
 	// Start the game
-	game.Start("stage-select", 60, 1600, 832);
+	game.Start("opening", 60, 1600, 832);
 	return 0;
 }

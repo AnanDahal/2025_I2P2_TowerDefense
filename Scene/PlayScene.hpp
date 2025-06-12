@@ -14,6 +14,7 @@
 extern int OnStage;
 extern int core_memories;
 extern int endless_score;
+extern int whichPower;
 
 enum RoundTransitionState {
     NONE,
@@ -115,5 +116,10 @@ public:
 
     std::map<std::pair<int, int>, std::pair<int, int>> parent; // For reconstructing the path
     // void ModifyReadMapTiles();
+    float bombCooldown = 0.0f;
+    float moneyRainCooldown = 0.0f;
+
+    const float bombCooldownTime = 10.0f;       // 10 seconds
+    const float moneyRainCooldownTime = 15.0f;  // 15 seconds
 };
 #endif   // PLAYSCENE_HPP
