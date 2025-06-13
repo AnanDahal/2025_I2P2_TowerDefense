@@ -1096,90 +1096,121 @@ void PlayScene::GenerateEnemyWave(int round) {
         enemyWaveData.emplace_back(1, wait);
 }
 
+// Auto-placement routine for recommended turrets
 void PlayScene::AutoPlaceTurrets() {
     if (AIPlacedThisRound) return;
     AIPlacedThisRound = true;
 
-    // 1) Analyze upcoming waves
+    // 1) Gather turret picks
     std::map<int,int> freq;
     for (auto &p : enemyWaveData) freq[p.first]++;
-
-    // 2) Map enemy types to turret types
-    auto mapEnemyToTurret = [](int et) {
-        switch (et) {
-            case 1: return 1; // MachineGun
-            case 2: return 2; // Laser
-            case 3: return 3; // Sniper
-            case 4: return 4; // Missile
-            case 5: return 5; // TankKiller
-            case 6: return 6; // Buff
-            case 7: return 7; // Slow
-            case 8: return 8; // BossKiller
-            default: return 1;
-        }
-    };
-
-    // 3) Build picks up to 5 based on frequency
+    auto mapEnemyToTurret = [](int et){ switch(et){case 1:return 1;case 2:return 2;case 3:return 3;case 4:return 4;case 5:return 5;case 6:return 6;case 7:return 7;case 8:return 8;default:return 1;} };
     std::vector<int> picks;
     for (auto &kv : freq) {
         picks.push_back(mapEnemyToTurret(kv.first));
         if (picks.size() >= 5) break;
     }
-    // 4) Pad with all turret types if needed
-    static const int allTurrets[8] = {1,2,3,4,5,6,7,8};
-    int idx = 0;
-    while (picks.size() < 5) {
-        picks.push_back(allTurrets[idx++ % 8]);
-    }
+    static const int allT[8] = {1,2,3,4,5,6,7,8};
+    for (size_t i = picks.size(); i < 5; ++i) picks.push_back(allT[i % 8]);
 
-    // 5) Dynamic placement: one turret per pick
-    for (int type : picks) {
-        int bestX = -1, bestY = -1;
-        int bestDist = INT_MAX;
-        // Scan grid for valid floor tiles
-        for (int y = 0; y < MapHeight; ++y) {
-            for (int x = 0; x < MapWidth; ++x) {
-                if (mapState[y][x] != TILE_FLOOR) continue;
-                if (!CheckSpaceValid(x, y)) continue;
-                // Determine proximity to path
-                int localMin = INT_MAX;
-                for (auto &d : PlayScene::directions) {
-                    int nx = x + d.x, ny = y + d.y;
-                    if (nx < 0 || nx >= MapWidth || ny < 0 || ny >= MapHeight) continue;
-                    int pd = mapDistance[ny][nx];
-                    if (pd >= 0 && pd < localMin) localMin = pd;
-                }
-                if (localMin < bestDist) {
-                    bestDist = localMin;
-                    bestX = x;
-                    bestY = y;
-                }
+    // 2) Compute distance-to-path for floor cells
+    std::vector<std::vector<int>> distToPath(MapHeight, std::vector<int>(MapWidth, -1));
+    std::queue<Engine::Point> q;
+    for (int y = 0; y < MapHeight; ++y) {
+        for (int x = 0; x < MapWidth; ++x) {
+            if (mapState[y][x] == TILE_DIRT) {
+                distToPath[y][x] = 0;
+                q.push(Engine::Point(x, y));
             }
         }
-        // Place turret if found
-        if (bestX != -1) {
-            Turret *t = nullptr;
-            switch (type) {
-                case 1: t = new MachineGunTurret(0,0); break;
-                case 2: t = new LaserTurret(0,0); break;
-                case 3: t = new SniperTurret(0,0); break;
-                case 4: t = new MissileTurret(0,0); break;
-                case 5: t = new TankKillerTurret(0,0); break;
-                case 6: t = new BuffTurret(0,0); break;
-                case 7: t = new SlowTurret(0,0); break;
-                case 8: t = new BossKillerTurret(0,0); break;
-                default: t = new MachineGunTurret(0,0); break;
+    }
+    while (!q.empty()) {
+        auto p = q.front(); q.pop();
+        int cd = distToPath[p.y][p.x];
+        for (auto &d : directions) {
+            int nx = p.x + d.x, ny = p.y + d.y;
+            if (nx >= 0 && nx < MapWidth && ny >= 0 && ny < MapHeight
+                && mapState[ny][nx] == TILE_FLOOR
+                && distToPath[ny][nx] == -1) {
+                distToPath[ny][nx] = cd + 1;
+                q.push(Engine::Point(nx, ny));
             }
-            t->Position.x = bestX * BlockSize + BlockSize/2;
-            t->Position.y = bestY * BlockSize + BlockSize/2;
-            t->Enabled = true;
-            t->Preview = false;
-            TowerGroup->AddNewObject(t);
-            mapState[bestY][bestX] = TILE_OCCUPIED;
-            mapDistance = CalculateBFSDistance();
+        }
+    }
+
+    // 3) Occupancy to avoid adjacent placements
+    std::vector<std::vector<bool>> occupied(MapHeight, std::vector<bool>(MapWidth, false));
+    for (auto obj : TowerGroup->GetObjects()) if (auto *t = dynamic_cast<Turret*>(obj)) {
+        int cx = int(t->Position.x / BlockSize);
+        int cy = int(t->Position.y / BlockSize);
+        if (cx >= 0 && cx < MapWidth && cy >= 0 && cy < MapHeight) {
+            occupied[cy][cx] = true;
+            for (auto &d : directions) {
+                int nx = cx + d.x, ny = cy + d.y;
+                if (nx >= 0 && nx < MapWidth && ny >= 0 && ny < MapHeight)
+                    occupied[ny][nx] = true;
+            }
+        }
+    }
+
+    std::mt19937 rng{std::random_device{}()};
+
+    // 4) Place each turret pick one by one
+    for (int type : picks) {
+        int maxRange = (type == 3 ? 800 : 300) / BlockSize + 1;
+        std::vector<Engine::Point> cands;
+        for (int y = 0; y < MapHeight; ++y) {
+            for (int x = 0; x < MapWidth; ++x) {
+                if (mapState[y][x] != TILE_FLOOR || occupied[y][x]) continue;
+                int d = distToPath[y][x];
+                // require at least 2 cells away instead of 1
+                if (d < 2) continue;
+                if (type == 3) {
+                    // sniper: distance in [2..maxRange]
+                    if (d > maxRange) continue;
+                } else {
+                    // others: exactly 2 cells away
+                    if (d != 2) continue;
+                }
+                if (!CheckSpaceValid(x, y)) continue;
+                cands.emplace_back(x, y);
+            }
+        }
+        if (cands.empty()) continue;
+        std::uniform_int_distribution<int> di(0, cands.size() - 1);
+        auto pt = cands[di(rng)];
+        int bx = pt.x, by = pt.y;
+
+        Turret* t = nullptr;
+        switch (type) {
+            case 1: t = new MachineGunTurret(0,0); break;
+            case 2: t = new LaserTurret(0,0); break;
+            case 3: t = new SniperTurret(0,0); break;
+            case 4: t = new MissileTurret(0,0); break;
+            case 5: t = new TankKillerTurret(0,0); break;
+            case 6: t = new BuffTurret(0,0); break;
+            case 7: t = new SlowTurret(0,0); break;
+            case 8: t = new BossKillerTurret(0,0); break;
+            default: t = new MachineGunTurret(0,0); break;
+        }
+        t->Position.x = bx * BlockSize + BlockSize/2;
+        t->Position.y = by * BlockSize + BlockSize/2;
+        t->Enabled = true;
+        t->Preview = false;
+        TowerGroup->AddNewObject(t);
+        mapState[by][bx] = TILE_OCCUPIED;
+        mapDistance = CalculateBFSDistance();
+
+        // mark adjacency
+        occupied[by][bx] = true;
+        for (auto &d : directions) {
+            int nx = bx + d.x, ny = by + d.y;
+            if (nx >= 0 && nx < MapWidth && ny >= 0 && ny < MapHeight)
+                occupied[ny][nx] = true;
         }
     }
 }
+
 
 void PlayScene::RemoveAllTurrets() {
     // Remove all turrets from the TowerGroup and mark mapState as not occupied
