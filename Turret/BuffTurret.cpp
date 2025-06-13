@@ -42,6 +42,12 @@ void BuffTurret::Update(float deltaTime) {
             // Apply buff
             if (!turret->buffed ) {
                 turret->buffed = true;
+                if (buffUpgrade1) {
+                    turret->coolDown /= 2;
+                }
+                if (buffUpgrade2) {
+                    turret->missing = false;
+                }
                 turret->CollisionRadius *= 2;
             }
         }

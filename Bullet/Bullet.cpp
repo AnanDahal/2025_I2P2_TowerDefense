@@ -17,13 +17,14 @@ PlayScene *Bullet::getPlayScene() {
 }
 void Bullet::OnExplode(Enemy *enemy) {
 }
-Bullet::Bullet(std::string img, float speed, float damage, Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool slow, bool miss) : Sprite(img, position.x, position.y), speed(speed), damage(damage), parent(parent) {
+Bullet::Bullet(std::string img, float speed, float damage, Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool slow, bool miss, bool upgrade) : Sprite(img, position.x, position.y), speed(speed), damage(damage), parent(parent) {
     Velocity = forwardDirection.Normalize() * speed;
     Rotation = rotation;
     CollisionRadius = 4;
     isBuffed = buff;
     isSlow = slow;
     isMiss = miss;
+    isUpgraded = upgrade;
 }
 void Bullet::Update(float deltaTime) {
     Sprite::Update(deltaTime);
@@ -41,7 +42,12 @@ void Bullet::Update(float deltaTime) {
                     enemy->Hit(0, false);
                 }
                 else {
-                    enemy->Hit(2*damage, isSlow);
+                    if (isUpgraded) {
+                        enemy->Hit(4*damage, isSlow);
+                    }
+                    else {
+                        enemy->Hit(2*damage, isSlow);
+                    }
                 }
             }
             else {
@@ -49,7 +55,12 @@ void Bullet::Update(float deltaTime) {
                     enemy->Hit(0, false);
                 }
                 else {
-                    enemy->Hit(damage, isSlow);
+                    if (isUpgraded) {
+                        enemy->Hit(2*damage, isSlow);
+                    }
+                    else {
+                        enemy->Hit(damage, isSlow);
+                    }
                 }
             }
             getPlayScene()->BulletGroup->RemoveObject(objectIterator);

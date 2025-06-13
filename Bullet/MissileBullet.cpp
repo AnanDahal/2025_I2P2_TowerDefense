@@ -12,7 +12,7 @@
 #include "Scene/PlayScene.hpp"
 #include "UI/Animation/DirtyEffect.hpp"
 
-MissileBullet::MissileBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, float aoeRadius,bool buff, bool miss) : AOEBullet("play/bullet-3.png", 600, 3, position, forwardDirection, rotation - ALLEGRO_PI * 3/ 2, parent, aoeRadius, buff, false, miss) {
+MissileBullet::MissileBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, float aoeRadius,bool buff, bool miss, bool upgrade) : AOEBullet("play/bullet-3.png", 600, 3, position, forwardDirection, rotation - ALLEGRO_PI * 3/ 2, parent, aoeRadius, buff, false, miss, upgrade) {
 }
 void MissileBullet::OnExplode(Enemy *enemy) {
     std::random_device dev;

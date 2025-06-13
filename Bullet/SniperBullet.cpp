@@ -11,7 +11,7 @@
 
 class Turret;
 
-SniperBullet::SniperBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool miss) : Bullet("play/bullet-9.png", 1000, 5, position, forwardDirection, rotation - ALLEGRO_PI / 2, parent, buff, false, miss) {
+SniperBullet::SniperBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool miss, bool upgrade) : Bullet("play/bullet-9.png", 1000, 5, position, forwardDirection, rotation - ALLEGRO_PI / 2, parent, buff, false, miss, upgrade) {
 }
 void SniperBullet::OnExplode(Enemy *enemy) {
     std::random_device dev;

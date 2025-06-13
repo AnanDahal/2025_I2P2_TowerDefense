@@ -23,13 +23,14 @@ protected:
     bool isBuffed;
     bool isSlow;
     bool isMiss;
+    bool isUpgraded;
     Turret *parent;
     PlayScene *getPlayScene();
     virtual void OnExplode(Enemy *enemy);
 
 public:
     Enemy *Target = nullptr;
-    explicit AOEBullet(std::string img, float speed, float damage, Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, float aoeRadius, bool buff, bool slow, bool miss);
+    explicit AOEBullet(std::string img, float speed, float damage, Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, float aoeRadius, bool buff, bool slow, bool miss, bool upgrade);
     void Update(float deltaTime) override;
 };
 

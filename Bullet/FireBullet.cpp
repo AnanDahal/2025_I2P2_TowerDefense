@@ -11,7 +11,7 @@
 
 class Turret;
 
-FireBullet::FireBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool miss) : Bullet("play/bullet-1.png", 500, 1, position, forwardDirection, rotation - ALLEGRO_PI / 2, parent, buff, false, miss) {
+FireBullet::FireBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool miss, bool upgraded) : Bullet("play/bullet-1.png", 500, 1, position, forwardDirection, rotation - ALLEGRO_PI / 2, parent, buff, false, miss, upgraded) {
 }
 void FireBullet::OnExplode(Enemy *enemy) {
     std::random_device dev;

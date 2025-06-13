@@ -14,7 +14,6 @@ protected:
     int price;
     int currentHp;
     int maxHp;
-    float coolDown;
     float reload = 0;
     float rotateRadian = 2 * ALLEGRO_PI;
     Sprite imgBase;
@@ -29,6 +28,7 @@ public:
     bool Preview = false;
     bool buffed = false;
     bool missing = false;
+    float coolDown;
     Enemy *Target = nullptr;
     Turret(std::string imgBase, std::string imgTurret, float x, float y, float radius, int price, float coolDown, int hp);
     void Update(float deltaTime) override;

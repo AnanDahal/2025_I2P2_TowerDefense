@@ -13,7 +13,7 @@ namespace Engine {
 
 class SniperBullet : public Bullet {
 public:
-    explicit SniperBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool miss);
+    explicit SniperBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool miss, bool upgrade);
     void OnExplode(Enemy *enemy) override;
     static float getSpeed();
 };

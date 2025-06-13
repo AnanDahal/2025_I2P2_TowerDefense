@@ -37,7 +37,7 @@ void ShopScene::Initialize() {
     btn = new Engine::ImageButton("play/light-2.png", "play/light-7.png", 0, 120, 400, 400);
     btn->SetOnClickCallback(std::bind(&ShopScene::ChooseOnClick, this, 1));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Skin1", "pirulen.ttf", 36, 200, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Turret Skin Pack", "pirulen.ttf", 24, 200, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
     //money power
     btn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 400, 120, 400, 400);
     btn->SetOnClickCallback(std::bind(&ShopScene::ChooseOnClick, this, 2));

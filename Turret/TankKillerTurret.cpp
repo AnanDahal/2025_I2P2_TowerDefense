@@ -24,13 +24,21 @@ void TankKillerTurret::CreateBullet() {
     Engine::Point normalized = diff.Normalize();
     Engine::Point normal = Engine::Point(-normalized.y, normalized.x);
     // Change bullet position to the front of the gun barrel.
-    getPlayScene()->BulletGroup->AddNewObject(new TankKillerBullet(Position + normalized * 36 - normal * 6, diff, rotation, this, buffed, missing));
-    getPlayScene()->BulletGroup->AddNewObject(new TankKillerBullet(Position + normalized * 36 + normal * 6, diff, rotation, this, buffed, missing));
+    getPlayScene()->BulletGroup->AddNewObject(new TankKillerBullet(Position + normalized * 36 - normal * 6, diff, rotation, this, buffed, missing, tankUpgrade1));
+    getPlayScene()->BulletGroup->AddNewObject(new TankKillerBullet(Position + normalized * 36 + normal * 6, diff, rotation, this, buffed, missing, tankUpgrade1));
     missThreshold++;
     if (missThreshold == 2) {
         missing = false;
     }
     AudioHelper::PlayAudio("op.wav"); //change sound
-}//
+}
+
+void TankKillerTurret::Update(float deltaTime) {
+    Turret::Update(deltaTime);
+    if (tankUpgrade2) {
+        CollisionRadius *= 2;
+    }
+}
+//
 // Created by user on 6/12/2025.
 //

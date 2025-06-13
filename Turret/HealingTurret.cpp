@@ -27,6 +27,9 @@ HealingTurret::HealingTurret(float x, float y)
 
 void HealingTurret::Update(float deltaTime) {
     // 1) Base sprite + base image sync
+    if (healUpgrade2) {
+        coolDown /= 2;
+    }
     Sprite::Update(deltaTime);
     imgBase.Position = Position;
     imgBase.Tint     = Tint;
@@ -49,7 +52,7 @@ void HealingTurret::Update(float deltaTime) {
     // 5) Fire healing bullet
     Engine::Point spawnPos = Position + dir * 36;
     getPlayScene()->BulletGroup->AddNewObject(
-        new HealingBullet(spawnPos, dir, Rotation - ALLEGRO_PI/2, this, buffed)
+        new HealingBullet(spawnPos, dir, Rotation - ALLEGRO_PI/2, this, buffed, healUpgrade1)
     );
     AudioHelper::PlayAudio("gun.wav");
 }
