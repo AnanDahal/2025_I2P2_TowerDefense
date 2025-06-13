@@ -6,7 +6,7 @@
 
 
 
-CarrierEnemy::CarrierEnemy(int x, int y) : Enemy("play/enemy-4.png", 1, x, y, 10, 20, 50, 30) {
+CarrierEnemy::CarrierEnemy(int x, int y) : Enemy("play/enemy-4.png", 1, x, y, 10, 20, 100, 30) {
 }
 
 void CarrierEnemy::OnExplode() {
