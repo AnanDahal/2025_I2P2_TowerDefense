@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 #include <random>
+#include <climits>
+
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_ttf.h>
 #include "Enemy/Enemy.hpp"
@@ -80,6 +82,7 @@ Engine::Point PlayScene::GetClientSize() {
     return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);
 }
 void PlayScene::Initialize() {
+    AIPlacedThisRound = false;
     mapState.clear();
     keyStrokes.clear();
     ticks = 0;
@@ -214,17 +217,18 @@ void PlayScene::Update(float deltaTime) {
             else if (roundTransitionState == WAIT_AFTER_ROUND_LABEL) {
                 // ──── start the next round ────
                 if (endlessMode) {
-                    endlessRound = nextRoundNumber;            // from code 1
+                    endlessRound = nextRoundNumber;            
                 }
                 roundTransitionState = NONE;
-                RemoveAllTurrets();                           // from code 1
-                EnemyGroup->Clear();                          // both
-                GenerateRandomMap(nextRoundNumber);           // both
-                PlayScene::EndGridPoint = endPoint;           // from code 1
-                mapDistance = CalculateBFSDistance();         // both
-                GenerateEnemyWave(nextRoundNumber);           // both
-                EarnMoney(100 * nextRoundNumber / 2);         // both
-                ticks = 0;                                    // from code 1
+                RemoveAllTurrets();                           
+                EnemyGroup->Clear();                         
+                GenerateRandomMap(nextRoundNumber);           
+                PlayScene::EndGridPoint = endPoint;           
+                mapDistance = CalculateBFSDistance();         
+                GenerateEnemyWave(nextRoundNumber);           
+                EarnMoney(100 * nextRoundNumber / 2);         
+                ticks = 0;                                    
+                AIPlacedThisRound = false;                   // reset AI placement flag
                 if (roundLabel) 
                     roundLabel->Text = "Round: " + std::to_string(nextRoundNumber);
             }
@@ -342,6 +346,7 @@ void PlayScene::Update(float deltaTime) {
         && roundTransitionState == NONE)
     {
         // all waves are done and no enemies remain → campaign level complete
+        AIPlacedThisRound = false; // reset AI placement flag
         Engine::GameEngine::GetInstance().ChangeScene("after");
         return;
     }
@@ -803,6 +808,7 @@ void PlayScene::UIBtnClicked(int id) {
     }
     else if (id == 14) {
         //AI DO A MESSAGE
+        AutoPlaceTurrets();
     }
     else if (id == 20) {
         Engine::GameEngine::GetInstance().ChangeScene("stage-select");
@@ -1088,6 +1094,91 @@ void PlayScene::GenerateEnemyWave(int round) {
 
     for (int i = 0; i < numSoldiers; ++i)
         enemyWaveData.emplace_back(1, wait);
+}
+
+void PlayScene::AutoPlaceTurrets() {
+    if (AIPlacedThisRound) return;
+    AIPlacedThisRound = true;
+
+    // 1) Analyze upcoming waves
+    std::map<int,int> freq;
+    for (auto &p : enemyWaveData) freq[p.first]++;
+
+    // 2) Map enemy types to turret types
+    auto mapEnemyToTurret = [](int et) {
+        switch (et) {
+            case 1: return 1; // MachineGun
+            case 2: return 2; // Laser
+            case 3: return 3; // Sniper
+            case 4: return 4; // Missile
+            case 5: return 5; // TankKiller
+            case 6: return 6; // Buff
+            case 7: return 7; // Slow
+            case 8: return 8; // BossKiller
+            default: return 1;
+        }
+    };
+
+    // 3) Build picks up to 5 based on frequency
+    std::vector<int> picks;
+    for (auto &kv : freq) {
+        picks.push_back(mapEnemyToTurret(kv.first));
+        if (picks.size() >= 5) break;
+    }
+    // 4) Pad with all turret types if needed
+    static const int allTurrets[8] = {1,2,3,4,5,6,7,8};
+    int idx = 0;
+    while (picks.size() < 5) {
+        picks.push_back(allTurrets[idx++ % 8]);
+    }
+
+    // 5) Dynamic placement: one turret per pick
+    for (int type : picks) {
+        int bestX = -1, bestY = -1;
+        int bestDist = INT_MAX;
+        // Scan grid for valid floor tiles
+        for (int y = 0; y < MapHeight; ++y) {
+            for (int x = 0; x < MapWidth; ++x) {
+                if (mapState[y][x] != TILE_FLOOR) continue;
+                if (!CheckSpaceValid(x, y)) continue;
+                // Determine proximity to path
+                int localMin = INT_MAX;
+                for (auto &d : PlayScene::directions) {
+                    int nx = x + d.x, ny = y + d.y;
+                    if (nx < 0 || nx >= MapWidth || ny < 0 || ny >= MapHeight) continue;
+                    int pd = mapDistance[ny][nx];
+                    if (pd >= 0 && pd < localMin) localMin = pd;
+                }
+                if (localMin < bestDist) {
+                    bestDist = localMin;
+                    bestX = x;
+                    bestY = y;
+                }
+            }
+        }
+        // Place turret if found
+        if (bestX != -1) {
+            Turret *t = nullptr;
+            switch (type) {
+                case 1: t = new MachineGunTurret(0,0); break;
+                case 2: t = new LaserTurret(0,0); break;
+                case 3: t = new SniperTurret(0,0); break;
+                case 4: t = new MissileTurret(0,0); break;
+                case 5: t = new TankKillerTurret(0,0); break;
+                case 6: t = new BuffTurret(0,0); break;
+                case 7: t = new SlowTurret(0,0); break;
+                case 8: t = new BossKillerTurret(0,0); break;
+                default: t = new MachineGunTurret(0,0); break;
+            }
+            t->Position.x = bestX * BlockSize + BlockSize/2;
+            t->Position.y = bestY * BlockSize + BlockSize/2;
+            t->Enabled = true;
+            t->Preview = false;
+            TowerGroup->AddNewObject(t);
+            mapState[bestY][bestX] = TILE_OCCUPIED;
+            mapDistance = CalculateBFSDistance();
+        }
+    }
 }
 
 void PlayScene::RemoveAllTurrets() {

@@ -43,6 +43,9 @@ private:
     ALLEGRO_SAMPLE_ID bgmId;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> deathBGMInstance;
 
+    bool AIPlacedThisRound = false;
+    void AutoPlaceTurrets();
+
 protected:
     int lives;
     int money;
