@@ -87,15 +87,23 @@ void PasswordScene::SubmitName() {
     int stage;
     int memories;
     int endless;
+    bool skinone;
+    bool skintwo;
+    bool skinthree;
+    bool skinfour;
     bool found = false;
 
-    while (fin >> name >> password >> stage >> memories >> endless) {
+    while (fin >> name >> password >> stage >> memories >> endless >> skinone >> skintwo >> skinthree >> skinfour) {
         if (name == playerName) {
             found = true;
             if (password == playerPassword) {
                 OnStage = stage;
                 core_memories = memories;
                 endless_score = endless;
+                skin1 = skinone;
+                skin2 = skintwo;
+                skin3 = skinthree;
+                skin4 = skinfour;
                 Engine::GameEngine::GetInstance().ChangeScene("stage-select");
                 return;
             } else {
@@ -109,11 +117,15 @@ void PasswordScene::SubmitName() {
     if (!found) {
         std::ofstream fout("../Resource/accounts.txt", std::ios::app);
         if (fout) {
-            fout << playerName << " " << playerPassword << " 0 0 0\n";
+            fout << playerName << " " << playerPassword << " 0 0 0 0 0 0 0\n";
         }
         OnStage = 0;
         core_memories = 0;
         endless_score = 0;
+        skin1 = false;
+        skin2 = false;
+        skin3 = false;
+        skin4 = false;
         Engine::GameEngine::GetInstance().ChangeScene("stage-select"); //FARREL UPDATE THIS WHEN FINISH CUTSCENE
     }
 }
