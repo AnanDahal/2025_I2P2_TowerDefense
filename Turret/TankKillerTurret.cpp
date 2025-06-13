@@ -16,12 +16,7 @@ TankKillerTurret::TankKillerTurret(float x, float y) : Turret("play/tower-base.p
     // Move center downward, since we the turret head is slightly biased upward.
     Anchor.y += 8.0f / GetBitmapHeight();
     missThreshold = 0;
-    if (OnStage >= 4) {
-        isLocked = false;
-    }
-    else {
-        isLocked = true;
-    }
+    isLocked = false;
 }
 void TankKillerTurret::CreateBullet() {
     Engine::Point diff = Engine::Point(cos(Rotation - ALLEGRO_PI / 2), sin(Rotation - ALLEGRO_PI / 2));

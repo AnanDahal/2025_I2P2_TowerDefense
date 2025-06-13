@@ -584,25 +584,31 @@ void PlayScene::ConstructUI() {
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 1));
     UIGroup->AddNewControlObject(btn);
 
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                           Engine::Sprite("play/tower-base.png", 1370 + 76, 136, 0, 0, 0, 0),
+                           Engine::Sprite("play/turret-4.png", 1370 + 76, 136 - 8, 0, 0, 0, 0), 1370 + 76, 136, MissileTurret::Price);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 3)); //missile turret
+    UIGroup->AddNewControlObject(btn);
+
     // Add a new button for the Healing Turret in ConstructUI()
     // In PlayScene.cpp, add the healing turret button and logic if not already done
 
     //SUPPORT TOWERS
     btn = new TurretButton("play/floor.png", "play/dirt.png",
                        Engine::Sprite("play/tower-base.png", 1294, 136 + 120, 0, 0, 0, 0),
-                       Engine::Sprite("play/turret-3.png", 1294, 136 - 8 + 120, 0, 0, 0, 0), 1294, 136 + 120, FarmTurret::Price);
+                       Engine::Sprite("play/turret-10.png", 1294, 136 - 8 + 120, 0, 0, 0, 0), 1294, 136 + 120, FarmTurret::Price);
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 9)); // farm turret
     UIGroup->AddNewControlObject(btn);
 
     btn = new TurretButton("play/floor.png", "play/dirt.png",
-                       Engine::Sprite("play/tower-base.png", 1370 + 76, 136, 0, 0, 0, 0),
-                       Engine::Sprite("play/turret-3.png", 1370 + 76, 136 - 8, 0, 0, 0, 0), 1370 + 76, 136, HealingTurret::Price);
+                       Engine::Sprite("play/tower-base.png", 1370 + 76, 136 + 120, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-3.png", 1370 + 76, 136 - 8 + 120, 0, 0, 0, 0), 1370 + 76, 136 + 120, HealingTurret::Price);
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 2)); // Healing turret
     UIGroup->AddNewControlObject(btn);
 
     btn = new TurretButton("play/floor.png", "play/dirt.png",
                        Engine::Sprite("play/tower-base.png", 1370, 136 + 120, 0, 0, 0, 0),
-                       Engine::Sprite("play/turret-3.png", 1370, 136 - 8 + 120, 0, 0, 0, 0), 1370, 136 + 120, BuffTurret::Price);
+                       Engine::Sprite("play/turret-9.png", 1370, 136 - 8 + 120, 0, 0, 0, 0), 1370, 136 + 120, BuffTurret::Price);
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 4)); // Buff turret
     UIGroup->AddNewControlObject(btn);
 

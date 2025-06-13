@@ -18,12 +18,7 @@ const int FarmTurret::Price = 400;
 FarmTurret::FarmTurret(float x, float y) : Turret("play/tower-base.png", "play/turret-10.png", x, y, 300, Price, 1, 600) {
     // Move center downward, since we the turret head is slightly biased upward.
     Anchor.y += 8.0f / GetBitmapHeight();
-    if (OnStage == 3 || OnStage == 4) {
-        isLocked = false;
-    }
-    else {
-        isLocked = true;
-    }
+    isLocked = false;
 }
 
 void FarmTurret::CreateBullet() {

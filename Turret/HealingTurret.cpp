@@ -22,12 +22,7 @@ HealingTurret::HealingTurret(float x, float y)
 {
     // keep the same “center adjustment” pattern your other turrets use
     Anchor.y += 8.0f / GetBitmapHeight();
-    if (OnStage >= 3) {
-        isLocked = false;
-    }
-    else {
-        isLocked = true;
-    }
+    isLocked = false;
 }
 
 void HealingTurret::Update(float deltaTime) {

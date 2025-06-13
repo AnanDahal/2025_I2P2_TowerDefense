@@ -15,12 +15,7 @@ BossKillerTurret::BossKillerTurret(float x, float y)
     // Move center downward, since we the turret head is slightly biased upward.
     Anchor.y += 8.0f / GetBitmapHeight();
     missThreshold = 0;
-    if (OnStage >= 4) {
-        isLocked = false;
-    }
-    else {
-        isLocked = true;
-    }
+    isLocked = false;
 }
 void BossKillerTurret::CreateBullet() {
     Engine::Point diff = Engine::Point(cos(Rotation - ALLEGRO_PI / 2), sin(Rotation - ALLEGRO_PI / 2));
