@@ -596,30 +596,44 @@ void PlayScene::EarnMoney(int money) {
     this->money += money;
     UIMoney->Text = std::string("$") + std::to_string(this->money);
 }
+
 void PlayScene::ReadMap() {
     std::string filename = "Resource/map" + std::to_string(MapId) + ".txt";
     char c;
-    std::vector<bool> mapData;
+    // read as ints so we can handle 0,1,2
+    std::vector<int> mapData;
     std::ifstream fin(filename);
     while (fin >> c) {
         switch (c) {
-            case '0': mapData.push_back(false); break;
-            case '1': mapData.push_back(true); break;
-            default: break;
+            case '0': mapData.push_back(TILE_DIRT);  break;
+            case '1': mapData.push_back(TILE_FLOOR); break;
+            case '2': mapData.push_back(TILE_VOID);  break;   // new VOID tile
+            default:  continue;  // skip anything else
         }
     }
     fin.close();
+
     mapState.assign(MapHeight, std::vector<TileType>(MapWidth));
     TileMapGroup->Clear();
-    for (int y = 0; y < MapHeight; y++) {
-        for (int x = 0; x < MapWidth; x++) {
-            bool isFloor = mapData[y * MapWidth + x];
-            mapState[y][x] = isFloor ? TILE_FLOOR : TILE_DIRT;
-            const char* img = isFloor ? "play/floor.png" : "play/dirt.png";
-            TileMapGroup->AddNewObject(new Engine::Image(img, x * BlockSize, y * BlockSize, BlockSize, BlockSize));
+    for (int y = 0; y < MapHeight; ++y) {
+        for (int x = 0; x < MapWidth; ++x) {
+            TileType t = static_cast<TileType>(mapData[y * MapWidth + x]);
+            mapState[y][x] = t;
+            const char* img;
+            if      (t == TILE_DIRT)  img = "play/dirt.png";
+            else if (t == TILE_FLOOR) img = "play/floor.png";
+            else if (t == TILE_VOID)  img = "play/void.png";
+            TileMapGroup->AddNewObject(
+                new Engine::Image(img,
+                                  x * BlockSize,
+                                  y * BlockSize,
+                                  BlockSize,
+                                  BlockSize)
+            );
         }
     }
 }
+
 
 
 void PlayScene::ReadEnemyWave() {
