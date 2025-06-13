@@ -944,11 +944,57 @@ void PlayScene::GenerateRandomMap(int round) {
         mapState[cur.y][cur.x] = TILE_DIRT;
     }
 
+    if (round >= 6) {
+        // rounds 6–10:1 pool, 11–15:2 pools, etc.
+        int poolCount = ((round - 6) / 5) + 1;
+        std::mt19937 rng{ std::random_device{}() };
+        for (int p = 0; p < poolCount; ++p) {
+            // pool size between 4 and 8
+            int poolSize = 4 + (rng() % 5);
+
+            // Collect all floor tiles as candidates for the seed
+            std::vector<Engine::Point> candidates;
+            for (int y = 0; y < MapHeight; ++y) {
+                for (int x = 0; x < MapWidth; ++x) {
+                    if (mapState[y][x] == TILE_FLOOR)
+                        candidates.emplace_back(x, y);
+                }
+            }
+            if (candidates.empty()) break;
+
+            // Pick a random seed
+            Engine::Point seed = candidates[rng() % candidates.size()];
+            std::vector<Engine::Point> poolTiles{ seed };
+            mapState[seed.y][seed.x] = TILE_VOID;
+
+            // Grow the pool by randomly adding adjacent floor‐tiles
+            for (int i = 1; i < poolSize; ++i) {
+                std::vector<Engine::Point> neighbors;
+                for (auto &pt : poolTiles) {
+                    for (auto &d : PlayScene::directions) {
+                        int nx = pt.x + d.x, ny = pt.y + d.y;
+                        if (nx >= 0 && nx < MapWidth && ny >= 0 && ny < MapHeight
+                         && mapState[ny][nx] == TILE_FLOOR) {
+                            neighbors.emplace_back(nx, ny);
+                        }
+                    }
+                }
+                if (neighbors.empty()) break;
+                Engine::Point next = neighbors[rng() % neighbors.size()];
+                poolTiles.push_back(next);
+                mapState[next.y][next.x] = TILE_VOID;
+            }
+        }
+    }
+
     // 6. Refresh the visual tile map
     TileMapGroup->Clear();
     for (int y = 0; y < MapHeight; y++) {
         for (int x = 0; x < MapWidth; x++) {
-            const char* img = (mapState[y][x] == TILE_DIRT ? "play/dirt.png" : "play/floor.png");
+            const char* img;
+            if      (mapState[y][x] == TILE_DIRT) img = "play/dirt.png";
+            else if (mapState[y][x] == TILE_VOID) img = "play/void.png";
+            else                                  img = "play/floor.png";
             TileMapGroup->AddNewObject(
                 new Engine::Image(img, x * BlockSize, y * BlockSize, BlockSize, BlockSize)
             );
@@ -968,6 +1014,7 @@ void PlayScene::GenerateEnemyWave(int round) {
     int numTanks          = std::max(0, round / 3);
     int numArmies         = std::max(1, round / 2);
     int numSoldiers       = 5 + round * 2;
+    
 
     float wait = std::max(0.5f, 2.0f - round * 0.05f);
 
