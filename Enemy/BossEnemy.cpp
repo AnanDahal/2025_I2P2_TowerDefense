@@ -12,7 +12,7 @@
 
 
 
-BossEnemy::BossEnemy(int x, int y, int ph) : Enemy("play/enemy-4.png", 4, x, y, 10, 5, 1000, 30) {
+BossEnemy::BossEnemy(int x, int y, int ph) : Enemy("play/enemy-8.png", 4, x, y, 10, 5, 1000, 30) {
     phase = ph;
 }
 

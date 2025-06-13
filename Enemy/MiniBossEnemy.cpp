@@ -11,7 +11,7 @@
 
 
 
-MiniBossEnemy::MiniBossEnemy(int x, int y, int ph) : Enemy("play/enemy-4.png", 4, x, y, 10, 5, 500, 30) {
+MiniBossEnemy::MiniBossEnemy(int x, int y, int ph) : Enemy("play/enemy-6.png", 4, x, y, 10, 5, 500, 30) {
     phase = ph;
 }
 

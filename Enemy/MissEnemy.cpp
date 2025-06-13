@@ -9,8 +9,8 @@
 #include "MissEnemy.h"
 
 MissEnemy::MissEnemy(int x, int y)
-    : Enemy("play/enemy-3.png", 0, x, y, 20.f, 20.f, 100.f, 50),
-      head("play/enemy-3-head.png", x, y),
+    : Enemy("play/enemy-7.png", 0, x, y, 20.f, 20.f, 100.f, 50),
+      head("play/enemy-7-head.png", x, y),
       targetRotation(0.0f) {
 }
 
