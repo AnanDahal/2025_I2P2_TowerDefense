@@ -119,6 +119,10 @@ void PlayScene::Initialize() {
         GenerateEnemyWave(endlessRound);
     } else {
         ReadMap();
+        entryPoints.clear();
+        entryPoints.emplace_back(0, 0);
+        endPoint = Engine::Point(MapWidth - 1, MapHeight - 1);
+        PlayScene::EndGridPoint = endPoint;
         ReadEnemyWave();
     }
 
@@ -161,6 +165,9 @@ void PlayScene::Initialize() {
     imgTarget->Visible = false;
     preview = nullptr;
     UIGroup->AddNewObject(imgTarget);
+
+    Engine::Resources::GetInstance().GetBitmap("play/void.png");
+
     // Preload Lose Scene
     deathBGMInstance = Engine::Resources::GetInstance().GetSampleInstance("astronomia.ogg");
     Engine::Resources::GetInstance().GetBitmap("lose/benjamin-happy.png");
@@ -174,111 +181,128 @@ void PlayScene::Terminate() {
     IScene::Terminate();
 }
 void PlayScene::Update(float deltaTime) {
-    // --- Round transition effect ---
+    // ────── bomb & money-rain cooldowns ──────
+    // from code 1
     if (bombCooldown > 0) {
         bombCooldown -= deltaTime;
     }
     if (moneyRainCooldown > 0) {
         moneyRainCooldown -= deltaTime;
     }
+
+    // ────── base update ──────
+    // from code 2
+    IScene::Update(deltaTime * SpeedMult);
+
+    // ────── Round transition effect ──────
+    // mostly from code 2, with endless-round tweaks from code 1
     if (roundTransitionState != NONE) {
-        // Only update effects, not enemies!
         EffectGroup->Update(deltaTime);
         BulletGroup->Update(deltaTime);
         GroundEffectGroup->Update(deltaTime);
-        // Optionally: UIGroup->Update(deltaTime);
 
         roundTransitionTimer -= deltaTime;
         if (roundTransitionTimer <= 0) {
             if (roundTransitionState == WAIT_BEFORE_ROUND_LABEL) {
                 roundTransitionState = SHOW_ROUND_LABEL;
                 roundTransitionTimer = 1.0f;
-            } else if (roundTransitionState == SHOW_ROUND_LABEL) {
+            }
+            else if (roundTransitionState == SHOW_ROUND_LABEL) {
                 roundTransitionState = WAIT_AFTER_ROUND_LABEL;
                 roundTransitionTimer = 2.0f;
-            } else if (roundTransitionState == WAIT_AFTER_ROUND_LABEL) {
+            }
+            else if (roundTransitionState == WAIT_AFTER_ROUND_LABEL) {
+                // ──── start the next round ────
+                if (endlessMode) {
+                    endlessRound = nextRoundNumber;            // from code 1
+                }
                 roundTransitionState = NONE;
-                EnemyGroup->Clear();
-                GenerateRandomMap(nextRoundNumber);
-                mapDistance = CalculateBFSDistance();
-                GenerateEnemyWave(nextRoundNumber);
-                EarnMoney(100 * nextRoundNumber / 2);
-                ticks = 0; // Reset spawn timer!
-                if (roundLabel) roundLabel->Text = "Round: " + std::to_string(nextRoundNumber);
+                RemoveAllTurrets();                           // from code 1
+                EnemyGroup->Clear();                          // both
+                GenerateRandomMap(nextRoundNumber);           // both
+                PlayScene::EndGridPoint = endPoint;           // from code 1
+                mapDistance = CalculateBFSDistance();         // both
+                GenerateEnemyWave(nextRoundNumber);           // both
+                EarnMoney(100 * nextRoundNumber / 2);         // both
+                ticks = 0;                                    // from code 1
+                if (roundLabel) 
+                    roundLabel->Text = "Round: " + std::to_string(nextRoundNumber);
             }
         }
-        return; // Skip all enemy spawn/update code during transition!
+        return;  // skip normal spawning while transitioning
     }
 
-    if (SpeedMult == 0)
-        deathCountDown = -1;
-    else if (deathCountDown != -1)
-        SpeedMult = 1;
-    // Calculate danger zone.
-    std::vector<float> reachEndTimes;
-    for (auto &it : EnemyGroup->GetObjects()) {
-        reachEndTimes.push_back(dynamic_cast<Enemy *>(it)->reachEndTime);
+    // ────── Chat box update ──────
+    // from code 2
+    if (chatBox) {
+        chatBox->Update(deltaTime);
+        if (chatBox->finished) {
+            UIGroup->RemoveObject(chatBox->GetObjectIterator());
+            chatBox->Terminate();
+            chatBox.reset();
+        }
     }
-    // Can use Heap / Priority-Queue instead. But since we won't have too many enemies, sorting is fast enough.
+
+    // ────── Danger indicator ──────
+    // from code 2
+    std::vector<float> reachEndTimes;
+    for (auto &obj : EnemyGroup->GetObjects())
+        reachEndTimes.push_back(dynamic_cast<Enemy *>(obj)->reachEndTime);
     std::sort(reachEndTimes.begin(), reachEndTimes.end());
     float newDeathCountDown = -1;
     int danger = lives;
-    for (auto &it : reachEndTimes) {
-        if (it <= DangerTime) {
+    for (float t : reachEndTimes) {
+        if (t <= DangerTime) {
             danger--;
             if (danger <= 0) {
-                // Death Countdown
-                float pos = DangerTime - it;
-                if (it > deathCountDown) {
-                    // Restart Death Count Down BGM.
+                float pos = DangerTime - t;
+                if (t > deathCountDown) {
                     AudioHelper::StopSample(deathBGMInstance);
                     if (SpeedMult != 0)
                         deathBGMInstance = AudioHelper::PlaySample("astronomia.ogg", false, AudioHelper::BGMVolume, pos);
                 }
                 float alpha = pos / DangerTime;
-                alpha = std::max(0, std::min(255, static_cast<int>(alpha * alpha * 255)));
-                dangerIndicator->Tint = al_map_rgba(255, 255, 255, alpha);
-                newDeathCountDown = it;
+                alpha = std::clamp(alpha * alpha * 255.0f, 0.0f, 255.0f);
+                dangerIndicator->Tint = al_map_rgba(255, 255, 255, static_cast<int>(alpha));
+                newDeathCountDown = t;
                 break;
             }
         }
     }
     deathCountDown = newDeathCountDown;
-    if (SpeedMult == 0)
-        AudioHelper::StopSample(deathBGMInstance);
-    if (deathCountDown == -1 && lives > 0) {
+    if (SpeedMult == 0 || (deathCountDown == -1 && lives > 0)) {
         AudioHelper::StopSample(deathBGMInstance);
         dangerIndicator->Tint.a = 0;
     }
-    ticks += deltaTime * SpeedMult;  // accumulate timeAdd commentMore actions
+
+    // ────── Timed enemy spawning ──────
+    // based on code 1’s tick logic, but merged into code 2
+    ticks += deltaTime * SpeedMult;
     while (!enemyWaveData.empty() && ticks >= enemyWaveData.front().second) {
         auto wave = enemyWaveData.front();
         enemyWaveData.pop_front();
         ticks -= wave.second;
 
-        // 1) Pick a random entry grid point (set in GenerateRandomMap or ReadMap)
         Engine::Point entry = entryPoints[rand() % entryPoints.size()];
 
-        // 2) Compute off-screen spawn center based on which edge
         float spawnX, spawnY;
-        if (entry.x == 0) {                 // left edge → from left
+        if (entry.x == 0) {
             spawnX = -BlockSize/2.0f;
             spawnY = entry.y * BlockSize + BlockSize/2.0f;
         }
-        else if (entry.x == MapWidth - 1) { // right edge → from right
+        else if (entry.x == MapWidth - 1) {
             spawnX = MapWidth * BlockSize + BlockSize/2.0f;
             spawnY = entry.y * BlockSize + BlockSize/2.0f;
         }
-        else if (entry.y == 0) {            // top edge → from above
+        else if (entry.y == 0) {
             spawnX = entry.x * BlockSize + BlockSize/2.0f;
             spawnY = -BlockSize/2.0f;
         }
-        else {                              // bottom edge → from below
+        else {
             spawnX = entry.x * BlockSize + BlockSize/2.0f;
             spawnY = MapHeight * BlockSize + BlockSize/2.0f;
         }
 
-        // 3) Instantiate the correct Enemy subclass
         Enemy *e = nullptr;
         switch (wave.first) {
             case 1: EnemyGroup->AddNewObject(e = new SoldierEnemy(spawnX, spawnY)); break;
@@ -286,51 +310,48 @@ void PlayScene::Update(float deltaTime) {
             case 3: EnemyGroup->AddNewObject(e = new TankEnemy   (spawnX, spawnY)); break;
             case 4: EnemyGroup->AddNewObject(e = new CarrierEnemy(spawnX, spawnY)); break;
             case 5: EnemyGroup->AddNewObject(e = new BiggerCarrierEnemy(spawnX, spawnY)); break;
-            case 6: EnemyGroup->AddNewObject(e = new MissEnemy(spawnX, spawnY)); break;
-            case 7: EnemyGroup->AddNewObject(e = new MiniBossEnemy(spawnX, spawnY, 2)); break;
-            case 8: EnemyGroup->AddNewObject(e = new BossEnemy(spawnX, spawnY, 6));break;
             default:
                 printf("[ERROR] Unknown enemy type %d\n", wave.first);
                 continue;
         }
         if (e) {
-            // Position and path
             e->Position.x = spawnX;
             e->Position.y = spawnY;
-            printf("Spawning enemy at (%.1f, %.1f)\n", spawnX, spawnY);
             e->UpdatePath(mapDistance);
         }
     }
+
+    // ────── Round-end detection ──────
+    // carried over from both
     if (endlessMode
-            && enemyWaveData.empty()
-            && EnemyGroup->GetObjects().empty()
-            && roundTransitionState == NONE)
+        && enemyWaveData.empty()
+        && EnemyGroup->GetObjects().empty()
+        && roundTransitionState == NONE)
     {
-        nextRoundNumber = endlessRound + 1;
-        roundTransitionState = WAIT_BEFORE_ROUND_LABEL;
-        roundTransitionTimer = 1.0f;
+        nextRoundNumber = endlessRound + 1;            // from code 1
+        roundTransitionState = WAIT_BEFORE_ROUND_LABEL; // both
+        roundTransitionTimer = 1.0f;                    // both
     }
 
+    // ────── Turret- & shovel-preview ──────
+    // from code 2
     if (preview) {
         preview->Position = Engine::GameEngine::GetInstance().GetMousePosition();
         preview->Update(deltaTime);
     }
-
-    // shovel‐preview follows cursor
     if (Shoveling && shovelPreview) {
         auto mpos = Engine::GameEngine::GetInstance().GetMousePosition();
         shovelPreview->Position = mpos;
         shovelPreview->Update(deltaTime);
     }
 }
+
 void PlayScene::Draw() const {
     IScene::Draw();
     if (DebugMode) {
-        // Draw reverse BFS distance on all reachable blocks.
         for (int i = 0; i < MapHeight; i++) {
             for (int j = 0; j < MapWidth; j++) {
                 if (mapDistance[i][j] != -1) {
-                    // Not elegant nor efficient, but it's quite enough for debugging.
                     Engine::Label label(std::to_string(mapDistance[i][j]), "pirulen.ttf", 32, (j + 0.5) * BlockSize, (i + 0.5) * BlockSize);
                     label.Anchor = Engine::Point(0.5, 0.5);
                     label.Draw();
@@ -338,19 +359,27 @@ void PlayScene::Draw() const {
             }
         }
     }
-}
-void PlayScene::OnMouseDown(int button, int mx, int my) {
-    if ((button & 1) && !imgTarget->Visible && preview) {
-        // Cancel turret construct.
-        UIGroup->RemoveObject(preview->GetObjectIterator());
-        preview = nullptr;
+    if (roundTransitionState == SHOW_ROUND_LABEL) {
+        int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
+        int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
+        al_draw_filled_rectangle(0, 0, w, h, al_map_rgb(0, 0, 0));
+        std::string text = "ROUND " + std::to_string(nextRoundNumber);
+        ALLEGRO_FONT* font = al_load_ttf_font("Resource/fonts/pirulen.ttf", 72, 0);
+        if (font) {
+            al_draw_text(font, al_map_rgb(255, 255, 255), w / 2, h / 2 - 36, ALLEGRO_ALIGN_CENTRE, text.c_str());
+            al_destroy_font(font);
+        }
     }
+}
+
+void PlayScene::OnMouseDown(int button, int mx, int my) {
     IScene::OnMouseDown(button, mx, my);
 }
+
 void PlayScene::OnMouseMove(int mx, int my) {
     IScene::OnMouseMove(mx, my);
-    const int x = mx / BlockSize;
-    const int y = my / BlockSize;
+    int x = mx / BlockSize;
+    int y = my / BlockSize;
     if (!preview || x < 0 || x >= MapWidth || y < 0 || y >= MapHeight) {
         imgTarget->Visible = false;
         return;
@@ -359,117 +388,99 @@ void PlayScene::OnMouseMove(int mx, int my) {
     imgTarget->Position.x = x * BlockSize;
     imgTarget->Position.y = y * BlockSize;
 }
+
 void PlayScene::OnMouseUp(int button, int mx, int my) {
     IScene::OnMouseUp(button, mx, my);
 
-    // ────── shovel-mode removal ──────
     if (Shoveling && (button & 1)) {
         int cellX = mx / BlockSize;
         int cellY = my / BlockSize;
-
-        // 1) find & remove exactly that turret
-        for (auto obj : TowerGroup->GetObjects()) {
-            Turret* t = dynamic_cast<Turret*>(obj);
+        for (auto tObj : TowerGroup->GetObjects()) {
+            auto t = dynamic_cast<Turret*>(tObj);
             if (!t) continue;
             int tx = int(t->Position.x / BlockSize);
             int ty = int(t->Position.y / BlockSize);
             if (tx == cellX && ty == cellY) {
                 EarnMoney(t->GetPrice());
                 TowerGroup->RemoveObject(t->GetObjectIterator());
-                // mark tile free
-                mapState[cellY][cellX] = TILE_FLOOR;
+                mapState[ty][tx] = TILE_FLOOR;
                 break;
             }
         }
-
-        // 3) immediately clear the shovel icon
         if (shovelPreview) {
             UIGroup->RemoveObject(shovelPreview->GetObjectIterator());
             shovelPreview = nullptr;
         }
-
         Shoveling = false;
         return;
     }
 
-
-    if (!imgTarget->Visible)
+    if (!(button & 1) || !preview || !imgTarget->Visible)
         return;
-    const int x = mx / BlockSize;
-    const int y = my / BlockSize;
-    if (button & 1) {
-        if (mapState[y][x] != TILE_OCCUPIED) {
-            if (!preview)
-                return;
-            // Check if valid.
-            if (!CheckSpaceValid(x, y)) {
-                Engine::Sprite *sprite;
-                GroundEffectGroup->AddNewObject(sprite = new DirtyEffect("play/target-invalid.png", 1, x * BlockSize + BlockSize / 2, y * BlockSize + BlockSize / 2));
-                sprite->Rotation = 0;
-                return;
-            }
-            // Purchase.
-            EarnMoney(-preview->GetPrice());
-            // Remove Preview.
-            preview->GetObjectIterator()->first = false;
-            UIGroup->RemoveObject(preview->GetObjectIterator());
-            // Construct real turret.
-            preview->Position.x = x * BlockSize + BlockSize / 2;
-            preview->Position.y = y * BlockSize + BlockSize / 2;
-            preview->Enabled = true;
-            preview->Preview = false;
-            preview->Tint = al_map_rgba(255, 255, 255, 255);
-            TowerGroup->AddNewObject(preview);
-            // To keep responding when paused.
-            preview->Update(0);
-            // Remove Preview.
-            preview = nullptr;
 
-            mapState[y][x] = TILE_OCCUPIED;
-            OnMouseMove(mx, my);
+    int cellX = int(imgTarget->Position.x) / BlockSize;
+    int cellY = int(imgTarget->Position.y) / BlockSize;
+
+    if (mapState[cellY][cellX] != TILE_FLOOR) {
+        auto fx = new DirtyEffect("play/target-invalid.png", 1,
+            cellX * BlockSize + BlockSize/2,
+            cellY * BlockSize + BlockSize/2);
+        GroundEffectGroup->AddNewObject(fx);
+        fx->Rotation = 0;
+        return;
+    }
+
+    int x = mx / BlockSize;
+    int y = my / BlockSize;
+    if (mapState[y][x] != TILE_OCCUPIED) {
+        if (!CheckSpaceValid(x, y)) {
+            auto sprite = new DirtyEffect("play/target-invalid.png", 1, x * BlockSize + BlockSize / 2, y * BlockSize + BlockSize / 2);
+            GroundEffectGroup->AddNewObject(sprite);
+            sprite->Rotation = 0;
+            return;
         }
+        EarnMoney(-preview->GetPrice());
+        preview->GetObjectIterator()->first = false;
+        UIGroup->RemoveObject(preview->GetObjectIterator());
+        preview->Position.x = x * BlockSize + BlockSize / 2;
+        preview->Position.y = y * BlockSize + BlockSize / 2;
+        preview->Enabled = true;
+        preview->Preview = false;
+        preview->Tint = al_map_rgba(255, 255, 255, 255);
+        TowerGroup->AddNewObject(preview);
+        preview->Update(0);
+        preview = nullptr;
+        OnMouseMove(mx, my);
     }
 }
+
 void PlayScene::OnKeyDown(int keyCode) {
     IScene::OnKeyDown(keyCode);
+    if (chatBox) chatBox->OnKeyDown(keyCode);
     if (keyCode == ALLEGRO_KEY_TAB) {
         DebugMode = !DebugMode;
     } else {
         keyStrokes.push_back(keyCode);
-        if (keyStrokes.size() > code.size())
-            keyStrokes.pop_front();
+        if (keyStrokes.size() > code.size()) keyStrokes.pop_front();
         if (keyStrokes.size() == code.size()) {
             auto it1 = keyStrokes.begin();
-            auto it2  = code.begin();
-
-            for (auto i = 0; i < code.size(); i++) {
-                if (*it1 == *it2) {
-                    ++it1;
-                    ++it2;
-                }
-                else {
-                    return;
-                }
+            auto it2 = code.begin();
+            while (it1 != keyStrokes.end()) {
+                if (*it1 == *it2) { ++it1; ++it2; }
+                else break;
                 if (it2 == code.end()) {
                     UIGroup->AddNewObject(new Plane);
-                    this->money += 10000;
-                    UIMoney->Text = std::string("$") + std::to_string(this->money);
+                    money += 10000;
+                    UIMoney->Text = "$" + std::to_string(money);
                 }
             }
         }
     }
-    if (keyCode == ALLEGRO_KEY_Q && money >= MachineGunTurret::Price) {
-        // Hotkey for MachineGunTurret.
-        UIBtnClicked(0);
-    } else if (keyCode == ALLEGRO_KEY_W) {
-        // Hotkey for LaserTurret.
-        UIBtnClicked(1);
-    }
-    else if (keyCode >= ALLEGRO_KEY_0 && keyCode <= ALLEGRO_KEY_9) {
-        // Hotkey for Speed up.
-        SpeedMult = keyCode - ALLEGRO_KEY_0;
-    }
+    if (keyCode == ALLEGRO_KEY_Q && money >= MachineGunTurret::Price) UIBtnClicked(0);
+    else if (keyCode == ALLEGRO_KEY_W && money >= LaserTurret::Price) UIBtnClicked(1);
+    else if (keyCode >= ALLEGRO_KEY_0 && keyCode <= ALLEGRO_KEY_9) SpeedMult = keyCode - ALLEGRO_KEY_0;
 }
+
 void PlayScene::Hit() {
     lives--;
     // not sure
@@ -504,8 +515,7 @@ void PlayScene::EarnMoney(int money) {
     UIMoney->Text = std::string("$") + std::to_string(this->money);
 }
 void PlayScene::ReadMap() {
-    std::string filename = std::string("Resource/map") + std::to_string(MapId) + ".txt";
-    // Read map file.
+    std::string filename = "Resource/map" + std::to_string(MapId) + ".txt";
     char c;
     std::vector<bool> mapData;
     std::ifstream fin(filename);
@@ -513,33 +523,24 @@ void PlayScene::ReadMap() {
         switch (c) {
             case '0': mapData.push_back(false); break;
             case '1': mapData.push_back(true); break;
-            case '\n':
-            case '\r':
-                if (static_cast<int>(mapData.size()) / MapWidth != 0)
-                    throw std::ios_base::failure("Map data is corrupted.");
-                break;
-            default: throw std::ios_base::failure("Map data is corrupted.");
+            default: break;
         }
     }
     fin.close();
-    // Validate map data.
-    if (static_cast<int>(mapData.size()) != MapWidth * MapHeight)
-        throw std::ios_base::failure("Map data is corrupted.");
-    // Store map in 2d array.
-    mapState = std::vector<std::vector<TileType>>(MapHeight, std::vector<TileType>(MapWidth));
-    for (int i = 0; i < MapHeight; i++) {
-        for (int j = 0; j < MapWidth; j++) {
-            const int num = mapData[i * MapWidth + j];
-            mapState[i][j] = num ? TILE_FLOOR : TILE_DIRT;
-            if (num)
-                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-            else
-                TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+    mapState.assign(MapHeight, std::vector<TileType>(MapWidth));
+    TileMapGroup->Clear();
+    for (int y = 0; y < MapHeight; y++) {
+        for (int x = 0; x < MapWidth; x++) {
+            bool isFloor = mapData[y * MapWidth + x];
+            mapState[y][x] = isFloor ? TILE_FLOOR : TILE_DIRT;
+            const char* img = isFloor ? "play/floor.png" : "play/dirt.png";
+            TileMapGroup->AddNewObject(new Engine::Image(img, x * BlockSize, y * BlockSize, BlockSize, BlockSize));
         }
     }
 }
+
+
 void PlayScene::ReadEnemyWave() {
-    // Read enemy file.
     std::string filename = "Resource/enemy" + std::to_string(MapId) + ".txt";
     enemyWaveData.clear();
     std::ifstream fin(filename);
@@ -549,6 +550,7 @@ void PlayScene::ReadEnemyWave() {
     }
     fin.close();
 }
+
 void PlayScene::ConstructUI() {
     // Background
     UIGroup->AddNewObject(new Engine::Image("play/sand.png", 1280, 0, 320, 832));
@@ -719,7 +721,7 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new MachineGunTurret(0, 0);
     else if (id == 1 && money >= LaserTurret::Price)
         preview = new LaserTurret(0, 0);
-    else if (id == 2 && money >= HealingTurret::Price)
+    else if (id == 2 && money >= HealingTurret::Price && !HealingTurret::isLocked)
         preview = new HealingTurret(0, 0);
     else if (id == 3 && money >= MissileTurret::Price)
         preview = new MissileTurret(0, 0);
@@ -735,21 +737,20 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new BossKillerTurret(0, 0);
     else if (id == 9 && money >= FarmTurret::Price && !FarmTurret::isLocked)
         preview = new FarmTurret(0, 0);
-    else if (id == 11) {
-        if (bombCooldown <= 0) {
-            UIGroup->AddNewObject(new Plane());
-            bombCooldown = bombCooldownTime;
-        }
+    else if (id == 11) { //maybe create a cooldown
+        UIGroup->AddNewObject(new Plane);
     }
     else if (id == 12) {
-        if (moneyRainCooldown <= 0) {
-            EarnMoney(1000);
-            moneyRainCooldown = moneyRainCooldownTime;
-        }
+        EarnMoney(1000);
+    }
+    else if (id == 13) {
+        //TIMESTOP
+    }
+    else if (id == 14) {
+        //AI DO A MESSAGE
     }
     else if (id == 20) {
-        if (MapId == 7) Engine::GameEngine::GetInstance().ChangeScene("stage-select");
-        else Engine::GameEngine::GetInstance().ChangeScene("campaign");
+        Engine::GameEngine::GetInstance().ChangeScene("stage-select");
     }
     else if (id == 21) {
         Engine::GameEngine::GetInstance().ChangeScene("play");
@@ -764,80 +765,63 @@ void PlayScene::UIBtnClicked(int id) {
     OnMouseMove(Engine::GameEngine::GetInstance().GetMousePosition().x, Engine::GameEngine::GetInstance().GetMousePosition().y);
 }
 
+
 int PlayScene::GetScore() const {
     return Score;
 }
 
 
 bool PlayScene::CheckSpaceValid(int x, int y) {
-    if (x < 0 || x >= MapWidth || y < 0 || y >= MapHeight)
-        return false;
-    auto map00 = mapState[y][x];
+    if (x < 0 || x >= MapWidth || y < 0 || y >= MapHeight) return false;
+    TileType old = mapState[y][x];
     mapState[y][x] = TILE_OCCUPIED;
-    std::vector<std::vector<int>> map = CalculateBFSDistance();
-    mapState[y][x] = map00;
-    if (map[0][0] == -1)
-        return false;
-    for (auto &it : EnemyGroup->GetObjects()) {
-        Engine::Point pnt;
-        pnt.x = floor(it->Position.x / BlockSize);
-        pnt.y = floor(it->Position.y / BlockSize);
-        if (pnt.x < 0) pnt.x = 0;
-        if (pnt.x >= MapWidth) pnt.x = MapWidth - 1;
-        if (pnt.y < 0) pnt.y = 0;
-        if (pnt.y >= MapHeight) pnt.y = MapHeight - 1;
-        if (map[pnt.y][pnt.x] == -1)
+    auto distMap = CalculateBFSDistance();
+    mapState[y][x] = old;
+    for (auto &ep : entryPoints) {
+        if (ep.x < 0 || ep.x >= MapWidth || ep.y < 0 || ep.y >= MapHeight || distMap[ep.y][ep.x] == -1)
             return false;
     }
-    // All enemy have path to exit.
-    mapState[y][x] = TILE_OCCUPIED;
-    mapDistance = map;
-    for (auto &it : EnemyGroup->GetObjects())
-        dynamic_cast<Enemy *>(it)->UpdatePath(mapDistance);
+    for (auto &obj : EnemyGroup->GetObjects()) {
+        auto *e = dynamic_cast<Enemy *>(obj);
+        int ex = int(std::floor(e->Position.x / BlockSize));
+        int ey = int(std::floor(e->Position.y / BlockSize));
+        if (ex < 0 || ex >= MapWidth || ey < 0 || ey >= MapHeight) continue;
+        if (distMap[ey][ex] == -1) return false;
+    }
+    mapDistance = std::move(distMap);
+    for (auto &obj : EnemyGroup->GetObjects())
+        dynamic_cast<Enemy *>(obj)->UpdatePath(mapDistance);
     return true;
 }
+
+
 std::vector<std::vector<int>> PlayScene::CalculateBFSDistance() {
-    // Reverse BFS to find path.
-    std::vector<std::vector<int>> map(MapHeight, std::vector<int>(std::vector<int>(MapWidth, -1)));
-    std::queue<Engine::Point> que;
-    // Push end point.
-    // BFS from end point.
-    int endX = EndGridPoint.x - 1;
-    int endY = EndGridPoint.y;
-    if (endX < 0 || endX >= MapWidth || endY < 0 || endY >= MapHeight) return map;
-    if (mapState[MapHeight - 1][MapWidth - 1] != TILE_DIRT)
-        return map;
-    que.push(Engine::Point(MapWidth - 1, MapHeight - 1));
-    map[MapHeight - 1][MapWidth - 1] = 0;
-    while (!que.empty()) {
-        Engine::Point p = que.front();
-        que.pop();
-        // TODO PROJECT-1 (1/1): Implement a BFS starting from the most right-bottom block in the map.
-        //               For each step you should assign the corresponding distance to the most right-bottom block.
-        //               mapState[y][x] is TILE_DIRT if it is empty.
-
-        int dist = map[p.y][p.x];
-
-        for (auto dir : directions) {
-            int nx = p.x + dir.x;
-            int ny = p.y + dir.y;
-
-            if (nx >= 0 && nx < MapWidth && ny >= 0 && ny < MapHeight) {
-                if (map[ny][nx] == -1 && mapState[ny][nx] == TILE_DIRT) {
-                    map[ny][nx] = dist + 1;
-                    que.push(Engine::Point(nx, ny));
-                }
-            }
+    std::vector<std::vector<int>> dist(MapHeight, std::vector<int>(MapWidth, -1));
+    std::queue<Engine::Point> q;
+    int sx = std::clamp(static_cast<int>(EndGridPoint.x), 0, MapWidth - 1);
+    int sy = std::clamp(static_cast<int>(EndGridPoint.y), 0, MapHeight - 1);
+    dist[sy][sx] = 0;
+    q.push(Engine::Point(sx, sy));
+    while (!q.empty()) {
+        auto p = q.front(); q.pop();
+        int cd = dist[p.y][p.x];
+        for (auto &d : PlayScene::directions) {
+            int nx = p.x + d.x, ny = p.y + d.y;
+            if (nx < 0 || nx >= MapWidth || ny < 0 || ny >= MapHeight) continue;
+            if (dist[ny][nx] != -1) continue;
+            if (mapState[ny][nx] != TILE_DIRT) continue;
+            dist[ny][nx] = cd + 1;
+            q.push(Engine::Point(nx, ny));
         }
-
     }
-    return map;
+    return dist;
 }
+
 
 void PlayScene::FreeTile(int gridX, int gridY) {
-    // restore to “floor” so it's buildable again but still blocks enemies
     mapState[gridY][gridX] = TILE_FLOOR;
 }
+
 
 void PlayScene::GenerateRandomMap(int round) {
     // 1. Fill every cell with FLOOR
@@ -954,10 +938,6 @@ void PlayScene::GenerateRandomMap(int round) {
     mapDistance = CalculateBFSDistance();
 }
 
-
-
-
-
 void PlayScene::GenerateEnemyWave(int round) {
     // Example: Increase difficulty each round
     enemyWaveData.clear();
@@ -980,7 +960,6 @@ void PlayScene::GenerateEnemyWave(int round) {
         enemyWaveData.emplace_back(2, wait + 0.2f);
     for (int i = 0; i < numSoldiers; ++i)
         enemyWaveData.emplace_back(1, wait);
-
 }
 
 void PlayScene::RemoveAllTurrets() {
