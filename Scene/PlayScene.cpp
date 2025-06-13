@@ -83,6 +83,9 @@ Engine::Point PlayScene::GetClientSize() {
 }
 void PlayScene::Initialize() {
     AIPlacedThisRound = false;
+    timeStopUsed    = false;
+    timeStopActive  = false;
+    timeStopTimer   = 0.0f;
     mapState.clear();
     keyStrokes.clear();
     ticks = 0;
@@ -184,6 +187,16 @@ void PlayScene::Terminate() {
     IScene::Terminate();
 }
 void PlayScene::Update(float deltaTime) {
+
+    // ──── Time-stop timer ────
+    if (timeStopActive) {
+        timeStopTimer -= deltaTime;
+        if (timeStopTimer <= 0.0f) {
+            timeStopActive = false;
+        }
+    }
+
+
     // ────── bomb & money-rain cooldowns ──────
     // from code 1
     if (bombCooldown > 0) {
@@ -193,9 +206,24 @@ void PlayScene::Update(float deltaTime) {
         moneyRainCooldown -= deltaTime;
     }
 
-    // ────── base update ──────
-    // from code 2
-    IScene::Update(deltaTime * SpeedMult);
+    // ──── Main scene update ────
+    float scaledDelta = deltaTime * SpeedMult;
+    if (!timeStopActive) {
+        // normal: all game objects advance
+        IScene::Update(scaledDelta);
+    } else {
+        // time-stopped: advance everything *except* enemies
+        TileMapGroup       ->Update(scaledDelta);
+        GroundEffectGroup  ->Update(scaledDelta);
+        DebugIndicatorGroup->Update(scaledDelta);
+        TowerGroup         ->Update(scaledDelta);
+        // skip EnemyGroup->Update!
+        BulletGroup        ->Update(scaledDelta);
+        EffectGroup        ->Update(scaledDelta);
+        UIGroup            ->Update(scaledDelta);
+    }
+
+
 
     // ────── Round transition effect ──────
     // mostly from code 2, with endless-round tweaks from code 1
@@ -229,6 +257,10 @@ void PlayScene::Update(float deltaTime) {
                 EarnMoney(100 * nextRoundNumber / 2);         
                 ticks = 0;                                    
                 AIPlacedThisRound = false;                   // reset AI placement flag
+                timeStopUsed   = false;
+                timeStopActive = false;
+                timeStopTimer  = 0.0f;
+
                 if (roundLabel) 
                     roundLabel->Text = "Round: " + std::to_string(nextRoundNumber);
             }
@@ -805,6 +837,11 @@ void PlayScene::UIBtnClicked(int id) {
     }
     else if (id == 13) {
         //TIMESTOP
+        if (!timeStopUsed) {
+            timeStopUsed   = true;
+            timeStopActive = true;
+            timeStopTimer  = timeStopDuration;
+        }
     }
     else if (id == 14) {
         //AI DO A MESSAGE

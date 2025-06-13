@@ -57,6 +57,11 @@ protected:
     float roundTransitionTimer = 0.0f;
     int nextRoundNumber = 0;
 
+    bool timeStopUsed    = false;   // has the player already used time-stop this round?
+    bool timeStopActive  = false;   // is time-stop currently running?
+    float timeStopTimer  = 0.0f;     // how much longer it will run
+    const float timeStopDuration = 5.0f; // seconds of freeze
+
 public:
     static bool DebugMode;
     static const std::vector<Engine::Point> directions;
