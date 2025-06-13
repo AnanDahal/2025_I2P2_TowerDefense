@@ -19,6 +19,7 @@ public:
     void BackOnClick(int stage);
     void Draw() const override;
     void OnKeyDown(int keyCode) override;
+    int winstage = 7;
 };
 
 #endif   // WINSCENE_HPP
