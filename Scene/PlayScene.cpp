@@ -659,8 +659,6 @@ void PlayScene::ConstructUI() {
     }
 
 
-
-
     if (MapId == 2) {
         roundLabel = new Engine::Label("Round: " + std::to_string(endlessRound), "pirulen.ttf", 32, 1050, 50);
         UIGroup->AddNewObject(roundLabel);
@@ -748,11 +746,17 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new BossKillerTurret(0, 0);
     else if (id == 9 && money >= FarmTurret::Price && !FarmTurret::isLocked)
         preview = new FarmTurret(0, 0);
-    else if (id == 11) { //maybe create a cooldown
-        UIGroup->AddNewObject(new Plane);
+    else if (id == 11) {
+        if (bombCooldown <= 0) {
+            UIGroup->AddNewObject(new Plane());
+            bombCooldown = bombCooldownTime;
+        }
     }
     else if (id == 12) {
-        EarnMoney(1000);
+        if (moneyRainCooldown <= 0) {
+            EarnMoney(1000);
+            moneyRainCooldown = moneyRainCooldownTime;
+        }
     }
     else if (id == 13) {
         //TIMESTOP
