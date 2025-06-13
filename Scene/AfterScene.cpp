@@ -1,6 +1,7 @@
 #include "AfterScene.h"
 
 #include "PlayScene.hpp"
+#include "WinScene.hpp"
 #include "StageSelectScene.hpp"
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_primitives.h>
@@ -190,7 +191,9 @@ void AfterScene::Update(float deltaTime) {
         if (fadeAlpha >= 255) {
             fadeAlpha = 255;
             // Change scene when fully faded out - go back to campaign scene
-            Engine::GameEngine::GetInstance().ChangeScene("campaign");
+            WinScene *scene = dynamic_cast<WinScene *>(Engine::GameEngine::GetInstance().GetScene("win"));
+            scene->winstage = storyid;
+            Engine::GameEngine::GetInstance().ChangeScene("win");
         }
     }
 }
