@@ -15,6 +15,11 @@
 #include "Enemy/SoldierEnemy.hpp"
 #include "Enemy/ArmyEnemy.hpp"
 #include "Enemy/TankEnemy.hpp"
+#include "Enemy/CarrierEnemy.h"
+#include "Enemy/BiggerCarrierEnemy.h"
+#include "Enemy/MissEnemy.h"
+#include "Enemy/MiniBossEnemy.h"
+#include "Enemy/BossEnemy.h"
 #include "Engine/AudioHelper.hpp"
 #include "Engine/GameEngine.hpp"
 #include "Engine/Group.hpp"
@@ -30,6 +35,7 @@
 #include "Turret/MissileTurret.h"
 #include "Turret/SlowTurret.h"
 #include "Turret/TankKillerTurret.h"
+#include "Turret/BossKillerTurret.h"
 #include "Turret/TurretButton.hpp"
 #include "UI/Animation/DirtyEffect.hpp"
 #include "UI/Animation/Plane.hpp"
@@ -47,8 +53,8 @@ const std::vector<Engine::Point> PlayScene::directions = { Engine::Point(-1, 0),
 const int PlayScene::MapWidth = 20, PlayScene::MapHeight = 13;
 const int PlayScene::BlockSize = 64;
 const float PlayScene::DangerTime = 7.61;
-const Engine::Point PlayScene::SpawnGridPoint = Engine::Point(-1, 0);
-const Engine::Point PlayScene::EndGridPoint = Engine::Point(MapWidth, MapHeight - 1);
+Engine::Point PlayScene::SpawnGridPoint = Engine::Point(-1, 0);
+Engine::Point PlayScene::EndGridPoint = Engine::Point(MapWidth, MapHeight - 1);
 const std::vector<int> PlayScene::code = {
     ALLEGRO_KEY_UP, ALLEGRO_KEY_UP, ALLEGRO_KEY_DOWN, ALLEGRO_KEY_DOWN
     // ,
@@ -872,8 +878,8 @@ void PlayScene::GenerateRandomMap(int round) {
     //    a) Determine orientation of start-edge
     bool isHorizontal = (startP.x == 0 || startP.x == MapWidth - 1);
 
-    //    b) Prepare RNG    //    b) Prepare RNG
-    std::mt19937 rng{ std::random_device{}() };    std::mt19937 rng{ std::random_device{}() };
+    //    b) Prepare RNG
+    std::mt19937 rng{ std::random_device{}() };
 
     //    c) First move: step off the start-edge
     std::vector<std::pair<int,int>> moves;
@@ -912,7 +918,7 @@ void PlayScene::GenerateRandomMap(int round) {
         middle.emplace_back(0, remDY > 0 ? 1 : -1);
 
     //    g) Shuffle middle steps to create winding corridor
-    std::shuffle(middle.begin(), middle.end(), rng);    std::shuffle(middle.begin(), middle.end(), rng);
+    std::shuffle(middle.begin(), middle.end(), rng);
 
     //    h) Stitch together: first, then middle, then last
     moves.insert(moves.end(), middle.begin(), middle.end());
@@ -941,6 +947,8 @@ void PlayScene::GenerateRandomMap(int round) {
     // 7. Compute BFS distances for enemy pathfinding
     mapDistance = CalculateBFSDistance();
 }
+
+
 
 
 

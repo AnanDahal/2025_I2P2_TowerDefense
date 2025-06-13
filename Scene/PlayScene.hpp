@@ -59,8 +59,8 @@ public:
     static const int MapWidth, MapHeight;
     static const int BlockSize;
     static const float DangerTime;
-    static const Engine::Point SpawnGridPoint;
-    static const Engine::Point EndGridPoint;
+    static Engine::Point SpawnGridPoint;
+    static Engine::Point EndGridPoint;
     static const std::vector<int> code;
     int MapId;
     float ticks;
@@ -110,6 +110,10 @@ public:
     // shovel
     Engine::Sprite* shovelPreview = nullptr;
     bool Shoveling = false;
+
+    std::vector<Engine::Point> entryPoints; 
+    Engine::Point endPoint;                 // End point (grid coordinate)
+    Engine::Point spawnPoint;
 
 Engine::Label* roundLabel = nullptr;
 
