@@ -10,7 +10,6 @@
 #include <random>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_ttf.h>
-
 #include "Enemy/Enemy.hpp"
 #include "Enemy/SoldierEnemy.hpp"
 #include "Enemy/ArmyEnemy.hpp"
@@ -55,7 +54,7 @@ const int PlayScene::MapWidth = 20, PlayScene::MapHeight = 13;
 const int PlayScene::BlockSize = 64;
 const float PlayScene::DangerTime = 7.61;
 const Engine::Point PlayScene::SpawnGridPoint = Engine::Point(-1, 0);
-const Engine::Point PlayScene::EndGridPoint = Engine::Point(MapWidth, MapHeight - 1);
+Engine::Point PlayScene::EndGridPoint = Engine::Point(MapWidth, MapHeight - 1);
 const std::vector<int> PlayScene::code = {
     ALLEGRO_KEY_UP, ALLEGRO_KEY_UP, ALLEGRO_KEY_DOWN, ALLEGRO_KEY_DOWN
     // ,
@@ -880,7 +879,7 @@ void PlayScene::GenerateRandomMap(int round) {
     bool isHorizontal = (startP.x == 0 || startP.x == MapWidth - 1);
 
     //    b) Prepare RNG    //    b) Prepare RNG
-    std::mt19937 rng{ std::random_device{}() };    std::mt19937 rng{ std::random_device{}() };
+    std::mt19937 rng{ std::random_device{}() };
 
     //    c) First move: step off the start-edge
     std::vector<std::pair<int,int>> moves;
