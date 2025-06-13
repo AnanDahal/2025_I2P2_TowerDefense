@@ -7,7 +7,6 @@
 #include "Engine/Point.hpp"
 #include "Engine/Sprite.hpp"
 
-extern int OnStage;
 extern int core_memories;
 
 class Bullet;

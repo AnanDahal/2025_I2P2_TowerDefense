@@ -12,6 +12,7 @@
 #include "Engine/Group.hpp"
 #include "Engine/IScene.hpp"
 #include "Engine/LOG.hpp"
+#include "Scene/BeforeScene.h"
 #include "Scene/PlayScene.hpp"
 #include "Turret/Turret.hpp"
 #include "UI/Animation/DirtyEffect.hpp"
@@ -30,7 +31,7 @@ void Enemy::OnExplode() {
         // Random add 10 dirty effects.
         getPlayScene()->GroundEffectGroup->AddNewObject(new DirtyEffect("play/dirty-" + std::to_string(distId(rng)) + ".png", dist(rng), Position.x, Position.y));
     }
-    if (OnStage == 5 || OnStage == 6) {
+    if (getPlayScene()->MapId == 5 || getPlayScene()->MapId == 6) {
         core_memories++;
     }
 }
