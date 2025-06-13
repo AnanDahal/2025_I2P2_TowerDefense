@@ -248,82 +248,67 @@ void PlayScene::Update(float deltaTime) {
         AudioHelper::StopSample(deathBGMInstance);
         dangerIndicator->Tint.a = 0;
     }
-    if (SpeedMult == 0)
-        deathCountDown = -1;
-
-    for (int i = 0; i < SpeedMult; i++) {
-        IScene::Update(deltaTime);
-        // Check if we should create new enemy.
-        ticks += deltaTime;
-        if (enemyWaveData.empty()) {
-            if (EnemyGroup->GetObjects().empty()) {
-                if (endlessMode) {
-                    endlessRound++;
-                    RemoveAllTurrets();
-                    EnemyGroup->Clear();
-                    roundTransitionState = WAIT_BEFORE_ROUND_LABEL;
-                    roundTransitionTimer = 1.0f; // Wait 1 second before showing "ROUND X"
-                    nextRoundNumber = endlessRound;
-                    return;
-                } else {
-                    // Check if this stage has an after-scene (stages 1-6)
-                    if (MapId >= 1 && MapId <= 6) {
-                        // For stages with story, go to AfterScene
-                        AfterScene *afterScene = dynamic_cast<AfterScene *>(Engine::GameEngine::GetInstance().GetScene("after"));
-                        if (afterScene) {
-                            afterScene->storyid = MapId;
-                            Engine::GameEngine::GetInstance().ChangeScene("after");
-                        }
-                    } else {
-                        // For stages without story, go directly to WinScene
-                        Engine::GameEngine::GetInstance().ChangeScene("win");
-                    }
-                }
-            }
-            continue;
-        }
-        auto current = enemyWaveData.front();
-        if (ticks < current.second)
-            continue;
-        ticks -= current.second;
+    ticks += deltaTime * SpeedMult;  // accumulate timeAdd commentMore actions
+    while (!enemyWaveData.empty() && ticks >= enemyWaveData.front().second) {
+        auto wave = enemyWaveData.front();
         enemyWaveData.pop_front();
-        const Engine::Point SpawnCoordinate = Engine::Point(SpawnGridPoint.x * BlockSize + BlockSize / 2, SpawnGridPoint.y * BlockSize + BlockSize / 2);
-        Enemy *enemy;
-        switch (current.first) {
-            case 1:
-                EnemyGroup->AddNewObject(enemy = new SoldierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 2:
-                EnemyGroup->AddNewObject(enemy = new ArmyEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 3:
-                EnemyGroup->AddNewObject(enemy = new TankEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 4:
-                EnemyGroup->AddNewObject(enemy = new CarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 5:
-                EnemyGroup->AddNewObject(enemy = new BiggerCarrierEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 6:
-                EnemyGroup->AddNewObject(enemy = new MissEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
-                break;
-            case 7:
-                EnemyGroup->AddNewObject(enemy = new MiniBossEnemy(SpawnCoordinate.x, SpawnCoordinate.y, 2));
-                break;
-            case 8:
-                EnemyGroup->AddNewObject(enemy = new BossEnemy(SpawnCoordinate.x, SpawnCoordinate.y, 6));
-                break;
+        ticks -= wave.second;
 
+        // 1) Pick a random entry grid point (set in GenerateRandomMap or ReadMap)
+        Engine::Point entry = entryPoints[rand() % entryPoints.size()];
+
+        // 2) Compute off-screen spawn center based on which edge
+        float spawnX, spawnY;
+        if (entry.x == 0) {                 // left edge → from left
+            spawnX = -BlockSize/2.0f;
+            spawnY = entry.y * BlockSize + BlockSize/2.0f;
+        }
+        else if (entry.x == MapWidth - 1) { // right edge → from right
+            spawnX = MapWidth * BlockSize + BlockSize/2.0f;
+            spawnY = entry.y * BlockSize + BlockSize/2.0f;
+        }
+        else if (entry.y == 0) {            // top edge → from above
+            spawnX = entry.x * BlockSize + BlockSize/2.0f;
+            spawnY = -BlockSize/2.0f;
+        }
+        else {                              // bottom edge → from below
+            spawnX = entry.x * BlockSize + BlockSize/2.0f;
+            spawnY = MapHeight * BlockSize + BlockSize/2.0f;
+        }
+
+        // 3) Instantiate the correct Enemy subclass
+        Enemy *e = nullptr;
+        switch (wave.first) {
+            case 1: EnemyGroup->AddNewObject(e = new SoldierEnemy(spawnX, spawnY)); break;
+            case 2: EnemyGroup->AddNewObject(e = new ArmyEnemy   (spawnX, spawnY)); break;
+            case 3: EnemyGroup->AddNewObject(e = new TankEnemy   (spawnX, spawnY)); break;
+            case 4: EnemyGroup->AddNewObject(e = new CarrierEnemy(spawnX, spawnY)); break;
+            case 5: EnemyGroup->AddNewObject(e = new BiggerCarrierEnemy(spawnX, spawnY)); break;
+            case 6: EnemyGroup->AddNewObject(e = new MissEnemy(spawnX, spawnY)); break;
+            case 7: EnemyGroup->AddNewObject(e = new MiniBossEnemy(spawnX, spawnY, 2)); break;
+            case 8: EnemyGroup->AddNewObject(e = new BossEnemy(spawnX, spawnY, 6));break;
             default:
+                printf("[ERROR] Unknown enemy type %d\n", wave.first);
                 continue;
         }
-        enemy->Position.x = SpawnCoordinate.x;
-        enemy->Position.y = SpawnCoordinate.y;
-        printf("Spawning enemy at (%.1f, %.1f)\n", enemy->Position.x, enemy->Position.y);
-        enemy->UpdatePath(mapDistance);
-        enemy->Update(ticks);
+        if (e) {
+            // Position and path
+            e->Position.x = spawnX;
+            e->Position.y = spawnY;
+            printf("Spawning enemy at (%.1f, %.1f)\n", spawnX, spawnY);
+            e->UpdatePath(mapDistance);
+        }
     }
+    if (endlessMode
+            && enemyWaveData.empty()
+            && EnemyGroup->GetObjects().empty()
+            && roundTransitionState == NONE)
+    {
+        nextRoundNumber = endlessRound + 1;
+        roundTransitionState = WAIT_BEFORE_ROUND_LABEL;
+        roundTransitionTimer = 1.0f;
+    }
+
     if (preview) {
         preview->Position = Engine::GameEngine::GetInstance().GetMousePosition();
         preview->Update(deltaTime);
@@ -618,14 +603,13 @@ void PlayScene::ReadMap() {
     }
 }
 void PlayScene::ReadEnemyWave() {
-    std::string filename = std::string("Resource/enemy") + std::to_string(MapId) + ".txt";
     // Read enemy file.
-    float type, wait, repeat;
+    std::string filename = "Resource/enemy" + std::to_string(MapId) + ".txt";
     enemyWaveData.clear();
     std::ifstream fin(filename);
-    while (fin >> type && fin >> wait && fin >> repeat) {
-        for (int i = 0; i < repeat; i++)
-            enemyWaveData.emplace_back(type, wait);
+    int type; float wait; int repeat;
+    while (fin >> type >> wait >> repeat) {
+        for (int i = 0; i < repeat; i++) enemyWaveData.emplace_back(type, wait);
     }
     fin.close();
 }
@@ -927,58 +911,145 @@ void PlayScene::FreeTile(int gridX, int gridY) {
 }
 
 void PlayScene::GenerateRandomMap(int round) {
-    // 1. Fill with floor
-    mapState = std::vector<std::vector<TileType>>(MapHeight, std::vector<TileType>(MapWidth, TILE_FLOOR));
+    // 1. Fill every cell with FLOOR
+    mapState.assign(MapHeight, std::vector<TileType>(MapWidth, TILE_FLOOR));
 
-    // 2. Generate a single winding path from (0,0) to (MapWidth-1, MapHeight-1)
-    int x = 0, y = 0;
-    mapState[y][x] = TILE_DIRT;
-    std::vector<std::pair<int, int>> path;
-    path.emplace_back(x, y);
-
-    // Randomly decide to go right or down at each step, but always reach the end
-    while (x < MapWidth - 1 || y < MapHeight - 1) {
-        bool moveRight = false;
-        if (x == MapWidth - 1) moveRight = false;
-        else if (y == MapHeight - 1) moveRight = true;
-        else moveRight = rand() % 2;
-
-        if (moveRight) x++;
-        else y++;
-        path.emplace_back(x, y);
+    // 2. Build lists of valid edge points (excluding corners)
+    std::vector<Engine::Point> topEdge, bottomEdge, leftEdge, rightEdge;
+    for (int x = 1; x < MapWidth - 1; x++) {
+        topEdge   .emplace_back(x, 0);
+        bottomEdge.emplace_back(x, MapHeight - 1);
+    }
+    for (int y = 1; y < MapHeight - 1; y++) {
+        leftEdge .emplace_back(0, y);
+        rightEdge.emplace_back(MapWidth - 1, y);
     }
 
-    // Mark the path as TILE_DIRT (enemy path), rest is TILE_FLOOR (tower buildable)
-    for (auto& p : path) {
-        mapState[p.second][p.first] = TILE_DIRT;
+    // 3. Randomly pick start+end on opposite sides
+    int side = rand() % 4;
+    Engine::Point startP, endP;
+    if      (side == 0) { startP = leftEdge [rand() % leftEdge .size()]; endP = rightEdge[rand() % rightEdge.size()]; }
+    else if (side == 1) { startP = rightEdge[rand() % rightEdge.size()]; endP = leftEdge [rand() % leftEdge .size()]; }
+    else if (side == 2) { startP = topEdge  [rand() % topEdge  .size()]; endP = bottomEdge[rand() % bottomEdge.size()]; }
+    else                { startP = bottomEdge[rand() % bottomEdge.size()]; endP = topEdge   [rand() % topEdge  .size()]; }
+
+    std::cout << "[DEBUG] Start: (" << startP.x << "," << startP.y
+              << ") → End: (" << endP.x << "," << endP.y << ")\n";
+
+    // 4. Register entry & BFS target
+    entryPoints.clear();
+    entryPoints.push_back(startP);
+    endPoint = endP;
+    PlayScene::EndGridPoint = endP;
+    spawnPoint = startP;
+
+    std::cout
+    << "[DEBUG] GenerateRandomMap: startP=("
+    << startP.x << "," << startP.y << ")  "
+    << "endP=("   << endP.x   << "," << endP.y   << ")\n";
+    std::cout
+    << "[DEBUG]   spawnPoint=("
+    << spawnPoint.x << "," << spawnPoint.y << ")\n";
+
+    // 5. Carve one continuous path, reserving exactly one dirt at start-edge and one at end-edge
+    //    a) Determine orientation of start-edge
+    bool isHorizontal = (startP.x == 0 || startP.x == MapWidth - 1);
+
+    //    b) Prepare RNG    //    b) Prepare RNG
+    std::mt19937 rng{ std::random_device{}() };    std::mt19937 rng{ std::random_device{}() };
+
+    //    c) First move: step off the start-edge
+    std::vector<std::pair<int,int>> moves;
+    if (isHorizontal) {
+        int dx = (endP.x > startP.x ? 1 : -1);
+        moves.emplace_back(dx, 0);
+    } else {
+        int dy = (endP.y > startP.y ? 1 : -1);
+        moves.emplace_back(0, dy);
     }
 
-    // 3. Rebuild tile images
+    //    d) Compute remaining delta after first move
+    Engine::Point cur = startP;
+    cur.x += moves[0].first;
+    cur.y += moves[0].second;
+    int remDX = endP.x - cur.x;
+    int remDY = endP.y - cur.y;
+
+    //    e) Last move: step onto the end-edge
+    std::pair<int,int> lastMove;
+    if (isHorizontal) {
+        int dx = (remDX > 0 ? 1 : -1);
+        lastMove = {dx, 0};
+        remDX  -= dx;
+    } else {
+        int dy = (remDY > 0 ? 1 : -1);
+        lastMove = {0, dy};
+        remDY  -= dy;
+    }
+
+    //    f) Build the “middle” moves (all remaining Manhattan steps)
+    std::vector<std::pair<int,int>> middle;
+    for (int i = 0; i < std::abs(remDX); ++i)
+        middle.emplace_back(remDX > 0 ? 1 : -1, 0);
+    for (int i = 0; i < std::abs(remDY); ++i)
+        middle.emplace_back(0, remDY > 0 ? 1 : -1);
+
+    //    g) Shuffle middle steps to create winding corridor
+    std::shuffle(middle.begin(), middle.end(), rng);    std::shuffle(middle.begin(), middle.end(), rng);
+
+    //    h) Stitch together: first, then middle, then last
+    moves.insert(moves.end(), middle.begin(), middle.end());
+    moves.push_back(lastMove);
+
+    //    i) Carve path into mapState
+    mapState[startP.y][startP.x] = TILE_DIRT;
+    cur = startP;
+    for (auto &m : moves) {
+        cur.x += m.first;
+        cur.y += m.second;
+        mapState[cur.y][cur.x] = TILE_DIRT;
+    }
+
+    // 6. Refresh the visual tile map
     TileMapGroup->Clear();
-    for (int i = 0; i < MapHeight; i++) {
-        for (int j = 0; j < MapWidth; j++) {
-            if (mapState[i][j] == TILE_FLOOR)
-                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-            else
-                TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+    for (int y = 0; y < MapHeight; y++) {
+        for (int x = 0; x < MapWidth; x++) {
+            const char* img = (mapState[y][x] == TILE_DIRT ? "play/dirt.png" : "play/floor.png");
+            TileMapGroup->AddNewObject(
+                new Engine::Image(img, x * BlockSize, y * BlockSize, BlockSize, BlockSize)
+            );
         }
     }
+
+    // 7. Compute BFS distances for enemy pathfinding
+    mapDistance = CalculateBFSDistance();
 }
+
+
 
 void PlayScene::GenerateEnemyWave(int round) {
     // Example: Increase difficulty each round
     enemyWaveData.clear();
-    int numSoldiers = 5 + round * 2;
-    int numArmies = round / 2;
-    int numTanks = round / 3;
-    float wait = std::max(0.5f, 2.0f - round * 0.05f); // Faster spawns as round increases
+    // Adjust these numbers for your game's balance
+    int numBiggerCarriers = std::max(0, round / 5);
+    int numCarriers       = std::max(0, round / 4);
+    int numTanks          = std::max(0, round / 3);
+    int numArmies         = std::max(1, round / 2);
+    int numSoldiers       = 5 + round * 2;
 
-    for (int i = 0; i < numSoldiers; ++i)
-        enemyWaveData.emplace_back(1, wait);
-    for (int i = 0; i < numArmies; ++i)
-        enemyWaveData.emplace_back(2, wait + 0.2f);
+    float wait = std::max(0.5f, 2.0f - round * 0.05f);
+
+    for (int i = 0; i < numBiggerCarriers; ++i)
+        enemyWaveData.emplace_back(5, wait + 0.8f);
+    for (int i = 0; i < numCarriers; ++i)
+        enemyWaveData.emplace_back(4, wait + 0.6f);
     for (int i = 0; i < numTanks; ++i)
         enemyWaveData.emplace_back(3, wait + 0.4f);
+    for (int i = 0; i < numArmies; ++i)
+        enemyWaveData.emplace_back(2, wait + 0.2f);
+    for (int i = 0; i < numSoldiers; ++i)
+        enemyWaveData.emplace_back(1, wait);
+
 }
 
 void PlayScene::RemoveAllTurrets() {
