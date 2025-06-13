@@ -9,7 +9,7 @@
 
 
 
-BiggerCarrierEnemy::BiggerCarrierEnemy(int x, int y) : Enemy("play/enemy-6.png", 4, x, y, 10, 15, 100, 80) {
+BiggerCarrierEnemy::BiggerCarrierEnemy(int x, int y) : Enemy("play/enemy-6.png", 1, x, y, 10, 15, 100, 80) {
 }
 
 void BiggerCarrierEnemy::OnExplode() {

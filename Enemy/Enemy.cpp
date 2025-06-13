@@ -109,7 +109,7 @@ void Enemy::Update(float deltaTime) {
     }
     // Pre-calculate the velocity.
     float remainSpeed = speed * deltaTime;
-    if (type != 0 && type % 2 == 0) remainSpeed *= (refhp - hp <= 1) ? 1 : (refhp - hp) / 2;
+    if (type != 0 && type == 2) remainSpeed *= (refhp - hp <= 1) ? 1 : (refhp - hp) / 2;
     while (remainSpeed != 0) {
         if (path.empty()) {
             // Reach end point.
