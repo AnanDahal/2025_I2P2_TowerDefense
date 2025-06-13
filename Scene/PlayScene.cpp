@@ -333,6 +333,17 @@ void PlayScene::Update(float deltaTime) {
         roundTransitionTimer = 1.0f;                    // both
     }
 
+    if (!endlessMode
+        && enemyWaveData.empty()
+        && EnemyGroup->GetObjects().empty()
+        && roundTransitionState == NONE)
+    {
+        // all waves are done and no enemies remain → campaign level complete
+        Engine::GameEngine::GetInstance().ChangeScene("after");
+        return;
+    }
+
+
     // ────── Turret- & shovel-preview ──────
     // from code 2
     if (preview) {
