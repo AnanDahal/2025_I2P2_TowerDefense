@@ -48,38 +48,67 @@ void AfterScene::Initialize() {
             break;
             
         case 2:
-            AddDialogue("Player", "Stage 2 cleared!");
-            AddDialogue("Ally", "That was tougher than I expected.");
-            AddDialogue("Player", "We're getting stronger with each battle.");
+            AddDialogue("Narrator", "Hua woke up with a headache once more.");
+            AddDialogue("Hua", "Ouch...my head...");
+            AddDialogue("Tong Tong", "Dude, what are you still doing here? Aren't you supposed to be at work?");
+            AddDialogue("Hua", "Eh, thought it was still 7 so I slept some more. 5 minutes right?");
+            AddDialogue("Tong Tong", "Bro, its almost 9.");
+            AddDialogue("Hua", "OH SHOOT! Time to go!");
+            AddDialogue("Tong Tong", "...");
+            AddDialogue("Hua", "Umm...Tong, where's the bathroom again?");
+            AddDialogue("Tong Tong", "?");
+            AddDialogue("Tong Tong", "Is this guy really joking right now?");
             SetCharacterImage("play/benjamin.png", 300, 400, halfW, halfH);
             break;
             
         case 3:
-            AddDialogue("Panda", "Victory is ours! Stage 3 complete!");
-            AddDialogue("Ally", "That was an impressive battle.");
-            AddDialogue("Dev", "Congratulations on completing stage 3!");
+            AddDialogue("Narrator", "And again...");
+            AddDialogue("Hua", "Ughhhhhh...");
+            AddDialogue("Tong Tong", "Are you alright bud? You're not looking too fresh.");
+            AddDialogue("Hua", "I don't know bro, I think I'm just gonna go back to sleep.");
+            AddDialogue("Tong Tong", "No really, you look absolutely terrible.");
+            AddDialogue("Tong Tong", "I think we really need to get you to the hospital.");
+            AddDialogue("Hua", "...No thanks.");
+            AddDialogue("Tong Tong", "Huff, this guy...");
             SetCharacterImage("play/panda.png", 350, 450, halfW, halfH);
             break;
             
         case 4:
-            AddDialogue("Player", "Stage 4 conquered!");
-            AddDialogue("Ally", "We're making great progress.");
-            AddDialogue("Player", "Just two more stages to go.");
+            AddDialogue("Hua", "Ughhhhhhh...!");
+            AddDialogue("Narrator", "For context, since none of the developers have the time / skill to draw this,");
+            AddDialogue("Narrator", "Hua looks and feels like he's actively dying faster.");
+            AddDialogue("Hua", "Ugh...please...let this...work...");
+            AddDialogue("Hua", "*beep beep beep*");
+            AddDialogue("911 Operator", "911, what's your emergency?");
+            AddDialogue("Hua", "Help...");
             SetCharacterImage("play/benjamin.png", 300, 400, halfW, halfH);
             break;
             
         case 5:
-            AddDialogue("Player", "Stage 5 down! Just one more to go.");
-            AddDialogue("Ally", "The final battle awaits us.");
-            AddDialogue("Player", "We'll be ready for whatever comes next.");
+            // add the loss scene
+            AddDialogue("|", "|");
+            AddDialogue("| l", "| l");
+            AddDialogue("I l", "I l");
+            AddDialogue("| _", "| _");
+            AddDialogue("Doctor", "Mr Tong.");
+            AddDialogue("Tong Tong", "Yes doctor? Is he going to be alright?");
+            AddDialogue("Doctor", "Your friend here is showing symptoms of late-stage alzheimer's.");
+            AddDialogue("Doctor", "I'm afraid most of his brain functions are beginning to shutdown");
+            AddDialogue("Doctor", "He is currently only able to move his mouth.");
+            AddDialogue("Tong Tong", "...");
+            AddDialogue("Doctor", "We don't know how long he has left, but I assume its not long left.");
+            AddDialogue("Tong Tong", "Can I please see him now doctor?");
+            AddDialogue("Doctor", "By all means.");
             SetCharacterImage("play/benjamin.png", 300, 400, halfW, halfH);
             break;
             
         case 6:
-            AddDialogue("Player", "We've done it! The final stage is complete!");
-            AddDialogue("Ally", "Victory at last!");
-            AddDialogue("Player", "Thank you for playing our game!");
-            AddDialogue("Dev", "We hope you enjoyed the adventure.");
+            AddDialogue("Hua", "You know, you remind me of an old friend...");
+            AddDialogue("Hua", "...someone really dear to me.");
+            AddDialogue("Tong Tong", "...");
+            AddDialogue("Hua", "Why so serious?");
+            AddDialogue("Hua", "Theres no need to be sad.");
+            AddDialogue("Tong Tong", "...Yeah.");
             SetCharacterImage("play/benjamin.png", 300, 400, halfW, halfH);
             break;
             
