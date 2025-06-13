@@ -8,6 +8,10 @@
 
 #include "Engine/IScene.hpp"
 #include <allegro5/allegro_audio.h>
+extern bool skin1;
+extern bool skin2;
+extern bool skin3;
+extern bool skin4;
 
 class ShopScene final : public Engine::IScene {
 private:

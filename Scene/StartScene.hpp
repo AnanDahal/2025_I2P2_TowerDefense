@@ -12,6 +12,10 @@
 extern int OnStage;
 extern int core_memories;
 extern int endless_score;
+extern bool skin1;
+extern bool skin2;
+extern bool skin3;
+extern bool skin4;
 
 class StartScene final : public Engine::IScene {
     int fadeticks;

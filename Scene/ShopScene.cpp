@@ -14,10 +14,7 @@
 #include "UI/Component/Slider.hpp"
 
 //MOVE TO STARTSCENE
-bool skin1 = false;
-bool skin2 = false;
-bool skin3 = false;
-bool skin4 = false;
+
 
 void ShopScene::Initialize() {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
