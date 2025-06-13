@@ -147,7 +147,7 @@ void PlayScene::Initialize() {
         BossKillerTurret::isLocked = true;
     }
 
-    if (MapId == 3 || MapId == 4) {
+    if (MapId == 3 || MapId == 4 || endlessMode) {
         FarmTurret::isLocked = false;
     }
     else {
