@@ -13,22 +13,49 @@
 #include "UI/Component/Label.hpp"
 #include "UI/Component/Slider.hpp"
 
+//MOVE TO STARTSCENE
+bool skin1 = false;
+bool skin2 = false;
+bool skin3 = false;
+bool skin4 = false;
+
 void ShopScene::Initialize() {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int halfW = w / 2;
     int halfH = h / 2;
 
+    AddNewObject(new Engine::Label("SHOP", "pirulen.ttf", 48, halfW, 50, 255, 255, 255, 255, 0.5, 0.5));
+
     Engine::ImageButton *btn;
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH * 3 / 2 - 50, 400, 100);
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH * 3 / 2 + 100, 400, 100);
     btn->SetOnClickCallback(std::bind(&ShopScene::BackOnClick, this, 2));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH * 3 / 2, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH * 3 / 2 + 150, 0, 0, 0, 255, 0.5, 0.5));
+    //bomb power
+    btn = new Engine::ImageButton("play/light-2.png", "play/light-7.png", 0, 120, 400, 400);
+    btn->SetOnClickCallback(std::bind(&ShopScene::ChooseOnClick, this, 1));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label("Skin1", "pirulen.ttf", 36, 200, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
+    //money power
+    btn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 400, 120, 400, 400);
+    btn->SetOnClickCallback(std::bind(&ShopScene::ChooseOnClick, this, 2));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label("Skin2", "pirulen.ttf", 36, 200 + 400, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
+    //Time power
+    btn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 800, 120, 400, 400);
+    btn->SetOnClickCallback(std::bind(&ShopScene::ChooseOnClick, this, 3));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label("Skin3", "pirulen.ttf", 36, 200 + 800, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
+    //AI
+    btn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1200, 120, 400, 400);
+    btn->SetOnClickCallback(std::bind(&ShopScene::ChooseOnClick, this, 4));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label("Skin4", "pirulen.ttf", 36, 200 + 1200, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
 
     bgmInstance = AudioHelper::PlaySample("whistle.wav", true, AudioHelper::BGMVolume-0.75);
     bellInstance = AudioHelper::PlaySample("bell.wav", false, AudioHelper::BGMVolume);
 }
-
 void ShopScene::Terminate() {
     AudioHelper::StopSample(bgmInstance);
     bgmInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
@@ -43,4 +70,19 @@ void ShopScene::Draw() const {
 
 void ShopScene::BackOnClick(int stage) {
     Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+}
+
+void ShopScene::ChooseOnClick(int skin) {
+    if (skin == 1) {
+        skin1 = true;
+    }
+    else if (skin == 2) {
+        skin2 = true;
+    }
+    else if (skin == 3) {
+        skin3 = true;
+    }
+    else if (skin == 4) {
+        skin4 = true;
+    }
 }

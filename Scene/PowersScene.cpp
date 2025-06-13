@@ -21,6 +21,8 @@ void PowersScene::Initialize() {
     int halfW = w / 2;
     int halfH = h / 2;
 
+    AddNewObject(new Engine::Label("POWERS", "pirulen.ttf", 48, halfW, 50, 255, 255, 255, 255, 0.5, 0.5));
+
     Engine::ImageButton *btn;
     btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH * 3 / 2 + 100, 400, 100);
     btn->SetOnClickCallback(std::bind(&PowersScene::BackOnClick, this, 2));

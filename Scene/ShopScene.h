@@ -19,6 +19,7 @@ public:
     void Terminate() override;
     void Draw() const override;
     void BackOnClick(int stage);
+    void ChooseOnClick(int skin);
 };
 
 #endif //SHOPSCENE_H
