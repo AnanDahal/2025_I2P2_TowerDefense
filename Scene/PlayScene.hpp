@@ -116,7 +116,6 @@ public:
     Engine::Point spawnPoint;
 
 Engine::Label* roundLabel = nullptr;
-
     std::map<std::pair<int, int>, std::pair<int, int>> parent; // For reconstructing the path
     // void ModifyReadMapTiles();
     float bombCooldown = 0.0f;

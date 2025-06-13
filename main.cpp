@@ -17,6 +17,7 @@
 #include "Scene/LogInScene.h"
 #include "Scene/PasswordScene.h"
 #include "Scene/PowersScene.h"
+#include "Scene/ShopScene.h"
 
 int main(int argc, char **argv) {
 	Engine::LOG::SetConfig(true);
@@ -37,6 +38,7 @@ int main(int argc, char **argv) {
 	game.AddNewScene("campaign", new CampaignScene());
 	game.AddNewScene("before", new BeforeScene());
 	game.AddNewScene("after", new AfterScene());  // Add the AfterScene
+	game.AddNewScene("shop", new ShopScene());
 
 	// Start the game
 	game.Start("opening", 60, 1600, 832);

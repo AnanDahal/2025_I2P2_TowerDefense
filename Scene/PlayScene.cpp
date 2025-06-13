@@ -10,7 +10,6 @@
 #include <random>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_ttf.h>
-
 #include "Enemy/Enemy.hpp"
 #include "Enemy/SoldierEnemy.hpp"
 #include "Enemy/ArmyEnemy.hpp"
@@ -26,6 +25,12 @@
 #include "Engine/LOG.hpp"
 #include "Engine/Resources.hpp"
 #include "PlayScene.hpp"
+
+#include "Enemy/BiggerCarrierEnemy.h"
+#include "Enemy/BossEnemy.h"
+#include "Enemy/CarrierEnemy.h"
+#include "Enemy/MiniBossEnemy.h"
+#include "Enemy/MissEnemy.h"
 #include "Turret/LaserTurret.hpp"
 #include "Turret/MachineGunTurret.hpp"
 #include "Turret/HealingTurret.hpp"
@@ -35,6 +40,7 @@
 #include "Turret/MissileTurret.h"
 #include "Turret/SlowTurret.h"
 #include "Turret/TankKillerTurret.h"
+#include "Turret/BossKillerTurret.h"
 #include "Turret/BossKillerTurret.h"
 #include "Turret/TurretButton.hpp"
 #include "UI/Animation/DirtyEffect.hpp"
