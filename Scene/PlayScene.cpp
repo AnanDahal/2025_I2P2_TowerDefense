@@ -10,13 +10,10 @@
 #include <random>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_ttf.h>
-
 #include "Enemy/Enemy.hpp"
 #include "Enemy/SoldierEnemy.hpp"
 #include "Enemy/ArmyEnemy.hpp"
 #include "Enemy/TankEnemy.hpp"
-#include "Enemy/CarrierEnemy.h"
-#include "Enemy/BiggerCarrierEnemy.h"
 #include "Engine/AudioHelper.hpp"
 #include "Engine/GameEngine.hpp"
 #include "Engine/Group.hpp"
@@ -24,11 +21,11 @@
 #include "Engine/Resources.hpp"
 #include "PlayScene.hpp"
 
-#include "AfterScene.h"
+#include "Enemy/BiggerCarrierEnemy.h"
 #include "Enemy/BossEnemy.h"
+#include "Enemy/CarrierEnemy.h"
 #include "Enemy/MiniBossEnemy.h"
 #include "Enemy/MissEnemy.h"
-#include "Turret/BossKillerTurret.h"
 #include "Turret/LaserTurret.hpp"
 #include "Turret/MachineGunTurret.hpp"
 #include "Turret/HealingTurret.hpp"
@@ -38,6 +35,7 @@
 #include "Turret/MissileTurret.h"
 #include "Turret/SlowTurret.h"
 #include "Turret/TankKillerTurret.h"
+#include "Turret/BossKillerTurret.h"
 #include "Turret/TurretButton.hpp"
 #include "UI/Animation/DirtyEffect.hpp"
 #include "UI/Animation/Plane.hpp"
@@ -56,9 +54,9 @@ const int PlayScene::MapWidth = 20, PlayScene::MapHeight = 13;
 const int PlayScene::BlockSize = 64;
 const float PlayScene::DangerTime = 7.61;
 const Engine::Point PlayScene::SpawnGridPoint = Engine::Point(-1, 0);
-const Engine::Point PlayScene::EndGridPoint = Engine::Point(MapWidth, MapHeight - 1);
+Engine::Point PlayScene::EndGridPoint = Engine::Point(MapWidth, MapHeight - 1);
 const std::vector<int> PlayScene::code = {
-    ALLEGRO_KEY_UP, ALLEGRO_KEY_UP, ALLEGRO_KEY_DOWN, ALLEGRO_KEY_DOWN   
+    ALLEGRO_KEY_UP, ALLEGRO_KEY_UP, ALLEGRO_KEY_DOWN, ALLEGRO_KEY_DOWN
     // ,
     // ALLEGRO_KEY_LEFT, ALLEGRO_KEY_RIGHT, ALLEGRO_KEY_LEFT, ALLEGRO_KEY_RIGHT,
     // ALLEGRO_KEY_B, ALLEGRO_KEY_A, ALLEGRO_KEYMOD_SHIFT, ALLEGRO_KEY_ENTER
@@ -78,7 +76,7 @@ Engine::Point PlayScene::GetClientSize() {
 void PlayScene::Initialize() {
     mapState.clear();
     keyStrokes.clear();
-    ticks = 0;  
+    ticks = 0;
     deathCountDown = -1;
     lives = 10;
     money = 150;
@@ -167,11 +165,8 @@ void PlayScene::Terminate() {
     AudioHelper::StopBGM(bgmId);
     AudioHelper::StopSample(deathBGMInstance);
     deathBGMInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
-
-    // Properly remove and destroy chatbox
     IScene::Terminate();
 }
-
 void PlayScene::Update(float deltaTime) {
     // --- Round transition effect ---
     if (bombCooldown > 0) {
@@ -213,12 +208,12 @@ void PlayScene::Update(float deltaTime) {
         deathCountDown = -1;
     else if (deathCountDown != -1)
         SpeedMult = 1;
-
     // Calculate danger zone.
     std::vector<float> reachEndTimes;
     for (auto &it : EnemyGroup->GetObjects()) {
         reachEndTimes.push_back(dynamic_cast<Enemy *>(it)->reachEndTime);
     }
+    // Can use Heap / Priority-Queue instead. But since we won't have too many enemies, sorting is fast enough.
     std::sort(reachEndTimes.begin(), reachEndTimes.end());
     float newDeathCountDown = -1;
     int danger = lives;
@@ -229,6 +224,7 @@ void PlayScene::Update(float deltaTime) {
                 // Death Countdown
                 float pos = DangerTime - it;
                 if (it > deathCountDown) {
+                    // Restart Death Count Down BGM.
                     AudioHelper::StopSample(deathBGMInstance);
                     if (SpeedMult != 0)
                         deathBGMInstance = AudioHelper::PlaySample("astronomia.ogg", false, AudioHelper::BGMVolume, pos);
@@ -313,6 +309,8 @@ void PlayScene::Update(float deltaTime) {
         preview->Position = Engine::GameEngine::GetInstance().GetMousePosition();
         preview->Update(deltaTime);
     }
+
+    // shovel‐preview follows cursor
     if (Shoveling && shovelPreview) {
         auto mpos = Engine::GameEngine::GetInstance().GetMousePosition();
         shovelPreview->Position = mpos;
@@ -334,20 +332,6 @@ void PlayScene::Draw() const {
             }
         }
     }
-
-    // --- Round transition overlay ---
-    if (roundTransitionState == SHOW_ROUND_LABEL) {
-        int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
-        int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
-        al_draw_filled_rectangle(0, 0, w, h, al_map_rgb(0, 0, 0));
-        std::string text = "ROUND " + std::to_string(nextRoundNumber);
-        ALLEGRO_FONT* font = al_load_ttf_font("Resource/fonts/pirulen.ttf", 72, 0);
-        if (font) {
-            al_draw_text(font, al_map_rgb(255, 255, 255), w / 2, h / 2 - 36, ALLEGRO_ALIGN_CENTRE, text.c_str());
-            al_destroy_font(font);
-        }
-    }
-
 }
 void PlayScene::OnMouseDown(int button, int mx, int my) {
     if ((button & 1) && !imgTarget->Visible && preview) {
@@ -370,7 +354,6 @@ void PlayScene::OnMouseMove(int mx, int my) {
     imgTarget->Position.y = y * BlockSize;
 }
 void PlayScene::OnMouseUp(int button, int mx, int my) {
-    
     IScene::OnMouseUp(button, mx, my);
 
     // ────── shovel-mode removal ──────
@@ -421,81 +404,28 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
             }
             // Purchase.
             EarnMoney(-preview->GetPrice());
-            
-            // Remove Preview from UI
+            // Remove Preview.
             preview->GetObjectIterator()->first = false;
             UIGroup->RemoveObject(preview->GetObjectIterator());
-
-            // Prepare random placement if needed
-            int finalX = x;
-            int finalY = y;
-
-            // Random placement for certain maps
-            if (MapId == 3 || MapId == 4 || MapId == 5) {
-                std::random_device rd;
-                std::mt19937 gen(rd());
-                std::uniform_int_distribution<int> dist(-2, 2);
-
-                int rand_x, rand_y;
-                do rand_x = dist(gen);
-                while (rand_x == 0); // Ensure offset is not 0
-                do rand_y = dist(gen);
-                while (rand_y == 0); // Ensure offset is not 0
-                
-                int new_x = x + rand_x;
-                int new_y = y + rand_y;
-                
-                new_x = std::max(0, std::min(MapWidth - 1, new_x));
-                new_y = std::max(0, std::min(MapHeight - 1, new_y));
-
-                if (CheckSpaceValid(new_x, new_y)) {
-                    preview->Position.x = new_x * BlockSize + BlockSize / 2;
-                    preview->Position.y = new_y * BlockSize + BlockSize / 2;
-                }
-                else {
-                    preview->Position.x = x * BlockSize + BlockSize / 2;
-                    preview->Position.y = y * BlockSize + BlockSize / 2;
-                }
-            }
-            else {
-                preview->Position.x = x * BlockSize + BlockSize / 2;
-                preview->Position.y = y * BlockSize + BlockSize / 2;
-            }
-
-            // Now check if the final position is valid and place the tower
-            if (CheckSpaceValid(finalX, finalY)) {
-                preview->Position.x = finalX * BlockSize + BlockSize / 2;
-                preview->Position.y = finalY * BlockSize + BlockSize / 2;
-                preview->Enabled = true;
-                preview->Preview = false;
-                preview->Tint = al_map_rgba(255, 255, 255, 255);
-                TowerGroup->AddNewObject(preview);
-                preview->Update(0);
-
-                // Mark as occupied
-                mapState[finalY][finalX] = TILE_OCCUPIED;
-            } else {
-                // Refund if placement failed
-                EarnMoney(preview->GetPrice());
-                Engine::Sprite *sprite;
-                GroundEffectGroup->AddNewObject(sprite = new DirtyEffect("play/target-invalid.png", 1, finalX * BlockSize + BlockSize / 2, finalY * BlockSize + BlockSize / 2));
-                sprite->Rotation = 0;
-            }
-
-            // Remove Preview
+            // Construct real turret.
+            preview->Position.x = x * BlockSize + BlockSize / 2;
+            preview->Position.y = y * BlockSize + BlockSize / 2;
+            preview->Enabled = true;
+            preview->Preview = false;
+            preview->Tint = al_map_rgba(255, 255, 255, 255);
+            TowerGroup->AddNewObject(preview);
+            // To keep responding when paused.
+            preview->Update(0);
+            // Remove Preview.
             preview = nullptr;
+
+            mapState[y][x] = TILE_OCCUPIED;
             OnMouseMove(mx, my);
         }
     }
 }
 void PlayScene::OnKeyDown(int keyCode) {
     IScene::OnKeyDown(keyCode);
-
-    if (chatBox) {
-        chatBox->OnKeyDown(keyCode);
-    }
-
-
     if (keyCode == ALLEGRO_KEY_TAB) {
         DebugMode = !DebugMode;
     } else {
@@ -506,13 +436,13 @@ void PlayScene::OnKeyDown(int keyCode) {
             auto it1 = keyStrokes.begin();
             auto it2  = code.begin();
 
-            while (it1 != keyStrokes.end()) {
+            for (auto i = 0; i < code.size(); i++) {
                 if (*it1 == *it2) {
                     ++it1;
                     ++it2;
                 }
                 else {
-                    break;
+                    return;
                 }
                 if (it2 == code.end()) {
                     UIGroup->AddNewObject(new Plane);
@@ -525,7 +455,7 @@ void PlayScene::OnKeyDown(int keyCode) {
     if (keyCode == ALLEGRO_KEY_Q && money >= MachineGunTurret::Price) {
         // Hotkey for MachineGunTurret.
         UIBtnClicked(0);
-    } else if (keyCode == ALLEGRO_KEY_W && money >= LaserTurret::Price) {
+    } else if (keyCode == ALLEGRO_KEY_W) {
         // Hotkey for LaserTurret.
         UIBtnClicked(1);
     }
@@ -635,12 +565,6 @@ void PlayScene::ConstructUI() {
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 1));
     UIGroup->AddNewControlObject(btn);
 
-    btn = new TurretButton("play/floor.png", "play/dirt.png",
-                       Engine::Sprite("play/tower-base.png", 1370 + 76, 136, 0, 0, 0, 0),
-                       Engine::Sprite("play/turret-4.png", 1370 + 76, 136 - 8, 0, 0, 0, 0), 1370 + 76, 136, MissileTurret::Price);
-    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 3)); // Missile turret (aoe)
-    UIGroup->AddNewControlObject(btn);
-
     // Add a new button for the Healing Turret in ConstructUI()
     // In PlayScene.cpp, add the healing turret button and logic if not already done
 
@@ -652,8 +576,8 @@ void PlayScene::ConstructUI() {
     UIGroup->AddNewControlObject(btn);
 
     btn = new TurretButton("play/floor.png", "play/dirt.png",
-                       Engine::Sprite("play/tower-base.png", 1370 + 76, 136 + 120, 0, 0, 0, 0),
-                       Engine::Sprite("play/turret-3.png", 1370 + 76, 136 - 8 + 120, 0, 0, 0, 0), 1370 + 76, 136 + 120, HealingTurret::Price);
+                       Engine::Sprite("play/tower-base.png", 1370 + 76, 136, 0, 0, 0, 0),
+                       Engine::Sprite("play/turret-3.png", 1370 + 76, 136 - 8, 0, 0, 0, 0), 1370 + 76, 136, HealingTurret::Price);
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 2)); // Healing turret
     UIGroup->AddNewControlObject(btn);
 
@@ -789,7 +713,7 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new MachineGunTurret(0, 0);
     else if (id == 1 && money >= LaserTurret::Price)
         preview = new LaserTurret(0, 0);
-    else if (id == 2 && money >= HealingTurret::Price && !HealingTurret::isLocked)
+    else if (id == 2 && money >= HealingTurret::Price)
         preview = new HealingTurret(0, 0);
     else if (id == 3 && money >= MissileTurret::Price)
         preview = new MissileTurret(0, 0);
@@ -833,7 +757,6 @@ void PlayScene::UIBtnClicked(int id) {
     UIGroup->AddNewObject(preview);
     OnMouseMove(Engine::GameEngine::GetInstance().GetMousePosition().x, Engine::GameEngine::GetInstance().GetMousePosition().y);
 }
-
 
 int PlayScene::GetScore() const {
     return Score;
@@ -956,7 +879,7 @@ void PlayScene::GenerateRandomMap(int round) {
     bool isHorizontal = (startP.x == 0 || startP.x == MapWidth - 1);
 
     //    b) Prepare RNG    //    b) Prepare RNG
-    std::mt19937 rng{ std::random_device{}() };    std::mt19937 rng{ std::random_device{}() };
+    std::mt19937 rng{ std::random_device{}() };
 
     //    c) First move: step off the start-edge
     std::vector<std::pair<int,int>> moves;
