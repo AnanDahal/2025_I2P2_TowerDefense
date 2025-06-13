@@ -74,6 +74,9 @@ void CampaignScene::PlayOnClick(int stage) {
     // Check if this is a story stage (1-5)
     if (stage >= 1 && stage <= 5) {
         // For stages with intro story, go to BeforeScene
+        if (OnStage < stage) {
+            OnStage = stage;
+        }
         BeforeScene *beforeScene = dynamic_cast<BeforeScene *>(Engine::GameEngine::GetInstance().GetScene("before"));
         if (beforeScene) {
             beforeScene->storyid = stage;

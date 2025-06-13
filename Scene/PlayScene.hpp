@@ -8,6 +8,20 @@
 #include "Turret/Turret.hpp"          // for dynamic_cast<Turret*>
 #include "Engine/IScene.hpp"
 #include "Engine/Point.hpp"
+#include "UI/Component/ChatBox.hpp"  // for chatbox
+#include <map>
+
+extern int OnStage;
+extern int core_memories;
+extern int endless_score;
+extern int whichPower;
+
+enum RoundTransitionState {
+    NONE,
+    WAIT_BEFORE_ROUND_LABEL,
+    SHOW_ROUND_LABEL,
+    WAIT_AFTER_ROUND_LABEL
+};
 
 class Turret;
 namespace Engine {
@@ -19,6 +33,7 @@ namespace Engine {
 
 class PlayScene final : public Engine::IScene {
 private:
+    std::shared_ptr<Engine::ChatBox> chatBox;
     enum TileType {
         TILE_DIRT,
         TILE_FLOOR,
@@ -32,6 +47,11 @@ protected:
     int money;
     int SpeedMult;
     int Score;
+    bool endlessMode = false;
+    int endlessRound = 0;
+    RoundTransitionState roundTransitionState = NONE;
+    float roundTransitionTimer = 0.0f;
+    int nextRoundNumber = 0;
 
 public:
     static bool DebugMode;
@@ -82,12 +102,23 @@ public:
     void ConstructUI();
     void UIBtnClicked(int id);
     bool CheckSpaceValid(int x, int y);
+    void GenerateRandomMap(int round);
+    void GenerateEnemyWave(int round);
+    void RemoveAllTurrets();
     std::vector<std::vector<int>> CalculateBFSDistance();
     int GetScore() const;
     // shovel
     Engine::Sprite* shovelPreview = nullptr;
     bool Shoveling = false;
 
+Engine::Label* roundLabel = nullptr;
+
+    std::map<std::pair<int, int>, std::pair<int, int>> parent; // For reconstructing the path
     // void ModifyReadMapTiles();
+    float bombCooldown = 0.0f;
+    float moneyRainCooldown = 0.0f;
+
+    const float bombCooldownTime = 10.0f;       // 10 seconds
+    const float moneyRainCooldownTime = 15.0f;  // 15 seconds
 };
 #endif   // PLAYSCENE_HPP
