@@ -63,10 +63,20 @@ void BeforeScene::Initialize() {
     }
     else if (storyid == 2) {
         AddDialogue("Narrator", "After work...");
+        AddDialogue("Hua", "Yo Tong. have you seen my phone? I forgot where I put it.");
+        AddDialogue("Tong Tong", "Weren't you just doomscrolling bro?");
+        AddDialogue("Hua", "...Maybe?");
+        AddDialogue("Tong Tong", "Huh? What do you mean \"Maybe\"?");
+        AddDialogue("Tong Tong", "Whatever bro, I think I saw your phone on the couch.");
+        AddDialogue("Hua", "Huh, well what do you know. Thanks Tong.");
+        AddDialogue("Tong Tong", "Sure thing. You're probably tired, go to sleep dawg.");
+        AddDialogue("Hua", "Alrighty bro, goodnight.");
+        AddDialogue("Tong Tong", "Goodnight.");
+        AddDialogue("Tong Tong", "(I sure hope he's alright...)");
         SetCharacterImage("play/benjamin.png", 300, 400, halfW, halfH);
     }
     else if (storyid == 3) {
-        AddDialogue("Panda", "This is story 3.");
+        AddDialogue("Narrator", "That night, Hua called Tong Tong to help get back home.");
         AddDialogue("Enemy", "Really? Nice implementation");
         AddDialogue("Dev", "Thanks bro.");
         
