@@ -33,7 +33,7 @@ void LeaderBoardScene::LoadScores() {
 
     std::sort(scores.begin(), scores.end(),
         [](auto const& a, auto const& b) {
-            return std::get<1>(a) < std::get<1>(b);
+            return std::get<1>(a) > std::get<1>(b);
         });
 }
 
