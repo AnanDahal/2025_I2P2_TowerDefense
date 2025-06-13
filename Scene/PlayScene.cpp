@@ -467,7 +467,7 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
 
             new_x = std::max(0, std::min(MapWidth - 1, new_x));
             new_y = std::max(0, std::min(MapHeight - 1, new_y));
-            usable = true;
+            if (mapState[new_y][new_x] != TILE_OCCUPIED) usable = true;
         }
         if (usable && !CheckSpaceValid(new_x, new_y)) {
             usable = false;
@@ -483,10 +483,16 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
         UIGroup->RemoveObject(preview->GetObjectIterator());
         preview->Position.x = (usable) ? new_x * BlockSize + BlockSize / 2 : x * BlockSize + BlockSize / 2;
         preview->Position.y = (usable) ? new_y * BlockSize + BlockSize / 2 : y * BlockSize + BlockSize / 2;
+        if (usable) {
+            mapState[new_y][new_x] = TILE_OCCUPIED;
+        } else {
+            mapState[y][x] = TILE_OCCUPIED;
+        }
         preview->Enabled = true;
         preview->Preview = false;
         preview->Tint = al_map_rgba(255, 255, 255, 255);
         TowerGroup->AddNewObject(preview);
+        std::cout << "tower made at point " << (preview->Position.x - BlockSize / 2 ) / BlockSize<< " " << (preview->Position.y - BlockSize / 2) / BlockSize << std::endl;
         preview->Update(0);
         preview = nullptr;
         OnMouseMove(mx, my);
