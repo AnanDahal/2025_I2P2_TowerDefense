@@ -123,15 +123,29 @@ void PlayScene::Initialize() {
         BuffTurret::isLocked = false;
         SlowTurret::isLocked = false;
     }
-    else if (MapId >= 4) {
+    else {
+        HealingTurret::isLocked = true;
+        BuffTurret::isLocked = true;
+        SlowTurret::isLocked = true;
+    }
+    if (MapId >= 4) {
         SniperTurret::isLocked = false;
         TankKillerTurret::isLocked = false;
         BossKillerTurret::isLocked = false;
+    }
+    else {
+        SniperTurret::isLocked = true;
+        TankKillerTurret::isLocked = true;
+        BossKillerTurret::isLocked = true;
     }
 
     if (MapId == 3 || MapId == 4) {
         FarmTurret::isLocked = false;
     }
+    else {
+        FarmTurret::isLocked = true;
+    }
+
     mapDistance = CalculateBFSDistance();
     ConstructUI();
 
