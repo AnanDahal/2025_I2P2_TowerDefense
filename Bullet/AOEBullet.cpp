@@ -19,18 +19,21 @@ PlayScene *AOEBullet::getPlayScene() {
 }
 void AOEBullet::OnExplode(Enemy *enemy) {
 }
-AOEBullet::AOEBullet(std::string img, float speed, float damage, Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, float aoeRadius, bool buff, bool slow, bool miss) : Sprite(img, position.x, position.y), speed(speed), damage(damage), parent(parent), aoeRadius(aoeRadius) {
+AOEBullet::AOEBullet(std::string img, float speed, float damage, Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, float aoeRadius, bool buff, bool slow, bool miss, bool upgrade) : Sprite(img, position.x, position.y), speed(speed), damage(damage), parent(parent), aoeRadius(aoeRadius) {
     Velocity = forwardDirection.Normalize() * speed;
     Rotation = rotation;
     CollisionRadius = 6;
     isBuffed = buff;
     isSlow = slow;
     isMiss = miss;
+    isUpgraded = upgrade;
 }
 void AOEBullet::Update(float deltaTime) {
     Sprite::Update(deltaTime);
     PlayScene* scene = getPlayScene();
-
+    if (isUpgraded) {
+        aoeRadius *= 2;
+    }
     bool hitEnemy = false;
     std::vector<Enemy*> hitEnemies;
 

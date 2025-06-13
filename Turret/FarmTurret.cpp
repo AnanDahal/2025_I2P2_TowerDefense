@@ -25,6 +25,12 @@ void FarmTurret::CreateBullet() {
 }
 
 void FarmTurret::Update(float deltaTime) {
+    if (farmUpgrade1) {
+        moneyPerHarvest *= 2;
+    }
+    if (farmUpgrade2) {
+        harvestInterval /= 2;
+    }
     // Update base sprite logic
     Sprite::Update(deltaTime);
     imgBase.Position = Position;

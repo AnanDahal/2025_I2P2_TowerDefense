@@ -15,7 +15,7 @@ namespace Engine {
 
 class MissileBullet : public AOEBullet {
 public:
-    explicit MissileBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, float aoeRadius, bool buff, bool miss);
+    explicit MissileBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, float aoeRadius, bool buff, bool miss, bool upgrade);
     void OnExplode(Enemy *enemy) override;
 };
 

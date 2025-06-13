@@ -13,7 +13,10 @@ public:
     // Override base targeting/shooting entirely
     void Update(float deltaTime) override;
     void CreateBullet() override;
+    static bool healUpgrade1;
+    static bool healUpgrade2;
 private:
     Turret* FindTargetTurret();
 };
+
 #endif   // HEALINGTURRET_HPP

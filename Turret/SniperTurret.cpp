@@ -40,11 +40,18 @@ void SniperTurret::CreateBullet() {
     float rotation = atan2(direction.y, direction.x);
 
     getPlayScene()->BulletGroup->AddNewObject(
-        new SniperBullet(Position + direction * 36, direction, rotation, this, buffed, missing)
+        new SniperBullet(Position + direction * 36, direction, rotation, this, buffed, missing, sniperUpgrade1)
     );
     missThreshold++;
     if (missThreshold == 2) {
         missing = false;
     }
     AudioHelper::PlayAudio("gun.wav");
+}
+
+void SniperTurret::Update(float deltaTime) {
+    Turret::Update(deltaTime);
+    if (sniperUpgrade2) {
+        coolDown /= 2;
+    }
 }

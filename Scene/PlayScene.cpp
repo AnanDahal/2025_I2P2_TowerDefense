@@ -77,6 +77,26 @@ bool SniperTurret::isLocked = true;
 bool TankKillerTurret::isLocked = true;
 bool BossKillerTurret::isLocked = true;
 bool FarmTurret::isLocked = true;
+bool MachineGunTurret::machinegunupgrade1 = false;
+bool MachineGunTurret::machinegunupgrade2 = false;
+bool LaserTurret::laserUpgrade1 = false;
+bool LaserTurret::laserUpgrade2 = false;
+bool MissileTurret::missileUpgrade1 = false;
+bool MissileTurret::missileUpgrade2 = false;
+bool HealingTurret::healUpgrade1 = false;
+bool HealingTurret::healUpgrade2 = false;
+bool SlowTurret::slowUpgrade1 = false;
+bool SlowTurret::slowUpgrade2 = false;
+bool FarmTurret::farmUpgrade1 = false;
+bool FarmTurret::farmUpgrade2 = false;
+bool BuffTurret::buffUpgrade1 = false;
+bool BuffTurret::buffUpgrade2 = false;
+bool SniperTurret::sniperUpgrade1 = false;
+bool SniperTurret::sniperUpgrade2 = false;
+bool TankKillerTurret::tankUpgrade1 = false;
+bool TankKillerTurret::tankUpgrade2 = false;
+bool BossKillerTurret::bossUpgrade1 = false;
+bool BossKillerTurret::bossUpgrade2 = false;
 
 Engine::Point PlayScene::GetClientSize() {
     return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);

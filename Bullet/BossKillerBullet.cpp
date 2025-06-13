@@ -14,7 +14,7 @@
 
 class Turret;
 
-BossKillerBullet::BossKillerBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool miss) : Bullet("play/bullet-7.png", 900, 4, position, forwardDirection, rotation - ALLEGRO_PI / 2, parent, buff, false, miss) {
+BossKillerBullet::BossKillerBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool miss, bool upgrade) : Bullet("play/bullet-7.png", 900, 4, position, forwardDirection, rotation - ALLEGRO_PI / 2, parent, buff, false, miss, upgrade) {
 }
 void BossKillerBullet::OnExplode(Enemy *enemy) {
     std::random_device dev;

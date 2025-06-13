@@ -24,13 +24,23 @@ void SlowTurret::CreateBullet() {
     Engine::Point normalized = diff.Normalize();
     Engine::Point normal = Engine::Point(-normalized.y, normalized.x);
     // Change bullet position to the front of the gun barrel.
-    getPlayScene()->BulletGroup->AddNewObject(new SlowBullet(Position + normalized * 36 - normal * 6, diff, rotation, this, buffed, missing));
-    getPlayScene()->BulletGroup->AddNewObject(new SlowBullet(Position + normalized * 36 + normal * 6, diff, rotation, this, buffed, missing));
+    getPlayScene()->BulletGroup->AddNewObject(new SlowBullet(Position + normalized * 36 - normal * 6, diff, rotation, this, buffed, missing, slowUpgrade1));
+    getPlayScene()->BulletGroup->AddNewObject(new SlowBullet(Position + normalized * 36 + normal * 6, diff, rotation, this, buffed, missing, slowUpgrade1));
     missThreshold++;
     if (missThreshold == 2) {
         missing = false;
     }
     AudioHelper::PlayAudio("laser.wav"); //change sound
+}
+
+void SlowTurret::Update(float deltaTime) {
+    Turret::Update(deltaTime);
+    if (slowUpgrade2) {
+        CollisionRadius *= 2;
+    }
+    if (slowUpgrade1) {
+        coolDown /= 2;
+    }
 }
 //
 // Created by user on 5/16/2025.

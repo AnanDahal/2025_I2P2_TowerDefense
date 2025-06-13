@@ -22,10 +22,17 @@ void BossKillerTurret::CreateBullet() {
     float rotation = atan2(diff.y, diff.x);
     Engine::Point normalized = diff.Normalize();
     // Change bullet position to the front of the gun barrel.
-    getPlayScene()->BulletGroup->AddNewObject(new BossKillerBullet(Position + normalized * 36, diff, rotation, this, buffed, missing));
+    getPlayScene()->BulletGroup->AddNewObject(new BossKillerBullet(Position + normalized * 36, diff, rotation, this, buffed, missing, bossUpgrade1));
     missThreshold++;
     if (missThreshold == 2) {
         missing = false;
     }
     AudioHelper::PlayAudio("kraber.wav");
+}
+
+void BossKillerTurret::Update(float deltaTime) {
+    Turret::Update(deltaTime);
+    if (bossUpgrade2) {
+        CollisionRadius *= 2;
+    }
 }

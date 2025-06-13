@@ -25,10 +25,17 @@ void MissileTurret::CreateBullet() {
     float rotation = atan2(diff.y, diff.x);
     Engine::Point normalized = diff.Normalize();
     // Change bullet position to the front of the gun barrel.
-    getPlayScene()->BulletGroup->AddNewObject(new MissileBullet(Position + normalized * 36, diff, rotation, this, 50, buffed, missing));
+    getPlayScene()->BulletGroup->AddNewObject(new MissileBullet(Position + normalized * 36, diff, rotation, this, 50, buffed, missing, missileUpgrade1));
     missThreshold++;
     if (missThreshold == 2) {
         missing = false;
     }
     AudioHelper::PlayAudio("gun.wav");
+}
+
+void MissileTurret::Update(float deltaTime) {
+    Turret::Update(deltaTime);
+    if (missileUpgrade2) {
+        CollisionRadius *= 2;
+    }
 }

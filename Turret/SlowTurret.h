@@ -12,6 +12,9 @@ public:
     SlowTurret(float x, float y);
     void CreateBullet() override;
     static bool isLocked;
+    void Update(float deltaTime) override;
+    static bool slowUpgrade1;
+    static bool slowUpgrade2;
 };
 
 #endif //SLOWTURRET_H

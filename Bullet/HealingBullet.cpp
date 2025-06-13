@@ -4,8 +4,8 @@
 #include "Turret/Turret.hpp"
 #include "Engine/Collider.hpp"
 
-HealingBullet::HealingBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff)
-    : Bullet("play/bullet-7.png", 0, 0, position, forwardDirection, rotation, parent, buff, false, false) {
+HealingBullet::HealingBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool upgrade)
+    : Bullet("play/bullet-7.png", 0, 0, position, forwardDirection, rotation, parent, buff, false, false, upgrade) {
     speed = 300;  // Ensure bullet speed is set
     damage = 0;   // No damage, just healing
     // Set velocity to move the bullet forward
@@ -16,7 +16,14 @@ void HealingBullet::OnExplode(Turret *turret) {
     if (turret == nullptr) return;
 
     // Heal the turret by a fixed amount (e.g., 10 HP)
-    int newHp = turret->GetCurrentHp() + 50;
+    int newHp;
+    if (isUpgraded) {
+        newHp = turret->GetCurrentHp() + 100;
+    }
+    else {
+        newHp = turret->GetCurrentHp() + 50;
+    }
+
     turret->SetCurrentHp(newHp);
 
     // Prevent exceeding max HP

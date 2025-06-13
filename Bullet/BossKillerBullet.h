@@ -14,7 +14,7 @@ namespace Engine {
 
 class BossKillerBullet : public Bullet {
 public:
-    explicit BossKillerBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool miss);
+    explicit BossKillerBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret *parent, bool buff, bool miss, bool upgrade);
     void OnExplode(Enemy *enemy) override;
 };
 #endif //BOSSKILLERBULLET_H

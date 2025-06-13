@@ -21,11 +21,18 @@ void LaserTurret::CreateBullet() {
     Engine::Point normalized = diff.Normalize();
     Engine::Point normal = Engine::Point(-normalized.y, normalized.x);
     // Change bullet position to the front of the gun barrel.
-    getPlayScene()->BulletGroup->AddNewObject(new LaserBullet(Position + normalized * 36 - normal * 6, diff, rotation, this, buffed, missing));
-    getPlayScene()->BulletGroup->AddNewObject(new LaserBullet(Position + normalized * 36 + normal * 6, diff, rotation, this, buffed, missing));
+    getPlayScene()->BulletGroup->AddNewObject(new LaserBullet(Position + normalized * 36 - normal * 6, diff, rotation, this, buffed, missing, laserUpgrade1));
+    getPlayScene()->BulletGroup->AddNewObject(new LaserBullet(Position + normalized * 36 + normal * 6, diff, rotation, this, buffed, missing, laserUpgrade1));
     missThreshold++;
     if (missThreshold == 2) {
         missing = false;
     }
     AudioHelper::PlayAudio("laser.wav");
+}
+
+void LaserTurret::Update(float deltaTime) {
+    Turret::Update(deltaTime);
+    if (laserUpgrade2) {
+        CollisionRadius *= 2;
+    }
 }
