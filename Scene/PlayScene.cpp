@@ -310,6 +310,9 @@ void PlayScene::Update(float deltaTime) {
             case 3: EnemyGroup->AddNewObject(e = new TankEnemy   (spawnX, spawnY)); break;
             case 4: EnemyGroup->AddNewObject(e = new CarrierEnemy(spawnX, spawnY)); break;
             case 5: EnemyGroup->AddNewObject(e = new BiggerCarrierEnemy(spawnX, spawnY)); break;
+            case 6: EnemyGroup->AddNewObject(e = new MissEnemy(spawnX, spawnY)); break;
+            case 7: EnemyGroup->AddNewObject(e = new MiniBossEnemy(spawnX, spawnY, 2)); break;
+            case 8: EnemyGroup->AddNewObject(e = new BossEnemy(spawnX, spawnY, 6)); break;
             default:
                 printf("[ERROR] Unknown enemy type %d\n", wave.first);
                 continue;
@@ -412,7 +415,7 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
             int tx = int(t->Position.x / BlockSize);
             int ty = int(t->Position.y / BlockSize);
             if (tx == cellX && ty == cellY) {
-                EarnMoney(t->GetPrice());
+                EarnMoney(t->GetPrice() / 2);
                 TowerGroup->RemoveObject(t->GetObjectIterator());
                 mapState[ty][tx] = TILE_FLOOR;
                 break;
@@ -1005,6 +1008,17 @@ void PlayScene::GenerateRandomMap(int round) {
     mapDistance = CalculateBFSDistance();
 }
 
+/*
+boss
+miniboss
+bigger carrier
+carrier
+miss enemy
+tank
+army
+soldier
+*/
+
 void PlayScene::GenerateEnemyWave(int round) {
     // Example: Increase difficulty each round
     enemyWaveData.clear();
@@ -1039,7 +1053,7 @@ void PlayScene::RemoveAllTurrets() {
             int ty = int(t->Position.y / BlockSize);
             if (tx >= 0 && tx < MapWidth && ty >= 0 && ty < MapHeight)
                 mapState[ty][tx] = TILE_FLOOR;
-            EarnMoney(t->GetPrice()); // Refund turret price
+            EarnMoney(t->GetPrice() / 2); // Refund turret price
         }
     }
     TowerGroup->Clear();
