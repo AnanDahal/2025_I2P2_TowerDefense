@@ -17,6 +17,8 @@
 
 #include <allegro5/allegro_primitives.h>
 
+#include "LogInScene.h"
+
 void WinScene::Initialize() {
     ticks = 0;
     playerName = "";
@@ -39,6 +41,40 @@ void WinScene::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH * 7 / 4, 0, 0, 0, 255, 0.5, 0.5));
     bgmId = AudioHelper::PlayAudio("win.wav");
+
+    std::ifstream fin("../Resource/accounts.txt");
+    std::vector<std::string> lines;
+    std::string name, password;
+    int stage, memories, endless;
+    bool skinone, skintwo, skinthree, skinfour;
+    playerName = LogInScene::getPlayerName();
+
+    // Read and update
+    while (fin >> name >> password >> stage >> memories >> endless >> skinone >> skintwo >> skinthree >> skinfour) {
+        if (name == playerName) {
+            // Update current player's data
+            stage = OnStage;
+            memories = core_memories;
+            endless = endless_score;
+            skinone = skin1;
+            skintwo = skin2;
+            skinthree = skin3;
+            skinfour = skin4;
+        }
+
+        std::ostringstream oss;
+        oss << name << " " << password << " "
+            << stage << " " << memories << " " << endless << " "
+            << skinone << " " << skintwo << " " << skinthree << " " << skinfour;
+        lines.push_back(oss.str());
+    }
+    fin.close();
+
+    // Write back all lines
+    std::ofstream fout("../Resource/accounts.txt");
+    for (const auto& line : lines) {
+        fout << line << "\n";
+    }
 }
 void WinScene::Terminate() {
     IScene::Terminate();

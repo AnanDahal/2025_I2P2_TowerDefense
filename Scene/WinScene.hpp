@@ -2,6 +2,13 @@
 #define WINSCENE_HPP
 #include "Engine/IScene.hpp"
 #include <allegro5/allegro_audio.h>
+extern int OnStage;
+extern int core_memories;
+extern int endless_score;
+extern bool skin1;
+extern bool skin2;
+extern bool skin3;
+extern bool skin4;
 
 class WinScene final : public Engine::IScene {
 private:
