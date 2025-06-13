@@ -9,6 +9,10 @@
 #include "Engine/Resources.hpp"
 #include "PowersScene.h"
 #include "Scene/ShopScene.h"
+
+#include <iostream>
+#include <bits/ostream.tcc>
+
 #include "UI/Component/ImageButton.hpp"
 #include "UI/Component/Label.hpp"
 #include "UI/Component/Slider.hpp"
@@ -70,16 +74,16 @@ void ShopScene::BackOnClick(int stage) {
 }
 
 void ShopScene::ChooseOnClick(int skin) {
-    if (skin == 1) {
+    if (skin == 1 && core_memories >= 100) {
         skin1 = true;
     }
-    else if (skin == 2) {
+    else if (skin == 2 && core_memories >= 500) {
         skin2 = true;
     }
-    else if (skin == 3) {
+    else if (skin == 3 && core_memories >= 1000) {
         skin3 = true;
     }
-    else if (skin == 4) {
+    else if (skin == 4 && core_memories >= 2000) {
         skin4 = true;
     }
 }

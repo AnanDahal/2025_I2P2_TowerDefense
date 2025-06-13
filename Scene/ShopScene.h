@@ -8,6 +8,7 @@
 
 #include "Engine/IScene.hpp"
 #include <allegro5/allegro_audio.h>
+extern int core_memories;
 extern bool skin1;
 extern bool skin2;
 extern bool skin3;

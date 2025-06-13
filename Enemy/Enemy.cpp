@@ -30,6 +30,9 @@ void Enemy::OnExplode() {
         // Random add 10 dirty effects.
         getPlayScene()->GroundEffectGroup->AddNewObject(new DirtyEffect("play/dirty-" + std::to_string(distId(rng)) + ".png", dist(rng), Position.x, Position.y));
     }
+    if (OnStage == 5 || OnStage == 6) {
+        core_memories++;
+    }
 }
 Enemy::Enemy(std::string img, int type,float x, float y, float radius, float speed, float hp, int money) : Engine::Sprite(img, x, y), type(type), speed(speed), hp(hp), money(money) {
     CollisionRadius = radius;
