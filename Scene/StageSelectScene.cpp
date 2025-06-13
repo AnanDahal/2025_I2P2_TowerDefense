@@ -52,7 +52,7 @@ void StageSelectScene::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW + 300, halfH / 2 + 375, 0, 0, 0, 255, 0.5, 0.5));
 
-    btn = new Engine::ImageButton("stage-select/powers.png", "stage-select/powers.png", -50, halfH / 2 - 200, 400, 400);
+    btn = new Engine::ImageButton("stage-select/powers.png", "stage-select/powershov.png", -50, halfH / 2 - 200, 400, 400);
     btn->SetOnClickCallback(std::bind(&StageSelectScene::PowersOnClick, this, 1));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Powers", "pirulen.ttf", 48, 150, halfH / 2 + 200, 0, 0, 0, 255, 0.5, 0.5));
