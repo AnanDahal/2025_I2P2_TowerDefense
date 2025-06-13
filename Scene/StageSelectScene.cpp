@@ -31,36 +31,31 @@ void StageSelectScene::Initialize() {
     fadeout = false;
     Engine::ImageButton *btn;
 
-    btn = new Engine::ImageButton("stage-select/trophy.png", "stage-select/trophyhov.png", 300, halfH / 2 - 200, 400, 400);
-    btn->SetOnClickCallback(std::bind(&StageSelectScene::ScoreboardOnClick, this, 3));
+    btn = new Engine::ImageButton("stage-select/trophy.png", "stage-select/trophyhov.png", 350, halfH / 2 - 200, 400, 400);
+    btn->SetOnClickCallback(std::bind(&StageSelectScene::ScoreboardOnClick, this, 2));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Scores", "pirulen.ttf", 48, 500, halfH / 2 + 200, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Scores", "pirulen.ttf", 48, 550, halfH / 2 + 200, 0, 0, 0, 255, 0.5, 0.5));
 
 
     btn = new Engine::ImageButton("stage-select/story.png", "stage-select/storyhov.png", halfW - 75, halfH / 2 - 200, 400, 400);
-    btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 1));
+    btn->SetOnClickCallback(std::bind(&StageSelectScene::StoryOnClick, this, 3));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Story", "pirulen.ttf", 48, halfW + 125, halfH / 2 + 200, 0, 0, 0, 255, 0.5, 0.5));
 
     btn = new Engine::ImageButton("stage-select/nightmare.png", "stage-select/nightmarehov.png", halfW + 350, halfH / 2 - 200, 400, 400);
-    btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 2));
+    btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 4));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Nightmare", "pirulen.ttf", 48, halfW + 550, halfH / 2 + 200, 0, 0, 0, 255, 0.5, 0.5));
 
     btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW + 200, halfH / 2 + 325, 200, 100);
-    btn->SetOnClickCallback(std::bind(&StageSelectScene::BackOnClick, this, 4));
+    btn->SetOnClickCallback(std::bind(&StageSelectScene::BackOnClick, this, 5));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW + 300, halfH / 2 + 375, 0, 0, 0, 255, 0.5, 0.5));
 
     btn = new Engine::ImageButton("stage-select/powers.png", "stage-select/powers.png", -50, halfH / 2 - 200, 400, 400);
-    btn->SetOnClickCallback(std::bind(&StageSelectScene::PowersOnClick, this, 2));
+    btn->SetOnClickCallback(std::bind(&StageSelectScene::PowersOnClick, this, 1));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Powers", "pirulen.ttf", 48, 150, halfH / 2 + 200, 0, 0, 0, 255, 0.5, 0.5));
-
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW + 500, halfH / 2 + 325, 200, 100);
-    btn->SetOnClickCallback(std::bind(&StageSelectScene::ShopOnClick, this, 5));
-    AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Shop", "pirulen.ttf", 48, halfW + 600, halfH / 2 + 375, 0, 0, 0, 255, 0.5, 0.5));
 
     snoreInstance = AudioHelper::PlaySample("snore.wav", true, AudioHelper::BGMVolume);
     violetInstance = AudioHelper::PlaySample("violet.wav", true, AudioHelper::BGMVolume);
@@ -105,45 +100,42 @@ void StageSelectScene::Update(float deltaTime) {
         //scene changes
         if (fadealpha >= 255) {
             if (changeto == 1) {
-                Engine::GameEngine::GetInstance().ChangeScene("opening");
-            }
-            else if (changeto == 2) {
-                PlayScene *scene = dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetScene("play"));
-                scene->MapId = stagenum;
-                // change the name from win to play for debugging (this is for github action)
-                Engine::GameEngine::GetInstance().ChangeScene("play");
-            }
-            else if (changeto == 3) {
-                Engine::GameEngine::GetInstance().ChangeScene("scoreboard-scene");
-            }
-            else if (changeto == 4) {
                 Engine::GameEngine::GetInstance().ChangeScene("powers");
             }
+            else if (changeto == 2) {
+                Engine::GameEngine::GetInstance().ChangeScene("scoreboard-scene");
+            }
+            else if (changeto == 3) {
+                Engine::GameEngine::GetInstance().ChangeScene("campaign");
+            }
+            else if (changeto == 4) {
+                PlayScene *scene = dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetScene("play"));
+                scene->MapId = 7; //change later to 7 according to anan
+                Engine::GameEngine::GetInstance().ChangeScene("play");
+            }
             else if (changeto == 5) {
-                Engine::GameEngine::GetInstance().ChangeScene("shop");
+                Engine::GameEngine::GetInstance().ChangeScene("opening");
             }
         }
     }
 }
-void StageSelectScene::BackOnClick(int stage) {
+void StageSelectScene::PowersOnClick(int stage) {
     changeto = 1;
     fadeout = true;
 }
-void StageSelectScene::PlayOnClick(int stage) {
-    changeto = 2; stagenum = stage;
-    OnStage = 1;
-    fadeout = true;
-}
-
-void StageSelectScene::PowersOnClick(int stage) {
-    changeto = 4;
-    fadeout = true;
-}
 void StageSelectScene::ScoreboardOnClick(int stage) {
+    changeto = 2;
+    fadeout = true;
+}
+void StageSelectScene::StoryOnClick(int stage) {
     changeto = 3;
     fadeout = true;
 }
-void StageSelectScene::ShopOnClick(int stage) {
+void StageSelectScene::PlayOnClick(int stage) {
+    changeto = 4; stagenum = stage;
+    fadeout = true;
+}
+void StageSelectScene::BackOnClick(int stage) {
     changeto = 5;
     fadeout = true;
 }
