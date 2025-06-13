@@ -1023,23 +1023,38 @@ void PlayScene::GenerateEnemyWave(int round) {
     // Example: Increase difficulty each round
     enemyWaveData.clear();
     // Adjust these numbers for your game's balance
-    int numBiggerCarriers = std::max(0, round / 5);
-    int numCarriers       = std::max(0, round / 4);
+    int numBosses         = std::max(0, round / 10);
+    int numMinibosses     = std::max(0, round / 7);
+    int numBiggerCarriers = std::max(0, round / 6);
+    int numCarriers       = std::max(0, round / 5);
+    int numMissEnemies    = std::max(0, round / 4);
     int numTanks          = std::max(0, round / 3);
     int numArmies         = std::max(1, round / 2);
     int numSoldiers       = 5 + round * 2;
-    
 
     float wait = std::max(0.5f, 2.0f - round * 0.05f);
 
+    for (int i = 0; i < numBosses; ++i)
+        enemyWaveData.emplace_back(8, wait + 0.8f);
+
+    for (int i = 0; i < numMinibosses; ++i)
+        enemyWaveData.emplace_back(7, wait + 0.8f);
+
     for (int i = 0; i < numBiggerCarriers; ++i)
         enemyWaveData.emplace_back(5, wait + 0.8f);
+
     for (int i = 0; i < numCarriers; ++i)
         enemyWaveData.emplace_back(4, wait + 0.6f);
+
+    for (int i = 0; i < numMissEnemies; ++i)
+        enemyWaveData.emplace_back(6, wait + 0.8f);
+
     for (int i = 0; i < numTanks; ++i)
         enemyWaveData.emplace_back(3, wait + 0.4f);
+
     for (int i = 0; i < numArmies; ++i)
         enemyWaveData.emplace_back(2, wait + 0.2f);
+
     for (int i = 0; i < numSoldiers; ++i)
         enemyWaveData.emplace_back(1, wait);
 }
