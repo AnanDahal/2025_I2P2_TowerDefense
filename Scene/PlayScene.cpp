@@ -446,18 +446,43 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
 
     int x = mx / BlockSize;
     int y = my / BlockSize;
+
     if (mapState[y][x] != TILE_OCCUPIED) {
-        if (!CheckSpaceValid(x, y)) {
-            auto sprite = new DirtyEffect("play/target-invalid.png", 1, x * BlockSize + BlockSize / 2, y * BlockSize + BlockSize / 2);
-            GroundEffectGroup->AddNewObject(sprite);
-            sprite->Rotation = 0;
-            return;
+        // if error with tower placement then its probably here
+        int new_x = -1, new_y = -1;
+        bool usable = false;
+        if (MapId == 3 || MapId == 4 || MapId == 5) {
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<int> dist(-2, 2);
+
+            int rand_x, rand_y;
+            do rand_x = dist(gen);
+            while (rand_x == 0); // Ensure offset is not 0
+            do rand_y = dist(gen);
+            while (rand_y == 0); // Ensure offset is not 0
+
+            new_x = x + rand_x;
+            new_y = y + rand_y;
+
+            new_x = std::max(0, std::min(MapWidth - 1, new_x));
+            new_y = std::max(0, std::min(MapHeight - 1, new_y));
+            usable = true;
+        }
+        if (usable && !CheckSpaceValid(new_x, new_y)) {
+            usable = false;
+            if (!CheckSpaceValid(x, y)) {
+                auto sprite = new DirtyEffect("play/target-invalid.png", 1, x * BlockSize + BlockSize / 2, y * BlockSize + BlockSize / 2);
+                GroundEffectGroup->AddNewObject(sprite);
+                sprite->Rotation = 0;
+                return;
+            }
         }
         EarnMoney(-preview->GetPrice());
         preview->GetObjectIterator()->first = false;
         UIGroup->RemoveObject(preview->GetObjectIterator());
-        preview->Position.x = x * BlockSize + BlockSize / 2;
-        preview->Position.y = y * BlockSize + BlockSize / 2;
+        preview->Position.x = (usable) ? new_x * BlockSize + BlockSize / 2 : x * BlockSize + BlockSize / 2;
+        preview->Position.y = (usable) ? new_y * BlockSize + BlockSize / 2 : y * BlockSize + BlockSize / 2;
         preview->Enabled = true;
         preview->Preview = false;
         preview->Tint = al_map_rgba(255, 255, 255, 255);
