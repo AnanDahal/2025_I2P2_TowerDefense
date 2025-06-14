@@ -88,10 +88,22 @@ add_executable(2025_I2P2_TowerDefense
         Scene/SettingsScene.hpp
         Scene/LeaderBoardScene.cpp
         Scene/LeaderBoardScene.h
-        scene/LogInScene.cpp
-        scene/LogInScene.h
-        scene/PasswordScene.cpp
-        scene/PasswordScene.h
+        Scene/LogInScene.cpp
+        Scene/LogInScene.h
+        Scene/PasswordScene.cpp
+        Scene/PasswordScene.h
+        Scene/PowersScene.cpp
+        Scene/PowersScene.h
+        Scene/ShopScene.cpp
+        Scene/ShopScene.h
+        Scene/CreditScene.cpp
+        Scene/CreditScene.h
+        Scene/AfterScene.cpp
+        Scene/AfterScene.h
+        Scene/BeforeScene.cpp
+        Scene/BeforeScene.h
+        Scene/CampaignScene.cpp
+        Scene/CampaignScene.h
 
     Turret/LaserTurret.cpp
     Turret/LaserTurret.hpp
@@ -191,6 +203,8 @@ add_executable(2025_I2P2_TowerDefense
         Scene/AfterScene.h
         Scene/ShopScene.cpp
         Scene/ShopScene.h
+        Scene/CreditScene.cpp
+        Scene/CreditScene.h
 )
 
 IF (WIN32)

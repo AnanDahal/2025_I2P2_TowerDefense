@@ -47,6 +47,12 @@ void StartScene::Initialize() {
     btn->SetOnClickCallback(std::bind(&StartScene::SettingsOnClick, this, 2));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Settings", "pirulen.ttf", 48, 450, halfH + 170, 0, 0, 0, 255, 0.5, 0.5));
+
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", 250, halfH + 250, 400, 100);
+    btn->SetOnClickCallback(std::bind(&StartScene::CreditsOnClick, this, 2));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label("Credits", "pirulen.ttf", 48, 450, halfH + 300, 0, 0, 0, 255, 0.5, 0.5));
+
     cricketInstance = AudioHelper::PlaySample("cricket.wav", true, AudioHelper::BGMVolume);
     sneakInstance = AudioHelper::PlaySample("sneak.wav", true, AudioHelper::BGMVolume);
 }
@@ -105,4 +111,8 @@ void StartScene::PlayOnClick(int stage) {
 }
 void StartScene::SettingsOnClick(int stage) {
     Engine::GameEngine::GetInstance().ChangeScene("settings");
+}
+
+void StartScene::CreditsOnClick(int stage) {
+    Engine::GameEngine::GetInstance().ChangeScene("credits");
 }
