@@ -11,7 +11,6 @@
 #include "Scene/ShopScene.h"
 
 #include <iostream>
-#include <bits/ostream.tcc>
 
 #include "UI/Component/ImageButton.hpp"
 #include "UI/Component/Label.hpp"
