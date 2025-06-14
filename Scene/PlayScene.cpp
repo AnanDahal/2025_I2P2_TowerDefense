@@ -191,11 +191,13 @@ void PlayScene::Initialize() {
         HealingTurret::isLocked = false;
         BuffTurret::isLocked = false;
         SlowTurret::isLocked = false;
+        FarmTurret::isLocked = false;
     }
     else {
         HealingTurret::isLocked = true;
         BuffTurret::isLocked = true;
         SlowTurret::isLocked = true;
+        FarmTurret::isLocked = true;
     }
     if (MapId >= 4) {
         SniperTurret::isLocked = false;
@@ -208,12 +210,6 @@ void PlayScene::Initialize() {
         BossKillerTurret::isLocked = true;
     }
 
-    if (MapId == 3 || MapId == 4 || endlessMode) {
-        FarmTurret::isLocked = false;
-    }
-    else {
-        FarmTurret::isLocked = true;
-    }
     if (MapId == 5) {
         money = 7000;
     }
