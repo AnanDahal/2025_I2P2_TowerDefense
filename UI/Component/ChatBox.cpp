@@ -16,9 +16,9 @@ namespace Engine {
         currentCharIndex = 0;
 
         // Load fonts once
-        chatFont = al_load_ttf_font("Resource/fonts/pirulen.ttf", 22, 0);
-        nameFont = al_load_ttf_font("Resource/fonts/pirulen.ttf", 26, 0); // slightly larger for name
-        smallFont = al_load_ttf_font("Resource/fonts/pirulen.ttf", 14, 0);
+        chatFont = al_load_ttf_font("Resource/fonts/pirulen.ttf", 40, 0);
+        nameFont = al_load_ttf_font("Resource/fonts/pirulen.ttf", 48, 0); // slightly larger for name
+        smallFont = al_load_ttf_font("Resource/fonts/pirulen.ttf", 24, 0);
 
         if (!chatFont || !nameFont || !smallFont)
             std::cout << "[ChatBox] Failed to load one or more fonts.\n";
