@@ -168,5 +168,10 @@ void WinScene::Draw() const {
 
 void WinScene::BackOnClick(int stage) {
     // Change to select scene.
-    Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+    PlayScene* playScene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetScene("play"));
+    if (playScene && playScene->MapId == 6) {
+        Engine::GameEngine::GetInstance().ChangeScene("credits");
+    } else {
+        Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+    }
 }

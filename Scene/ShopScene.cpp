@@ -43,10 +43,11 @@ void ShopScene::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Deluxe Turret Skin Pack", "pirulen.ttf", 36 + 12, 800 + 400, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
 
-    AddNewObject(new Engine::Label(
-        ("Core Memory: " + std::to_string(core_memories)).c_str(),
+    coreMemoryLabel = new Engine::Label(
+        "Core Memory: " + std::to_string(core_memories),
         "pirulen.ttf", 48 + 12, 10, 10, 255, 255, 255, 255, 0.0, 0.0
-        ));  
+        );
+    AddNewObject(coreMemoryLabel);
 
     AddNewObject(new Engine::Label("Price: 100", "pirulen.ttf", 36 + 12, 400, halfH + 175, 255, 255, 255, 255, 0.5, 0.5));
     AddNewObject(new Engine::Label("Price: 500", "pirulen.ttf", 36 + 12, 800 + 400, halfH + 175, 255, 255, 255, 255, 0.5, 0.5));
@@ -78,4 +79,7 @@ void ShopScene::ChooseOnClick(int skin) {
         skin2 = true;
         core_memories -= 500;
     }
+
+    if (coreMemoryLabel)
+        coreMemoryLabel->Text = "Core Memory: " + std::to_string(core_memories);
 }
