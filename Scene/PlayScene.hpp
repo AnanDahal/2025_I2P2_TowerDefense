@@ -131,7 +131,7 @@ Engine::Label* roundLabel = nullptr;
     float moneyRainCooldown = 0.0f;
 
     const float bombCooldownTime = 0.0f;       // 10 seconds
-    const float moneyRainCooldownTime = 15.0f;  // 15 seconds
+    const float moneyRainCooldownTime = 0.0f;  // 15 seconds
 
     bool upgradeTime = false;
 };

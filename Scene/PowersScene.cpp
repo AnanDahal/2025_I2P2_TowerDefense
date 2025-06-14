@@ -29,12 +29,12 @@ void PowersScene::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH * 3 / 2 + 150, 0, 0, 0, 255, 0.5, 0.5));
     //bomb power
-    btn = new Engine::ImageButton("play/light-2.png", "play/light-7.png", 0, 120, 400, 400);
+    btn = new Engine::ImageButton("play/explosion-2.png", "play/explosion-3.png", 0, 120, 400, 400);
     btn->SetOnClickCallback(std::bind(&PowersScene::ChooseOnClick, this, 1));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Atom Bomb", "pirulen.ttf", 36, 200, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
     //money power
-    btn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 400, 120, 400, 400);
+    btn = new Engine::ImageButton("play/sell-icon-2.png", "play/sell-icon.png", 400, 120, 400, 400);
     btn->SetOnClickCallback(std::bind(&PowersScene::ChooseOnClick, this, 2));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Raining Money", "pirulen.ttf", 36, 200 + 400, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
