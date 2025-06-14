@@ -205,6 +205,8 @@ add_executable(2025_I2P2_TowerDefense
         Scene/ShopScene.h
         Scene/CreditScene.cpp
         Scene/CreditScene.h
+        Scene/ClosingScene.cpp
+        Scene/ClosingScene.h
 )
 
 IF (WIN32)

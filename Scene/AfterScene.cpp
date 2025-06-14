@@ -186,9 +186,14 @@ void AfterScene::Update(float deltaTime) {
         if (fadeAlpha >= 255) {
             fadeAlpha = 255;
             // Change scene when fully faded out - go back to campaign scene
-            WinScene *scene = dynamic_cast<WinScene *>(Engine::GameEngine::GetInstance().GetScene("win"));
-            scene->winstage = storyid;
-            Engine::GameEngine::GetInstance().ChangeScene("win");
+            if (storyid == 6) {
+                Engine::GameEngine::GetInstance().ChangeScene("closing");
+            }
+            else {
+                WinScene *scene = dynamic_cast<WinScene *>(Engine::GameEngine::GetInstance().GetScene("win"));
+                scene->winstage = storyid;
+                Engine::GameEngine::GetInstance().ChangeScene("win");
+            }
         }
     }
 }

@@ -51,10 +51,10 @@ void OpeningScene::Draw() const {
     ALLEGRO_FONT* smallerfont = Engine::Resources::GetInstance().GetFont("pirulen.ttf", 40).get();
     //remove fadealphas
     al_draw_filled_rectangle(70, 90, 1530, 230, al_map_rgba(0,0,0,alpha/1.75));
-    al_draw_text(titlefont, al_map_rgba(84, 107, 171, alpha), 87.5, 86, 0, "Tower Defense");
+    al_draw_text(titlefont, al_map_rgba(255, 255, 255, alpha), 445, 75, 0, "Tower Defense");
     if (show) {
-        al_draw_text(smallerfont, al_map_rgba(255, 255, 255, alpha), 200, halfH + 86, 0, "Press [ENTER]");
-        al_draw_text(smallerfont, al_map_rgba(255, 255, 255, alpha), 275, halfH + 150, 0, "to play");
+        al_draw_text(smallerfont, al_map_rgba(255, 255, 255, alpha), 325, halfH + 86, 0, "Press [ENTER]");
+        al_draw_text(smallerfont, al_map_rgba(255, 255, 255, alpha), 400, halfH + 150, 0, "to play");
     }
     //house
     al_draw_tinted_scaled_bitmap(

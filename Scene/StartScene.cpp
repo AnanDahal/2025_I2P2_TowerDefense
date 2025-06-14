@@ -65,7 +65,7 @@ void StartScene::Draw() const {
     IScene::Draw();
     ALLEGRO_FONT* titlefont = Engine::Resources::GetInstance().GetFont("pirulen.ttf", 120).get();
     al_draw_filled_rectangle(70, 90, 1530, 230, al_map_rgba(0,0,0,255/1.75));
-    al_draw_text(titlefont, al_map_rgba(84, 107, 171, 255 - fadealpha), 87.5, 86, 0, "Tower Defense");
+    al_draw_text(titlefont, al_map_rgba(255, 255, 255, 255-fadealpha), 445, 75, 0, "Tower Defense");
 
     al_draw_tinted_scaled_bitmap(
         house,
