@@ -10,9 +10,10 @@
 
 #include "Scene/PasswordScene.h"
 #include "Scene/PlayScene.hpp"
+#include "Scene/ShopScene.h"
 
 const int SlowTurret::Price = 100;
-SlowTurret::SlowTurret(float x, float y) : Turret("play/tower-base.png", "play/turret-6.png", x, y, 300, Price, 1, 500) {
+SlowTurret::SlowTurret(float x, float y) : Turret("play/tower-base.png", GetTurretImage(6), x, y, 300, Price, 1, 500) {
     // Move center downward, since we the turret head is slightly biased upward.
     Anchor.y += 8.0f / GetBitmapHeight();
     missThreshold = 0;

@@ -12,10 +12,11 @@
 #include "Engine/Point.hpp"
 #include "Scene/PlayScene.hpp"
 #include "MissileTurret.h"
+#include "Scene/ShopScene.h"
 
 const int MissileTurret::Price = 150;
 MissileTurret::MissileTurret(float x, float y)
-    : Turret("play/tower-base.png", "play/turret-4.png", x, y, 300, Price, 1.5, 500) {
+    : Turret("play/tower-base.png", GetTurretImage(4), x, y, 300, Price, 1.5, 500) {
     // Move center downward, since we the turret head is slightly biased upward.
     Anchor.y += 8.0f / GetBitmapHeight();
     missThreshold = 0;

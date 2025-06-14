@@ -55,6 +55,16 @@ public:
             OnDestroyed();
         }
     }
+    inline std::string GetTurretImage(int turretNum) {
+    extern bool skin1;
+    extern bool skin2;
+    if (skin2)
+        return "play/Turret upgrades/turret-" + std::to_string(turretNum) + "-u2.png";
+    else if (skin1)
+        return "play/Turret upgrades/turret-" + std::to_string(turretNum) + "-u1.png";
+    else
+        return "play/turret-" + std::to_string(turretNum) + ".png";
+    }   
 
 };
 #endif   // TURRET_HPP

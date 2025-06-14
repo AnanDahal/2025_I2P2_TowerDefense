@@ -58,8 +58,6 @@ void WinScene::Initialize() {
             endless = endless_score;
             skinone = skin1;
             skintwo = skin2;
-            skinthree = skin3;
-            skinfour = skin4;
         }
 
         std::ostringstream oss;

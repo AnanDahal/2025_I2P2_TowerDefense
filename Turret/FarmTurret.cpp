@@ -13,9 +13,10 @@
 
 #include "Scene/PasswordScene.h"
 #include "Scene/PlayScene.hpp"
+#include "Scene/ShopScene.h"
 
 const int FarmTurret::Price = 400;
-FarmTurret::FarmTurret(float x, float y) : Turret("play/tower-base.png", "play/turret-10.png", x, y, 300, Price, 1, 600) {
+FarmTurret::FarmTurret(float x, float y) : Turret("play/tower-base.png", GetTurretImage(10), x, y, 300, Price, 1, 600) {
     // Move center downward, since we the turret head is slightly biased upward.
     Anchor.y += 8.0f / GetBitmapHeight();
     isLocked = false;

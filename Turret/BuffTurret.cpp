@@ -13,9 +13,10 @@
 
 #include "Scene/PasswordScene.h"
 #include "Scene/PlayScene.hpp"
+#include "Scene/ShopScene.h"
 
 const int BuffTurret::Price = 400;
-BuffTurret::BuffTurret(float x, float y) : Turret("play/tower-base.png", "play/turret-9.png", x, y, 300, Price, 1, 600) {
+BuffTurret::BuffTurret(float x, float y) : Turret("play/tower-base.png", GetTurretImage(9), x, y, 300, Price, 1, 600) {
     // Move center downward, since we the turret head is slightly biased upward.
     Anchor.y += 8.0f / GetBitmapHeight();
     isLocked = false;

@@ -102,8 +102,6 @@ void PasswordScene::SubmitName() {
                 endless_score = endless;
                 skin1 = skinone;
                 skin2 = skintwo;
-                skin3 = skinthree;
-                skin4 = skinfour;
                 Engine::GameEngine::GetInstance().ChangeScene("stage-select");
                 return;
             } else {
@@ -124,8 +122,6 @@ void PasswordScene::SubmitName() {
         endless_score = 0;
         skin1 = false;
         skin2 = false;
-        skin3 = false;
-        skin4 = false;
         Engine::GameEngine::GetInstance().ChangeScene("stage-select"); //FARREL UPDATE THIS WHEN FINISH CUTSCENE
     }
 }

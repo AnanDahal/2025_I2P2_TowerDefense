@@ -42,16 +42,6 @@ void ShopScene::Initialize() {
     btn->SetOnClickCallback(std::bind(&ShopScene::ChooseOnClick, this, 2));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Skin2", "pirulen.ttf", 36, 200 + 400, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
-    //Time power
-    btn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 800, 120, 400, 400);
-    btn->SetOnClickCallback(std::bind(&ShopScene::ChooseOnClick, this, 3));
-    AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Skin3", "pirulen.ttf", 36, 200 + 800, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
-    //AI
-    btn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1200, 120, 400, 400);
-    btn->SetOnClickCallback(std::bind(&ShopScene::ChooseOnClick, this, 4));
-    AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Skin4", "pirulen.ttf", 36, 200 + 1200, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
 
     bgmInstance = AudioHelper::PlaySample("whistle.wav", true, AudioHelper::BGMVolume-0.75);
     bellInstance = AudioHelper::PlaySample("bell.wav", false, AudioHelper::BGMVolume);
@@ -78,11 +68,5 @@ void ShopScene::ChooseOnClick(int skin) {
     }
     else if (skin == 2 && core_memories >= 500) {
         skin2 = true;
-    }
-    else if (skin == 3 && core_memories >= 1000) {
-        skin3 = true;
-    }
-    else if (skin == 4 && core_memories >= 2000) {
-        skin4 = true;
     }
 }

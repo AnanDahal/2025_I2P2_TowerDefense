@@ -5,6 +5,7 @@
 #include "Bullet/HealingBullet.hpp"
 #include "Engine/AudioHelper.hpp"
 #include "Scene/PasswordScene.h"
+#include "Scene/ShopScene.h"
 
 // 1) Define the static Price exactly like the others:
 const int HealingTurret::Price = 200;
@@ -12,7 +13,7 @@ const int HealingTurret::Price = 200;
 HealingTurret::HealingTurret(float x, float y)
     : Turret(
         "play/tower-base.png",   // base sprite
-        "play/turret-3.png",     // turret head sprite
+        GetTurretImage(3),     // turret head sprite
          x, y,                   // position
          200,                    // range
          Price,                  // cost

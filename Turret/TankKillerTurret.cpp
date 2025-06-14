@@ -10,9 +10,10 @@
 
 #include "Scene/PasswordScene.h"
 #include "Scene/PlayScene.hpp"
+#include "Scene/ShopScene.h"
 
 const int TankKillerTurret::Price = 250;
-TankKillerTurret::TankKillerTurret(float x, float y) : Turret("play/tower-base.png", "play/turret-8.png", x, y, 300, Price, 1, 1000) {
+TankKillerTurret::TankKillerTurret(float x, float y) : Turret("play/tower-base.png", GetTurretImage(8), x, y, 300, Price, 1, 1000) {
     // Move center downward, since we the turret head is slightly biased upward.
     Anchor.y += 8.0f / GetBitmapHeight();
     missThreshold = 0;

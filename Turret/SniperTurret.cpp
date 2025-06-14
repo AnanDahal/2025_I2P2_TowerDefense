@@ -10,11 +10,12 @@
 #include "Scene/PlayScene.hpp"
 #include "Enemy/Enemy.hpp"
 #include "Scene/PasswordScene.h"
+#include "Scene/ShopScene.h"
 
 const int SniperTurret::Price = 75;
 
 SniperTurret::SniperTurret(float x, float y)
-    : Turret("play/tower-base.png", "play/turret-7.png", x, y, 800, Price, 3, 100) {
+    : Turret("play/tower-base.png", GetTurretImage(7), x, y, 800, Price, 3, 100) {
     // Move center downward, since we the turret head is slightly biased upward.
     Anchor.y += 8.0f / GetBitmapHeight();
     rotateRadian = 4 * ALLEGRO_PI;

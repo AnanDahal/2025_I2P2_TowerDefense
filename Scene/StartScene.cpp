@@ -25,9 +25,7 @@ int OnStage = 0;
 int core_memories = 0;
 int endless_score = 0;
 bool skin1 = false;
-bool skin2 = false;
-bool skin3 = false;
-bool skin4 = false;
+bool skin2 = true;
 // TODO HACKATHON-2 (1/3): You can imitate the 2 files: 'StartScene.hpp', 'StartScene.cpp' to implement your SettingsScene.
 void StartScene::Initialize() {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;

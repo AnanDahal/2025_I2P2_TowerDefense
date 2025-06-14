@@ -8,10 +8,11 @@
 #include "Engine/Point.hpp"
 #include "BossKillerTurret.h"
 #include "Scene/PlayScene.hpp"
+#include "Scene/ShopScene.h"
 
 const int BossKillerTurret::Price = 500;
 BossKillerTurret::BossKillerTurret(float x, float y)
-    : Turret("play/tower-base.png", "play/turret-5.png", x, y, 200, Price, 0.5, 1000) {
+    : Turret("play/tower-base.png", GetTurretImage(5), x, y, 200, Price, 0.5, 1000) {
     // Move center downward, since we the turret head is slightly biased upward.
     Anchor.y += 8.0f / GetBitmapHeight();
     missThreshold = 0;
