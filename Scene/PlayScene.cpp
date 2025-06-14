@@ -220,8 +220,16 @@ void PlayScene::Initialize() {
     ConstructUI();
 
     // chatbox
-
+    auto lockLabel = new Engine::Label("Locked until Round 3:", "pirulen.ttf", 32, 1300, 200);
+    UIGroup->AddNewObject(lockLabel);
+    auto lockLabel1 = new Engine::Label("Locked until Round 4:", "pirulen.ttf", 32, 1300, 325);
+    UIGroup->AddNewObject(lockLabel1);
+    auto upgradeLabel = new Engine::Label("Press Upgrade, ", "pirulen.ttf", 28, 1300, 550);
+    UIGroup->AddNewObject(upgradeLabel);
+    auto upgradeLabel1 = new Engine::Label("then press desired turret", "pirulen.ttf", 28, 1300, 580);
+    UIGroup->AddNewObject(upgradeLabel1);
     // end chatbox
+
 
     imgTarget = new Engine::Image("play/target.png", 0, 0);
     imgTarget->Visible = false;
