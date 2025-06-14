@@ -214,7 +214,12 @@ void PlayScene::Initialize() {
     else {
         FarmTurret::isLocked = true;
     }
-
+    if (MapId == 5) {
+        money = 7000;
+    }
+    if (MapId == 6) {
+        money = 5000;
+    }
     mapDistance = CalculateBFSDistance();
     ConstructUI();
 
@@ -796,12 +801,12 @@ void PlayScene::ConstructUI() {
 
     Engine::ImageButton *btnn; //CHANGE PNGS
     if (whichPower == 1) {
-        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn = new Engine::ImageButton("play/explosion-2.png", "play/explosion-3.png", 1370 + 76, 36, 64, 64);
         btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 11));
         AddNewControlObject(btnn);
     }
     else if (whichPower == 2) {
-        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn = new Engine::ImageButton("play/sell-icon.png", "play/sell-icon-2.png", 1370 + 76, 36, 64, 64);
         btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 12));
         AddNewControlObject(btnn);
     }

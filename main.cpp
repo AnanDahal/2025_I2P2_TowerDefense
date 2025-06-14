@@ -6,6 +6,7 @@
 #include "Scene/AfterScene.h"
 #include "Scene/BeforeScene.h"
 #include "Scene/CampaignScene.h"
+#include "Scene/CreditScene.h"
 #include "Scene/LoseScene.hpp"
 #include "Scene/PlayScene.hpp"
 #include "Scene/StageSelectScene.hpp"
@@ -39,7 +40,7 @@ int main(int argc, char **argv) {
 	game.AddNewScene("before", new BeforeScene());
 	game.AddNewScene("after", new AfterScene());  // Add the AfterScene
 	game.AddNewScene("shop", new ShopScene());
-
+	game.AddNewScene("credits", new CreditScene());
 	// Start the game
 	game.Start("opening", 60, 1600, 832);
 	return 0;
