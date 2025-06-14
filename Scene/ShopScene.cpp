@@ -25,30 +25,31 @@ void ShopScene::Initialize() {
     int halfW = w / 2;
     int halfH = h / 2;
 
-    AddNewObject(new Engine::Label("SHOP", "pirulen.ttf", 48, halfW, 50, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("SHOP", "pirulen.ttf", 48 + 12 + 24, halfW, 50, 255, 255, 255, 255, 0.5, 0.5));
 
     Engine::ImageButton *btn;
     btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH * 3 / 2 + 100, 400, 100);
     btn->SetOnClickCallback(std::bind(&ShopScene::BackOnClick, this, 2));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH * 3 / 2 + 150, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48 + 12, halfW, halfH * 3 / 2 + 150, 0, 0, 0, 255, 0.5, 0.5));
     //bomb power
     btn = new Engine::ImageButton("play/Turret upgrades/turret-1-u1.png", "play/Turret upgrades/turret-1-u1.png", 200, 120, 400, 400);
     btn->SetOnClickCallback(std::bind(&ShopScene::ChooseOnClick, this, 1));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Turret Skin Pack", "pirulen.ttf", 36, 400, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Turret Skin Pack", "pirulen.ttf", 36 + 12, 400, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
     //money power
     btn = new Engine::ImageButton("play/Turret upgrades/turret-1-u2.png", "play/Turret upgrades/turret-1-u2.png", 1000, 120, 400, 400);
     btn->SetOnClickCallback(std::bind(&ShopScene::ChooseOnClick, this, 2));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Deluxe Turret Skin Pack", "pirulen.ttf", 36, 800 + 400, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Deluxe Turret Skin Pack", "pirulen.ttf", 36 + 12, 800 + 400, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
 
     AddNewObject(new Engine::Label(
         ("Core Memory: " + std::to_string(core_memories)).c_str(),
-        "pirulen.ttf", 30, 10, 10, 255, 255, 255, 255, 0.0, 0.0
+        "pirulen.ttf", 48 + 12, 10, 10, 255, 255, 255, 255, 0.0, 0.0
         ));  
 
-
+    AddNewObject(new Engine::Label("Price: 100", "pirulen.ttf", 36 + 12, 400, halfH + 175, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Price: 500", "pirulen.ttf", 36 + 12, 800 + 400, halfH + 175, 255, 255, 255, 255, 0.5, 0.5));
     bgmInstance = AudioHelper::PlaySample("whistle.wav", true, AudioHelper::BGMVolume-0.75);
     bellInstance = AudioHelper::PlaySample("bell.wav", false, AudioHelper::BGMVolume);
 }
