@@ -91,7 +91,7 @@ void LeaderBoardScene::DisplayCurrentPage() {
 
     // Title
     AddNewObject(new Engine::Label(
-        "SCOREBOARD", "pirulen.ttf", 48, halfW, 50,
+        "SCOREBOARD", "pirulen.ttf", 63, halfW, 50,
         255,255,255,255, 0.5,0.5));
 
     int start = currentPage * ENTRIES_PER_PAGE;
@@ -105,7 +105,7 @@ void LeaderBoardScene::DisplayCurrentPage() {
            << " - " << std::get<1>(scores[i])
            << " (" << std::get<2>(scores[i]) << ")";
         AddNewObject(new Engine::Label(
-            ss.str(), "pirulen.ttf", 24,
+            ss.str(), "pirulen.ttf", 48,
             halfW, 120 + (i - start)*50,
             255,255,255,255, 0.5,0.5));
     }
