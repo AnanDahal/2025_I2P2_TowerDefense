@@ -619,6 +619,14 @@ void PlayScene::OnKeyDown(int keyCode) {
     }
     if (keyCode == ALLEGRO_KEY_Q && money >= MachineGunTurret::Price) UIBtnClicked(0);
     else if (keyCode == ALLEGRO_KEY_W && money >= LaserTurret::Price) UIBtnClicked(1);
+    else if (keyCode == ALLEGRO_KEY_E && money >= MissileTurret::Price) UIBtnClicked(3);
+    else if (keyCode == ALLEGRO_KEY_R && money >= FarmTurret::Price && !FarmTurret::isLocked) UIBtnClicked(9);
+    else if (keyCode == ALLEGRO_KEY_A && money >= BuffTurret::Price && !BuffTurret::isLocked) UIBtnClicked(4);
+    else if (keyCode == ALLEGRO_KEY_S && money >= HealingTurret::Price && !HealingTurret::isLocked) UIBtnClicked(2);
+    else if (keyCode == ALLEGRO_KEY_D && money >= SlowTurret::Price && !SlowTurret::isLocked) UIBtnClicked(5);
+    else if (keyCode == ALLEGRO_KEY_F && money >= BossKillerTurret::Price && !BossKillerTurret::isLocked) UIBtnClicked(8);
+    else if (keyCode == ALLEGRO_KEY_Z && money >= SniperTurret::Price && !SniperTurret::isLocked) UIBtnClicked(6);
+    else if (keyCode == ALLEGRO_KEY_X && money >= TankKillerTurret::Price && !TankKillerTurret::isLocked) UIBtnClicked(7);
     else if (keyCode >= ALLEGRO_KEY_0 && keyCode <= ALLEGRO_KEY_9) SpeedMult = keyCode - ALLEGRO_KEY_0;
 }
 
@@ -1102,7 +1110,8 @@ void PlayScene::UIBtnClicked(int id) {
         upgradeTime = !upgradeTime;
     }
     else if (id == 20) {
-        Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+        if (MapId < 7) Engine::GameEngine::GetInstance().ChangeScene("campaign");
+        else Engine::GameEngine::GetInstance().ChangeScene("stage-select");
     }
     else if (id == 21) {
         Engine::GameEngine::GetInstance().ChangeScene("play");
