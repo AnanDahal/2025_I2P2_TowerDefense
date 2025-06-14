@@ -59,7 +59,7 @@ void ClosingScene::Initialize() {
     pandaFade = al_load_bitmap("../Resource/images/pandafade.png");
 
     // Keep only the cricket sound
-    cricketInstance = AudioHelper::PlaySample("cricket.wav", true, AudioHelper::BGMVolume);
+    soundInstance = AudioHelper::PlaySample("sad.wav", true, AudioHelper::BGMVolume);
 }
 void ClosingScene::Draw() const {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
@@ -133,8 +133,8 @@ void ClosingScene::Draw() const {
 }
 void ClosingScene::Terminate() {
     // Stop and clean up cricket sound
-    AudioHelper::StopSample(cricketInstance);
-    cricketInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
+    AudioHelper::StopSample(soundInstance);
+    soundInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
     
     // Clean up bitmaps
     if (finalScene) {

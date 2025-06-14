@@ -41,7 +41,7 @@ class ClosingScene final : public Engine::IScene {
     ALLEGRO_BITMAP *weirdScene;
     ALLEGRO_BITMAP *weirdScreen;
     ALLEGRO_BITMAP *pandaFade;
-    std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> cricketInstance;
+    std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> soundInstance;
 
 public:
     int changeid;  // Default story ID
