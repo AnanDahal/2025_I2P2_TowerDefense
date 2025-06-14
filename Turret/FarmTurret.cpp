@@ -27,10 +27,10 @@ void FarmTurret::CreateBullet() {
 
 void FarmTurret::Update(float deltaTime) {
     if (farmUpgrade1) {
-        moneyPerHarvest *= 2;
+        moneyPerHarvest = 20;
     }
     if (farmUpgrade2) {
-        harvestInterval /= 2;
+        harvestInterval = 2.0f;
     }
     // Update base sprite logic
     Sprite::Update(deltaTime);

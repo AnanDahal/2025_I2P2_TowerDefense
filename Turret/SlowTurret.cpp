@@ -37,10 +37,10 @@ void SlowTurret::CreateBullet() {
 void SlowTurret::Update(float deltaTime) {
     Turret::Update(deltaTime);
     if (slowUpgrade2) {
-        CollisionRadius *= 2;
+        CollisionRadius = 600;
     }
     if (slowUpgrade1) {
-        coolDown /= 2;
+        coolDown = 0.5f;
     }
 }
 //

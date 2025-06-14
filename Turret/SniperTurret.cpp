@@ -53,6 +53,6 @@ void SniperTurret::CreateBullet() {
 void SniperTurret::Update(float deltaTime) {
     Turret::Update(deltaTime);
     if (sniperUpgrade2) {
-        coolDown /= 2;
+        coolDown = 1.5f;
     }
 }

@@ -34,6 +34,6 @@ void BossKillerTurret::CreateBullet() {
 void BossKillerTurret::Update(float deltaTime) {
     Turret::Update(deltaTime);
     if (bossUpgrade2) {
-        CollisionRadius *= 2;
+        CollisionRadius = 400;
     }
 }

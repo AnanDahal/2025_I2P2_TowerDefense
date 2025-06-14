@@ -132,5 +132,7 @@ Engine::Label* roundLabel = nullptr;
 
     const float bombCooldownTime = 0.0f;       // 10 seconds
     const float moneyRainCooldownTime = 15.0f;  // 15 seconds
+
+    bool upgradeTime = false;
 };
 #endif   // PLAYSCENE_HPP
