@@ -28,6 +28,7 @@
 #include "Engine/Resources.hpp"
 #include "PlayScene.hpp"
 
+#include "AfterScene.h"
 #include "Enemy/BiggerCarrierEnemy.h"
 #include "Enemy/BossEnemy.h"
 #include "Enemy/CarrierEnemy.h"
@@ -399,6 +400,10 @@ void PlayScene::Update(float deltaTime) {
     {
         // all waves are done and no enemies remain → campaign level complete
         AIPlacedThisRound = false; // reset AI placement flag
+        AfterScene *afterScene = dynamic_cast<AfterScene *>(Engine::GameEngine::GetInstance().GetScene("after"));
+        if (afterScene && afterScene->storyid < 7) {
+            afterScene->storyid = MapId;
+        }
         Engine::GameEngine::GetInstance().ChangeScene("after");
         return;
     }
