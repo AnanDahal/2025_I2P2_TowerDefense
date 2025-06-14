@@ -121,7 +121,7 @@ void LeaderBoardScene::DisplayCurrentPage() {
         prev->SetOnClickCallback(
             std::bind(&LeaderBoardScene::PrevPageOnClick, this));
         AddNewControlObject(prev);
-        AddNewObject(new Engine::Label("<", "pirulen.ttf", 32,
+        AddNewObject(new Engine::Label("<", "pirulen.ttf", 48,
             100, btnY+25, 0,255,0,255, 0.5,0.5));
     }
 
@@ -133,7 +133,7 @@ void LeaderBoardScene::DisplayCurrentPage() {
         next->SetOnClickCallback(
             std::bind(&LeaderBoardScene::NextPageOnClick, this));
         AddNewControlObject(next);
-        AddNewObject(new Engine::Label(">", "pirulen.ttf", 32,
+        AddNewObject(new Engine::Label(">", "pirulen.ttf", 48,
             w - 100, btnY+25, 0,255,0,255, 0.5,0.5));
     }
 }

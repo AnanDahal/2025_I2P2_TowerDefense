@@ -38,17 +38,17 @@ void LogInScene::Initialize() {
     bgmInstance = AudioHelper::PlaySample("sass.wav", true, AudioHelper::BGMVolume);
 
     // Name input section
-    AddNewObject(new Engine::Label("Enter your name:", "pirulen.ttf", 24, halfW, halfH / 2, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Enter your name:", "pirulen.ttf", 63, halfW, halfH / 2, 255, 255, 255, 255, 0.5, 0.5));
 
     // Create the name label (will show typed text)
-    nameLabel = new Engine::Label("", "pirulen.ttf", 36, halfW, halfH / 2 + 65, 255, 255, 255, 255, 0.5, 0.5);
+    nameLabel = new Engine::Label("", "pirulen.ttf", 48, halfW, halfH / 2 + 65, 255, 255, 255, 255, 0.5, 0.5);
     AddNewObject(nameLabel);
 
     // Submit button
     btn = new Engine::ImageButton("win/dirt.png", "win/floor.png", halfW - 200, halfH * 3 / 2 - 50, 400, 100);
     btn->SetOnClickCallback(std::bind(&LogInScene::SubmitName, this));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Submit User", "pirulen.ttf", 36, halfW, halfH * 3 / 2, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Submit User", "pirulen.ttf", 48, halfW, halfH * 3 / 2, 0, 0, 0, 255, 0.5, 0.5));
 }
 
 void LogInScene::Terminate() {
