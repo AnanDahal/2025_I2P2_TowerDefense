@@ -764,8 +764,8 @@ void PlayScene::ConstructUI() {
 
     //ATTACK TOWERS
     btn = new TurretButton("play/floor.png", "play/dirt.png",
-                       Engine::Sprite("play/tower-base.png", 1370 + 152, 136 + 240, 0, 0, 0, 0),
-                       Engine::Sprite(GetTurretImage(7), 1370 + 152, 136 - 8 + 240, 0, 0, 0, 0), 1370 + 152, 136 + 240, SniperTurret::Price);
+                       Engine::Sprite("play/tower-base.png", 1370, 136 + 240, 0, 0, 0, 0),
+                       Engine::Sprite(GetTurretImage(7), 1370, 136 - 8 + 240, 0, 0, 0, 0), 1370, 136 + 240, SniperTurret::Price);
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 6)); // Sniper turret
     UIGroup->AddNewControlObject(btn);
 
