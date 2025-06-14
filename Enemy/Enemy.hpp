@@ -25,6 +25,10 @@ protected:
     bool _invisible = false;
     float _invisibleTime = 0;
     float _invisibleDuration = 0;
+    
+    // Add these new variables
+    bool markedForDeath = false;
+    float deathDelay = 0.05f; // Short delay to allow bullets to hit
 
 public:
     float reachEndTime;
@@ -36,7 +40,7 @@ public:
     void UpdatePath(const std::vector<std::vector<int>> &mapDistance);
     void Update(float deltaTime) override;
     void Draw() const override;
-    virtual bool IsTargetable() const {return !_invisible;}
+    virtual bool IsTargetable() const {return !_invisible && !markedForDeath;}
 
     void SetInvisible(float duration) {
         _invisible = true;

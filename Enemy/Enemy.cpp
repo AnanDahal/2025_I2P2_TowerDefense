@@ -54,15 +54,17 @@ void Enemy::Hit(float damage, bool slow) {
             speed = 5;
         }
     }
-    if (hp <= 0) {
+
+    if (hp <= 0 && !markedForDeath) {
+        markedForDeath = true;
         OnExplode();
         // Remove all turret's reference to target.
         for (auto &it : lockedTurrets)
             it->Target = nullptr;
-        for (auto &it : lockedBullets)
-            it->Target = nullptr;
+        // Don't clear bullet references yet - let them hit
         getPlayScene()->EarnMoney(money);
-        getPlayScene()->EnemyGroup->RemoveObject(objectIterator);
+
+        // Play explosion sound
         AudioHelper::PlayAudio("explosion.wav");
     }
 }
@@ -110,13 +112,32 @@ void Enemy::UpdatePath(const std::vector<std::vector<int>> &mapDistance) {
 
 
 void Enemy::Update(float deltaTime) {
+    // Handle death delay if marked for death
+    if (markedForDeath) {
+        deathDelay -= deltaTime;
+        if (deathDelay <= 0) {
+            // Clear any remaining bullet references
+            for (auto &it : lockedBullets)
+                it->Target = nullptr;
+                
+            // Remove from scene
+            getPlayScene()->EnemyGroup->RemoveObject(objectIterator);
+            return;
+        }
+        
+        // Still allow bullets to hit during death delay
+        // but don't process movement
+        return;
+    }
+
     if (_invisible) {
         _invisibleTime += deltaTime;
         if (_invisibleTime >= _invisibleDuration) {
             _invisible = false;
         }
     }
-    // Pre-calculate the velocity.
+    
+    // Rest of the update method remains unchanged
     float remainSpeed = speed * deltaTime;
     if (type != 0 && type == 2) remainSpeed *= (refhp - hp <= 1) ? 1 : (refhp - hp) / 2;
     while (remainSpeed != 0) {
