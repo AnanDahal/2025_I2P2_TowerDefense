@@ -14,6 +14,7 @@
 #include "Engine/LOG.hpp"
 #include "Scene/BeforeScene.h"
 #include "Scene/PlayScene.hpp"
+#include "Turret/SlowTurret.h"
 #include "Turret/Turret.hpp"
 #include "UI/Animation/DirtyEffect.hpp"
 #include "UI/Animation/ExplosionEffect.hpp"
@@ -42,8 +43,16 @@ Enemy::Enemy(std::string img, int type,float x, float y, float radius, float spe
 }
 void Enemy::Hit(float damage, bool slow) {
     hp -= damage;
-    if (slow && speed <= 5) {
-        speed -= 5;
+    if (slow && speed >= 5) {
+        if (SlowTurret::slowUpgrade1) {
+            speed -= 15;
+        }
+        else {
+            speed -= 10;
+        }
+        if (speed < 5) {
+            speed = 5;
+        }
     }
     if (hp <= 0) {
         OnExplode();
