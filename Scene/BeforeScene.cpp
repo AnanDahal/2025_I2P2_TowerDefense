@@ -141,7 +141,7 @@ void BeforeScene::Initialize() {
     // Start the dialogue system
     StartDialogues();
 
-    bgmInstance = AudioHelper::PlaySample("sass.wav", true, AudioHelper::BGMVolume);
+    bgmInstance = AudioHelper::PlaySample("mai.wav", true, AudioHelper::BGMVolume);
 
     // Reset the cleanup flag
     isCleanedUp = false;

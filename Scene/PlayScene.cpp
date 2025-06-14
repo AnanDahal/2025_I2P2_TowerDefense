@@ -727,9 +727,9 @@ void PlayScene::ConstructUI() {
     // Background
     UIGroup->AddNewObject(new Engine::Image("play/sand.png", 1280, 0, 320, 832));
     // Text
-    UIGroup->AddNewObject(new Engine::Label(std::string("Stage ") + std::to_string(MapId), "pirulen.ttf", 32, 1294, 0));
-    UIGroup->AddNewObject(UIMoney = new Engine::Label(std::string("$") + std::to_string(money), "pirulen.ttf", 24, 1294, 48));
-    UIGroup->AddNewObject(UILives = new Engine::Label(std::string("Life ") + std::to_string(lives), "pirulen.ttf", 24, 1294, 88));
+    UIGroup->AddNewObject(new Engine::Label(std::string("Stage ") + std::to_string(MapId), "pirulen.ttf", 36, 1294, 0));
+    UIGroup->AddNewObject(UIMoney = new Engine::Label(std::string("$") + std::to_string(money), "pirulen.ttf", 36, 1294, 48));
+    UIGroup->AddNewObject(UILives = new Engine::Label(std::string("Life ") + std::to_string(lives), "pirulen.ttf", 36, 1294, 88));
     TurretButton *btn;
     // Button 1
     btn = new TurretButton("play/floor.png", "play/dirt.png",
@@ -788,7 +788,7 @@ void PlayScene::ConstructUI() {
 
     btn = new TurretButton("play/floor.png", "play/dirt.png",
                        Engine::Sprite("play/tower-base.png", 1370 + 76, 136 + 240, 0, 0, 0, 0),
-                       Engine::Sprite(GetTurretImage(6), 1370 + 76, 136 - 8 + 240, 0, 0, 0, 0), 1370 + 76, 136 + 240, TankKillerTurret::Price);
+                       Engine::Sprite(GetTurretImage(8), 1370 + 76, 136 - 8 + 240, 0, 0, 0, 0), 1370 + 76, 136 + 240, TankKillerTurret::Price);
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 7)); // TankKiller turret
     UIGroup->AddNewControlObject(btn);
 

@@ -124,7 +124,7 @@ void AfterScene::Initialize() {
     StartDialogues();
 
     // Play victory music
-    bgmInstance = AudioHelper::PlaySample("win.wav", true, AudioHelper::BGMVolume);
+    bgmInstance = AudioHelper::PlaySample("yui.wav", true, AudioHelper::BGMVolume);
 
     // Reset the cleanup flag
     isCleanedUp = false;
