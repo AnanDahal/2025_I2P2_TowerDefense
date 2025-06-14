@@ -488,6 +488,10 @@ void PlayScene::Draw() const {
 }
 
 void PlayScene::OnMouseDown(int button, int mx, int my) {
+    if ((button & 1) && !imgTarget->Visible && preview) {
+        UIGroup->RemoveObject(preview->GetObjectIterator());
+        preview = nullptr;
+    }
     IScene::OnMouseDown(button, mx, my);
 }
 
