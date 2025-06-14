@@ -28,7 +28,7 @@ void WinScene::Initialize() {
     int halfH = h / 2;
 
     AddNewObject(new Engine::Image("win/benjamin-sad.png", halfW, halfH, 0, 0, 0.5, 0.5));
-    AddNewObject(new Engine::Label("You Win!", "pirulen.ttf", 48, halfW, halfH / 4 - 10, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("You Win!", "pirulen.ttf", 64, halfW, halfH / 4 - 10, 255, 255, 255, 255, 0.5, 0.5));
     // AddNewObject(new Engine::Label("Enter Name: ", "pirulen.ttf", 32, halfW - 350, halfH / 4 + 65, 255, 255, 255, 255, 0.5, 0.5));
     //
     // nameLabel = new Engine::Label(playerName, "pirulen.ttf", 32, halfW, halfH / 4 + 65, 255, 255, 255, 255, 0.5, 0.5);

@@ -640,6 +640,7 @@ void PlayScene::OnKeyDown(int keyCode) {
     else if (keyCode == ALLEGRO_KEY_F && money >= BossKillerTurret::Price && !BossKillerTurret::isLocked) UIBtnClicked(8);
     else if (keyCode == ALLEGRO_KEY_Z && money >= SniperTurret::Price && !SniperTurret::isLocked) UIBtnClicked(6);
     else if (keyCode == ALLEGRO_KEY_X && money >= TankKillerTurret::Price && !TankKillerTurret::isLocked) UIBtnClicked(7);
+    else if (keyCode == ALLEGRO_KEY_U) UIBtnClicked(15);
     else if (keyCode >= ALLEGRO_KEY_0 && keyCode <= ALLEGRO_KEY_9) SpeedMult = keyCode - ALLEGRO_KEY_0;
 }
 
