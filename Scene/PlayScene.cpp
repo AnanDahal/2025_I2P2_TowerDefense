@@ -825,8 +825,8 @@ void PlayScene::ConstructUI() {
     btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 15));
     AddNewControlObject(btnn);
 
-    if (MapId == 2) {
-        roundLabel = new Engine::Label("Round: " + std::to_string(endlessRound), "pirulen.ttf", 32, 1050, 50);
+    if (MapId == 7) {
+        roundLabel = new Engine::Label("Round: " + std::to_string(endlessRound), "pirulen.ttf", 32, 1150, 50);
         UIGroup->AddNewObject(roundLabel);
     }
 
