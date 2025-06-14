@@ -7,6 +7,10 @@
 #include "Engine/Group.hpp"
 #include "Engine/Point.hpp"
 #include "MachineGunTurret.hpp"
+
+#include <iostream>
+#include <bits/ostream.tcc>
+
 #include "Scene/PlayScene.hpp"
 #include "Scene/ShopScene.h"
 
@@ -33,6 +37,6 @@ void MachineGunTurret::CreateBullet() {
 void MachineGunTurret::Update(float deltaTime) {
     Turret::Update(deltaTime);
     if (machinegunupgrade2) {
-        CollisionRadius*= 2;
+        CollisionRadius = 400;
     }
 }

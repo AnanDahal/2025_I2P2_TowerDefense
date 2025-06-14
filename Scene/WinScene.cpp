@@ -40,7 +40,7 @@ void WinScene::Initialize() {
     btn->SetOnClickCallback(std::bind(&WinScene::BackOnClick, this, 2));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH * 7 / 4, 0, 0, 0, 255, 0.5, 0.5));
-    bgmId = AudioHelper::PlayAudio("win.wav");
+    bgmId = AudioHelper::PlayAudio("final.wav");
     //SAVE PLAYER DATA!!!!!
     std::ifstream fin("../Resource/accounts.txt");
     std::vector<std::string> lines;
@@ -89,6 +89,7 @@ void WinScene::Terminate() {
     IScene::Terminate();
     AudioHelper::StopBGM(bgmId);
 }
+
 void WinScene::Update(float deltaTime) {
     ticks += deltaTime;
     if (ticks > 4 && ticks < 100 &&

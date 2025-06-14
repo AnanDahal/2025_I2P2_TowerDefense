@@ -33,15 +33,15 @@ void ShopScene::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH * 3 / 2 + 150, 0, 0, 0, 255, 0.5, 0.5));
     //bomb power
-    btn = new Engine::ImageButton("play/light-2.png", "play/light-7.png", 0, 120, 400, 400);
+    btn = new Engine::ImageButton("play/Turret upgrades/turret-1-u1.png", "play/Turret upgrades/turret-1-u1.png", 200, 120, 400, 400);
     btn->SetOnClickCallback(std::bind(&ShopScene::ChooseOnClick, this, 1));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Turret Skin Pack", "pirulen.ttf", 24, 200, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Turret Skin Pack", "pirulen.ttf", 36, 400, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
     //money power
-    btn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 400, 120, 400, 400);
+    btn = new Engine::ImageButton("play/Turret upgrades/turret-1-u2.png", "play/Turret upgrades/turret-1-u2.png", 1000, 120, 400, 400);
     btn->SetOnClickCallback(std::bind(&ShopScene::ChooseOnClick, this, 2));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Skin2", "pirulen.ttf", 36, 200 + 400, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Deluxe Turret Skin Pack", "pirulen.ttf", 36, 800 + 400, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
 
     bgmInstance = AudioHelper::PlaySample("whistle.wav", true, AudioHelper::BGMVolume-0.75);
     bellInstance = AudioHelper::PlaySample("bell.wav", false, AudioHelper::BGMVolume);
@@ -65,8 +65,10 @@ void ShopScene::BackOnClick(int stage) {
 void ShopScene::ChooseOnClick(int skin) {
     if (skin == 1 && core_memories >= 100) {
         skin1 = true;
+        core_memories -= 100;
     }
     else if (skin == 2 && core_memories >= 500) {
         skin2 = true;
+        core_memories -= 500;
     }
 }

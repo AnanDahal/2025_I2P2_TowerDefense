@@ -34,6 +34,6 @@ void LaserTurret::CreateBullet() {
 void LaserTurret::Update(float deltaTime) {
     Turret::Update(deltaTime);
     if (laserUpgrade2) {
-        CollisionRadius *= 2;
+        CollisionRadius = 600;
     }
 }

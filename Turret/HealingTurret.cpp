@@ -29,7 +29,7 @@ HealingTurret::HealingTurret(float x, float y)
 void HealingTurret::Update(float deltaTime) {
     // 1) Base sprite + base image sync
     if (healUpgrade2) {
-        coolDown /= 2;
+        coolDown = 0.5f;
     }
     Sprite::Update(deltaTime);
     imgBase.Position = Position;

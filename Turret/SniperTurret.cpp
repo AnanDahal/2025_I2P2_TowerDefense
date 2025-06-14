@@ -12,7 +12,7 @@
 #include "Scene/PasswordScene.h"
 #include "Scene/ShopScene.h"
 
-const int SniperTurret::Price = 75;
+const int SniperTurret::Price = 125;
 
 SniperTurret::SniperTurret(float x, float y)
     : Turret("play/tower-base.png", GetTurretImage(7), x, y, 800, Price, 3, 100) {
@@ -53,6 +53,6 @@ void SniperTurret::CreateBullet() {
 void SniperTurret::Update(float deltaTime) {
     Turret::Update(deltaTime);
     if (sniperUpgrade2) {
-        coolDown /= 2;
+        coolDown = 1.5f;
     }
 }

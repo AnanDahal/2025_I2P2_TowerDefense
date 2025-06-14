@@ -14,7 +14,7 @@ public:
     void Update(float deltaTime) override;
     static bool isLocked;
     float timeSinceLastHarvest = 0.0f;
-    float harvestInterval = 4.0f; // seconds
+    float harvestInterval = 2.0f; // seconds
     int moneyPerHarvest = 10;
     static bool farmUpgrade1;
     static bool farmUpgrade2;

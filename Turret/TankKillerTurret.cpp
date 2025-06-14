@@ -37,7 +37,7 @@ void TankKillerTurret::CreateBullet() {
 void TankKillerTurret::Update(float deltaTime) {
     Turret::Update(deltaTime);
     if (tankUpgrade2) {
-        CollisionRadius *= 2;
+        CollisionRadius = 600;
     }
 }
 //

@@ -90,6 +90,7 @@ bool SniperTurret::isLocked = true;
 bool TankKillerTurret::isLocked = true;
 bool BossKillerTurret::isLocked = true;
 bool FarmTurret::isLocked = true;
+
 bool MachineGunTurret::machinegunupgrade1 = false;
 bool MachineGunTurret::machinegunupgrade2 = false;
 bool LaserTurret::laserUpgrade1 = false;
@@ -127,6 +128,27 @@ void PlayScene::Initialize() {
     money = 150;
     Score = 0;
     SpeedMult = 1;
+    upgradeTime = false;
+    MachineGunTurret::machinegunupgrade1 = false;
+    MachineGunTurret::machinegunupgrade2 = false;
+    LaserTurret::laserUpgrade1 = false;
+    LaserTurret::laserUpgrade2 = false;
+    MissileTurret::missileUpgrade1 = false;
+    MissileTurret::missileUpgrade2 = false;
+    HealingTurret::healUpgrade1 = false;
+    HealingTurret::healUpgrade2 = false;
+    SlowTurret::slowUpgrade1 = false;
+    SlowTurret::slowUpgrade2 = false;
+    FarmTurret::farmUpgrade1 = false;
+    FarmTurret::farmUpgrade2 = false;
+    BuffTurret::buffUpgrade1 = false;
+    BuffTurret::buffUpgrade2 = false;
+    SniperTurret::sniperUpgrade1 = false;
+    SniperTurret::sniperUpgrade2 = false;
+    TankKillerTurret::tankUpgrade1 = false;
+    TankKillerTurret::tankUpgrade2 = false;
+    BossKillerTurret::bossUpgrade1 = false;
+    BossKillerTurret::bossUpgrade2 = false;
     // Add groups from bottom to top.
     AddNewObject(TileMapGroup = new Group());
     AddNewObject(GroundEffectGroup = new Group());
@@ -192,7 +214,12 @@ void PlayScene::Initialize() {
     else {
         FarmTurret::isLocked = true;
     }
-
+    if (MapId == 5) {
+        money = 7000;
+    }
+    if (MapId == 6) {
+        money = 5000;
+    }
     mapDistance = CalculateBFSDistance();
     ConstructUI();
 
@@ -597,6 +624,14 @@ void PlayScene::OnKeyDown(int keyCode) {
     }
     if (keyCode == ALLEGRO_KEY_Q && money >= MachineGunTurret::Price) UIBtnClicked(0);
     else if (keyCode == ALLEGRO_KEY_W && money >= LaserTurret::Price) UIBtnClicked(1);
+    else if (keyCode == ALLEGRO_KEY_E && money >= MissileTurret::Price) UIBtnClicked(3);
+    else if (keyCode == ALLEGRO_KEY_R && money >= FarmTurret::Price && !FarmTurret::isLocked) UIBtnClicked(9);
+    else if (keyCode == ALLEGRO_KEY_A && money >= BuffTurret::Price && !BuffTurret::isLocked) UIBtnClicked(4);
+    else if (keyCode == ALLEGRO_KEY_S && money >= HealingTurret::Price && !HealingTurret::isLocked) UIBtnClicked(2);
+    else if (keyCode == ALLEGRO_KEY_D && money >= SlowTurret::Price && !SlowTurret::isLocked) UIBtnClicked(5);
+    else if (keyCode == ALLEGRO_KEY_F && money >= BossKillerTurret::Price && !BossKillerTurret::isLocked) UIBtnClicked(8);
+    else if (keyCode == ALLEGRO_KEY_Z && money >= SniperTurret::Price && !SniperTurret::isLocked) UIBtnClicked(6);
+    else if (keyCode == ALLEGRO_KEY_X && money >= TankKillerTurret::Price && !TankKillerTurret::isLocked) UIBtnClicked(7);
     else if (keyCode >= ALLEGRO_KEY_0 && keyCode <= ALLEGRO_KEY_9) SpeedMult = keyCode - ALLEGRO_KEY_0;
 }
 
@@ -742,8 +777,8 @@ void PlayScene::ConstructUI() {
 
     //ATTACK TOWERS
     btn = new TurretButton("play/floor.png", "play/dirt.png",
-                       Engine::Sprite("play/tower-base.png", 1370 + 152, 136 + 240, 0, 0, 0, 0),
-                       Engine::Sprite(GetTurretImage(7), 1370 + 152, 136 - 8 + 240, 0, 0, 0, 0), 1370 + 152, 136 + 240, SniperTurret::Price);
+                       Engine::Sprite("play/tower-base.png", 1370, 136 + 240, 0, 0, 0, 0),
+                       Engine::Sprite(GetTurretImage(7), 1370, 136 - 8 + 240, 0, 0, 0, 0), 1370, 136 + 240, SniperTurret::Price);
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 6)); // Sniper turret
     UIGroup->AddNewControlObject(btn);
 
@@ -766,26 +801,29 @@ void PlayScene::ConstructUI() {
 
     Engine::ImageButton *btnn; //CHANGE PNGS
     if (whichPower == 1) {
-        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn = new Engine::ImageButton("play/explosion-2.png", "play/explosion-3.png", 1370 + 76, 36, 64, 64);
         btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 11));
         AddNewControlObject(btnn);
     }
     else if (whichPower == 2) {
-        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn = new Engine::ImageButton("play/sell-icon.png", "play/sell-icon-2.png", 1370 + 76, 36, 64, 64);
         btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 12));
         AddNewControlObject(btnn);
     }
     else if (whichPower == 3) {
-        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn = new Engine::ImageButton("play/time.png", "play/time2.png", 1370 + 76, 36, 64, 64);
         btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 13));
         AddNewControlObject(btnn);
     }
     else if (whichPower == 4) {
-        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn = new Engine::ImageButton("play/ai.png", "play/ai2.png", 1370 + 76, 36, 64, 64);
         btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 14));
         AddNewControlObject(btnn);
     }
 
+    btnn = new Engine::ImageButton("play/upgrade-icon.png", "play/upgrade-icon.png", 1370 + 76, halfH + 200, 150, 150);
+    btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 15));
+    AddNewControlObject(btnn);
 
     if (MapId == 2) {
         roundLabel = new Engine::Label("Round: " + std::to_string(endlessRound), "pirulen.ttf", 32, 1050, 50);
@@ -826,6 +864,11 @@ void PlayScene::ConstructUI() {
 }
 
 void PlayScene::UIBtnClicked(int id) {
+    int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
+    int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
+    int halfW = w / 2;
+    int halfH = h / 2;
+    Engine::ImageButton *btnn;
     // 1) Shovel selected?
     if (id < 0) {
         Shoveling = true;
@@ -854,26 +897,196 @@ void PlayScene::UIBtnClicked(int id) {
 
     if (preview)
         UIGroup->RemoveObject(preview->GetObjectIterator());
-    if (id == 0 && money >= MachineGunTurret::Price)
-        preview = new MachineGunTurret(0, 0);
-    else if (id == 1 && money >= LaserTurret::Price)
-        preview = new LaserTurret(0, 0);
-    else if (id == 2 && money >= HealingTurret::Price && !HealingTurret::isLocked)
-        preview = new HealingTurret(0, 0);
-    else if (id == 3 && money >= MissileTurret::Price)
-        preview = new MissileTurret(0, 0);
-    else if (id == 4 && money >= BuffTurret::Price && !BuffTurret::isLocked)
-        preview = new BuffTurret(0, 0);
-    else if (id == 5 && money >= SlowTurret::Price && !SlowTurret::isLocked)
-        preview = new SlowTurret(0, 0);
-    else if (id == 6 && money >= SniperTurret::Price && !SniperTurret::isLocked)
-        preview = new SniperTurret(0, 0);
-    else if (id == 7 && money >= TankKillerTurret::Price && !TankKillerTurret::isLocked)
-        preview = new TankKillerTurret(0, 0);
-    else if (id == 8 && money >= BossKillerTurret::Price && !BossKillerTurret::isLocked)
-        preview = new BossKillerTurret(0, 0);
-    else if (id == 9 && money >= FarmTurret::Price && !FarmTurret::isLocked)
-        preview = new FarmTurret(0, 0);
+    if (id == 0) {
+        if (upgradeTime) {
+            if (!MachineGunTurret::machinegunupgrade1) {
+                MachineGunTurret::machinegunupgrade1 = true;
+                EarnMoney(-50);
+                upgradeTime = false;
+            }
+            else {
+                MachineGunTurret::machinegunupgrade2 = true;
+                EarnMoney(-50);
+                upgradeTime = false;
+            }
+        }
+        else {
+            if (money >= MachineGunTurret::Price) {
+                preview = new MachineGunTurret(0, 0);
+            }
+        }
+    }
+    else if (id == 1) {
+        if (upgradeTime) {
+            if (!LaserTurret::laserUpgrade1) {
+                LaserTurret::laserUpgrade1 = true;
+                EarnMoney(-200);
+                upgradeTime = false;
+            }
+            else {
+                LaserTurret::laserUpgrade2 = true;
+                EarnMoney(-200);
+                upgradeTime = false;
+            }
+        }
+        else {
+            if (money >= LaserTurret::Price) {
+                preview = new LaserTurret(0, 0);
+            }
+        }
+    }
+    else if (id == 2) {
+        if (upgradeTime) {
+            if (!HealingTurret::healUpgrade1) {
+                HealingTurret::healUpgrade1 = true;
+                EarnMoney(-200);
+                upgradeTime = false;
+            }
+            else {
+                HealingTurret::healUpgrade2 = true;
+                EarnMoney(-200);
+                upgradeTime = false;
+            }
+        }
+        else {
+            if (money >= HealingTurret::Price && !HealingTurret::isLocked) {
+                preview = new HealingTurret(0, 0);
+            }
+        }
+    }
+    else if (id == 3) {
+        if (upgradeTime) {
+            if (!MissileTurret::missileUpgrade1) {
+                MissileTurret::missileUpgrade1 = true;
+                EarnMoney(-150);
+                upgradeTime = false;
+            }
+            else {
+                MissileTurret::missileUpgrade2 = true;
+                EarnMoney(-150);
+                upgradeTime = false;
+            }
+        }
+        else {
+            if (money >= MissileTurret::Price) {
+                preview = new MissileTurret(0, 0);
+            }
+        }
+    }
+    else if (id == 4) {
+        if (upgradeTime) {
+            if (!BuffTurret::buffUpgrade1) {
+                BuffTurret::buffUpgrade1 = true;
+                EarnMoney(-400);
+                upgradeTime = false;
+            }
+            else {
+                BuffTurret::buffUpgrade2 = true;
+                EarnMoney(-400);
+                upgradeTime = false;
+            }
+        }
+        else {
+            if (money >= BuffTurret::Price && !BuffTurret::isLocked) {
+                preview = new BuffTurret(0, 0);
+            }
+        }
+    }
+    else if (id == 5) {
+        if (upgradeTime) {
+            if (!SlowTurret::slowUpgrade1) {
+                SlowTurret::slowUpgrade1 = true;
+                EarnMoney(-100);
+                upgradeTime = false;
+            }
+            else {
+                SlowTurret::slowUpgrade2 = true;
+                EarnMoney(-100);
+                upgradeTime = false;
+            }
+        }
+        else {
+            if (money >= SlowTurret::Price && !SlowTurret::isLocked) {
+                preview = new SlowTurret(0, 0);
+            }
+        }
+    }
+    else if (id == 6) {
+        if (upgradeTime) {
+            if (!SniperTurret::sniperUpgrade1) {
+                SniperTurret::sniperUpgrade1 = true;
+                EarnMoney(-125);
+                upgradeTime = false;
+            }
+            else {
+                SniperTurret::sniperUpgrade2 = true;
+                EarnMoney(-125);
+                upgradeTime = false;
+            }
+        }
+        else {
+            if (money >= SniperTurret::Price && !SniperTurret::isLocked) {
+                preview = new SniperTurret(0, 0);
+            }
+        }
+    }
+    else if (id == 7) {
+        if (upgradeTime) {
+            if (!TankKillerTurret::tankUpgrade1) {
+                TankKillerTurret::tankUpgrade1 = true;
+                EarnMoney(-250);
+                upgradeTime = false;
+            }
+            else {
+                TankKillerTurret::tankUpgrade2 = true;
+                EarnMoney(-250);
+                upgradeTime = false;
+            }
+        }
+        else {
+            if (money >= TankKillerTurret::Price && !TankKillerTurret::isLocked) {
+                preview = new TankKillerTurret(0, 0);
+            }
+        }
+    }
+    else if (id == 8) {
+        if (upgradeTime) {
+            if (!BossKillerTurret::bossUpgrade1) {
+                BossKillerTurret::bossUpgrade1 = true;
+                EarnMoney(-500);
+                upgradeTime = false;
+            }
+            else {
+                BossKillerTurret::bossUpgrade2 = true;
+                EarnMoney(-500);
+                upgradeTime = false;
+            }
+        }
+        else {
+            if (money >= BossKillerTurret::Price && !BossKillerTurret::isLocked) {
+                preview = new BossKillerTurret(0, 0);
+            }
+        }
+    }
+    else if (id == 9) {
+        if (upgradeTime) {
+            if (!FarmTurret::farmUpgrade1) {
+                FarmTurret::farmUpgrade1 = true;
+                EarnMoney(-200);
+                upgradeTime = false;
+            }
+            else {
+                FarmTurret::farmUpgrade2 = true;
+                EarnMoney(-200);
+                upgradeTime = false;
+            }
+        }
+        else {
+            if (money >= FarmTurret::Price && !FarmTurret::isLocked) {
+                preview = new FarmTurret(0, 0);
+            }
+        }
+    }
     else if (id == 11) {
         if (bombCooldown <= 0) {
             UIGroup->AddNewObject(new Plane());
@@ -898,8 +1111,12 @@ void PlayScene::UIBtnClicked(int id) {
         //AI DO A MESSAGE
         AutoPlaceTurrets();
     }
+    else if (id  == 15) {
+        upgradeTime = !upgradeTime;
+    }
     else if (id == 20) {
-        Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+        if (MapId < 7) Engine::GameEngine::GetInstance().ChangeScene("campaign");
+        else Engine::GameEngine::GetInstance().ChangeScene("stage-select");
     }
     else if (id == 21) {
         Engine::GameEngine::GetInstance().ChangeScene("play");

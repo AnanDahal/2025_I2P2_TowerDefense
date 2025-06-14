@@ -60,7 +60,7 @@ void CampaignScene::Initialize() {
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH * 3 / 2, 0, 0, 0, 255, 0.5, 0.5));
 
     // Not safe if release resource while playing, however we only free while change scene, so it's fine.
-    bgmInstance = AudioHelper::PlaySample("select.ogg", true, AudioHelper::BGMVolume);
+    bgmInstance = AudioHelper::PlaySample("mono.wav", true, AudioHelper::BGMVolume);
 }
 void CampaignScene::Terminate() {
     AudioHelper::StopSample(bgmInstance);

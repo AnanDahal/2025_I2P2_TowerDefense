@@ -92,7 +92,7 @@ void LeaderBoardScene::DisplayCurrentPage() {
     // Title
     AddNewObject(new Engine::Label(
         "SCOREBOARD", "pirulen.ttf", 48, halfW, 50,
-        0,255,0,255, 0.5,0.5));
+        255,255,255,255, 0.5,0.5));
 
     int start = currentPage * ENTRIES_PER_PAGE;
     int max  = static_cast<int>(scores.size());
@@ -107,7 +107,7 @@ void LeaderBoardScene::DisplayCurrentPage() {
         AddNewObject(new Engine::Label(
             ss.str(), "pirulen.ttf", 24,
             halfW, 120 + (i - start)*50,
-            0,255,0,255, 0.5,0.5));
+            255,255,255,255, 0.5,0.5));
     }
 
     int maxPage = (max - 1) / ENTRIES_PER_PAGE;

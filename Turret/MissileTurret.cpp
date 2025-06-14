@@ -37,6 +37,6 @@ void MissileTurret::CreateBullet() {
 void MissileTurret::Update(float deltaTime) {
     Turret::Update(deltaTime);
     if (missileUpgrade2) {
-        CollisionRadius *= 2;
+        CollisionRadius = 600;
     }
 }
