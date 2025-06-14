@@ -21,7 +21,7 @@ void PowersScene::Initialize() {
     int halfW = w / 2;
     int halfH = h / 2;
 
-    AddNewObject(new Engine::Label("POWERS", "pirulen.ttf", 48, halfW, 50, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("POWERS", "pirulen.ttf", 78, halfW, 50, 255, 255, 255, 255, 0.5, 0.5));
 
     Engine::ImageButton *btn;
     btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH * 3 / 2 + 100, 400, 100);
@@ -32,24 +32,24 @@ void PowersScene::Initialize() {
     btn = new Engine::ImageButton("play/explosion-2.png", "play/explosion-3.png", 0, 120, 400, 400);
     btn->SetOnClickCallback(std::bind(&PowersScene::ChooseOnClick, this, 1));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Atom Bomb", "pirulen.ttf", 36, 200, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Atom Bomb", "pirulen.ttf", 48, 200, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
     //money power
     btn = new Engine::ImageButton("play/sell-icon-2.png", "play/sell-icon.png", 400, 120, 400, 400);
     btn->SetOnClickCallback(std::bind(&PowersScene::ChooseOnClick, this, 2));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Raining Money", "pirulen.ttf", 36, 200 + 400, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Raining Money", "pirulen.ttf", 48, 200 + 400, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
     //Time power
     btn = new Engine::ImageButton("play/time.png", "play/time2.png", 800, 120, 400, 400);
     btn->SetOnClickCallback(std::bind(&PowersScene::ChooseOnClick, this, 3));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Time Stop", "pirulen.ttf", 36, 200 + 800, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Time Stop", "pirulen.ttf", 48, 200 + 800, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
     //AI
     btn = new Engine::ImageButton("play/ai.png", "play/ai2.png", 1200, 120, 400, 400);
     btn->SetOnClickCallback(std::bind(&PowersScene::ChooseOnClick, this, 4));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("AI Help", "pirulen.ttf", 36, 200 + 1200, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("AI Help", "pirulen.ttf", 48, 200 + 1200, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
 
-    bgmInstance = AudioHelper::PlaySample("sass.wav", true, AudioHelper::BGMVolume);
+    bgmInstance = AudioHelper::PlaySample("creepy.wav", true, AudioHelper::BGMVolume);
 }
 void PowersScene::Terminate() {
     AudioHelper::StopSample(bgmInstance);

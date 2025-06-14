@@ -71,14 +71,25 @@ void ShopScene::BackOnClick(int stage) {
 }
 
 void ShopScene::ChooseOnClick(int skin) {
-    if (skin == 1 && core_memories >= 100) {
+    int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
+    int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
+    int halfW = w / 2;
+    int halfH = h / 2;
+
+    if (skin == 1 && core_memories >= 100 && !skin1) {
         skin1 = true;
         core_memories -= 100;
+        Engine::GameEngine::GetInstance().ChangeScene("stage-select");
     }
-    else if (skin == 2 && core_memories >= 500) {
+    else if (skin == 2 && core_memories >= 500 && !skin2) {
         skin2 = true;
         core_memories -= 500;
+        Engine::GameEngine::GetInstance().ChangeScene("stage-select");
     }
+    else {
+        AddNewObject(new Engine::Label("Can't buy skin", "pirulen.ttf", 36 + 12, halfW, halfH + 200, 255, 255, 255, 255, 0.5, 0.5));
+    }
+
 
     if (coreMemoryLabel)
         coreMemoryLabel->Text = "Core Memory: " + std::to_string(core_memories);
