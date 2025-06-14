@@ -907,12 +907,12 @@ void PlayScene::UIBtnClicked(int id) {
         if (upgradeTime) {
             if (!LaserTurret::laserUpgrade1) {
                 LaserTurret::laserUpgrade1 = true;
-                EarnMoney(200);
+                EarnMoney(-200);
                 upgradeTime = false;
             }
             else {
                 LaserTurret::laserUpgrade2 = true;
-                EarnMoney(200);
+                EarnMoney(-200);
                 upgradeTime = false;
             }
         }
@@ -926,12 +926,12 @@ void PlayScene::UIBtnClicked(int id) {
         if (upgradeTime) {
             if (!HealingTurret::healUpgrade1) {
                 HealingTurret::healUpgrade1 = true;
-                EarnMoney(200);
+                EarnMoney(-200);
                 upgradeTime = false;
             }
             else {
                 HealingTurret::healUpgrade2 = true;
-                EarnMoney(200);
+                EarnMoney(-200);
                 upgradeTime = false;
             }
         }
@@ -945,12 +945,12 @@ void PlayScene::UIBtnClicked(int id) {
         if (upgradeTime) {
             if (!MissileTurret::missileUpgrade1) {
                 MissileTurret::missileUpgrade1 = true;
-                EarnMoney(150);
+                EarnMoney(-150);
                 upgradeTime = false;
             }
             else {
                 MissileTurret::missileUpgrade2 = true;
-                EarnMoney(150);
+                EarnMoney(-150);
                 upgradeTime = false;
             }
         }
@@ -964,12 +964,12 @@ void PlayScene::UIBtnClicked(int id) {
         if (upgradeTime) {
             if (!BuffTurret::buffUpgrade1) {
                 BuffTurret::buffUpgrade1 = true;
-                EarnMoney(400);
+                EarnMoney(-400);
                 upgradeTime = false;
             }
             else {
                 BuffTurret::buffUpgrade2 = true;
-                EarnMoney(400);
+                EarnMoney(-400);
                 upgradeTime = false;
             }
         }
@@ -983,12 +983,12 @@ void PlayScene::UIBtnClicked(int id) {
         if (upgradeTime) {
             if (!SlowTurret::slowUpgrade1) {
                 SlowTurret::slowUpgrade1 = true;
-                EarnMoney(100);
+                EarnMoney(-100);
                 upgradeTime = false;
             }
             else {
                 SlowTurret::slowUpgrade2 = true;
-                EarnMoney(100);
+                EarnMoney(-100);
                 upgradeTime = false;
             }
         }
@@ -1002,12 +1002,12 @@ void PlayScene::UIBtnClicked(int id) {
         if (upgradeTime) {
             if (!SniperTurret::sniperUpgrade1) {
                 SniperTurret::sniperUpgrade1 = true;
-                EarnMoney(125);
+                EarnMoney(-125);
                 upgradeTime = false;
             }
             else {
                 SniperTurret::sniperUpgrade2 = true;
-                EarnMoney(125);
+                EarnMoney(-125);
                 upgradeTime = false;
             }
         }
@@ -1021,12 +1021,12 @@ void PlayScene::UIBtnClicked(int id) {
         if (upgradeTime) {
             if (!TankKillerTurret::tankUpgrade1) {
                 TankKillerTurret::tankUpgrade1 = true;
-                EarnMoney(250);
+                EarnMoney(-250);
                 upgradeTime = false;
             }
             else {
                 TankKillerTurret::tankUpgrade2 = true;
-                EarnMoney(250);
+                EarnMoney(-250);
                 upgradeTime = false;
             }
         }
@@ -1040,12 +1040,12 @@ void PlayScene::UIBtnClicked(int id) {
         if (upgradeTime) {
             if (!BossKillerTurret::bossUpgrade1) {
                 BossKillerTurret::bossUpgrade1 = true;
-                EarnMoney(500);
+                EarnMoney(-500);
                 upgradeTime = false;
             }
             else {
                 BossKillerTurret::bossUpgrade2 = true;
-                EarnMoney(500);
+                EarnMoney(-500);
                 upgradeTime = false;
             }
         }
@@ -1059,12 +1059,12 @@ void PlayScene::UIBtnClicked(int id) {
         if (upgradeTime) {
             if (!FarmTurret::farmUpgrade1) {
                 FarmTurret::farmUpgrade1 = true;
-                EarnMoney(200);
+                EarnMoney(-200);
                 upgradeTime = false;
             }
             else {
                 FarmTurret::farmUpgrade2 = true;
-                EarnMoney(200);
+                EarnMoney(-200);
                 upgradeTime = false;
             }
         }
