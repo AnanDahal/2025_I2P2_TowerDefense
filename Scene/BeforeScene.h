@@ -17,6 +17,7 @@
 struct DialogueLine {
     std::string speaker;
     std::string text;
+    std::string mood;
 };
 
 class BeforeScene final : public Engine::IScene {
@@ -38,7 +39,7 @@ private:
     // Fade system
     bool isFading = false;
     float fadeAlpha = 0.0f;
-    float fadeSpeed = 5.0f; // Alpha change per frame
+    	float fadeSpeed = 5.0f; // Alpha change per frame
     
 public:
     explicit BeforeScene() = default;
@@ -50,7 +51,7 @@ public:
     void BackOnClick(int stage);
     
     // Methods for dialogue system
-    void AddDialogue(const std::string& speaker, const std::string& text);
+    void AddDialogue(const std::string& speaker, const std::string& text, const std::string& mood = "");
     void StartDialogues();
     void NextDialogue();
     
@@ -62,6 +63,7 @@ public:
     // Start the fade out effect
     void StartFadeOut();
     int storyid;
+    void SetCharacterImageByMood(const std::string& character, const std::string& mood);
 };
 
 #endif //BEFORESCENE_H

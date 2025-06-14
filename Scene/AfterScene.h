@@ -18,6 +18,7 @@
 struct AfterDialogueLine {
     std::string speaker;
     std::string text;
+    std::string mood;  // Added mood field
 };
 
 class AfterScene final : public Engine::IScene {
@@ -43,7 +44,7 @@ private:
     float fadeSpeed = 5.0f;    // Alpha change per frame
 
 public:
-    int storyid = 1;  // Default story ID
+    int storyid;  // Default story ID
 
     explicit AfterScene() = default;
     void Initialize() override;
@@ -54,7 +55,7 @@ public:
     void BackOnClick(int stage);
 
     // Methods for dialogue system
-    void AddDialogue(const std::string& speaker, const std::string& text);
+    void AddDialogue(const std::string& speaker, const std::string& text, const std::string& mood = "");
     void StartDialogues();
     void NextDialogue();
     void ClearDialogues();
@@ -63,6 +64,7 @@ public:
     void SetCharacterImage(const std::string& imagePath, float width, float height, float x, float y);
     void UpdateCharacterPosition(float x, float y);
     void UpdateCharacterSize(float width, float height);
+    void SetCharacterImageByMood(const std::string& character, const std::string& mood);
 
     // Fade methods
     void StartFadeIn();

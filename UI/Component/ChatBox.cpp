@@ -41,7 +41,16 @@ namespace Engine {
         }
     }
 
-    void ChatBox::Draw() const {
+    void Engine::ChatBox::Draw() const {
+        // Save the current transform
+        ALLEGRO_TRANSFORM transform;
+        al_copy_transform(&transform, al_get_current_transform());
+        
+        // Reset the transform to draw in screen space
+        ALLEGRO_TRANSFORM identity;
+        al_identity_transform(&identity);
+        al_use_transform(&identity);
+        
         // Draw the main chat box background
         al_draw_filled_rounded_rectangle(
             Position.x, Position.y,
@@ -102,6 +111,8 @@ namespace Engine {
                              ALLEGRO_ALIGN_RIGHT, "press [ENTER] to continue");
             }
         }
+        // Restore the original transform
+        al_use_transform(&transform);
     }
 
     void Engine::ChatBox::SetSpeaker(const std::string& name) {

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "AfterScene.h"
 #include "Engine/AudioHelper.hpp"
 #include "Engine/GameEngine.hpp"
 #include "Engine/Point.hpp"
@@ -77,9 +78,9 @@ void CampaignScene::PlayOnClick(int stage) {
         if (OnStage < stage) {
             OnStage = stage;
         }
-        BeforeScene *beforeScene = dynamic_cast<BeforeScene *>(Engine::GameEngine::GetInstance().GetScene("before"));
-        if (beforeScene) {
-            beforeScene->storyid = stage;
+        BeforeScene *beforescene = dynamic_cast<BeforeScene *>(Engine::GameEngine::GetInstance().GetScene("before"));
+        if (beforescene) {
+            beforescene->storyid = stage;
             Engine::GameEngine::GetInstance().ChangeScene("before");
         }
     } 
