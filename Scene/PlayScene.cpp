@@ -811,12 +811,12 @@ void PlayScene::ConstructUI() {
         AddNewControlObject(btnn);
     }
     else if (whichPower == 3) {
-        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn = new Engine::ImageButton("play/time.png", "play/time2.png", 1370 + 76, 36, 64, 64);
         btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 13));
         AddNewControlObject(btnn);
     }
     else if (whichPower == 4) {
-        btnn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1370 + 76, 36, 64, 64);
+        btnn = new Engine::ImageButton("play/ai.png", "play/ai2.png", 1370 + 76, 36, 64, 64);
         btnn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 14));
         AddNewControlObject(btnn);
     }

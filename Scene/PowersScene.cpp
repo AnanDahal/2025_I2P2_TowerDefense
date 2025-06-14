@@ -39,12 +39,12 @@ void PowersScene::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Raining Money", "pirulen.ttf", 36, 200 + 400, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
     //Time power
-    btn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 800, 120, 400, 400);
+    btn = new Engine::ImageButton("play/time.png", "play/time2.png", 800, 120, 400, 400);
     btn->SetOnClickCallback(std::bind(&PowersScene::ChooseOnClick, this, 3));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Time Stop", "pirulen.ttf", 36, 200 + 800, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
     //AI
-    btn = new Engine::ImageButton("play/turret-fire.png", "play/turret-fire.png", 1200, 120, 400, 400);
+    btn = new Engine::ImageButton("play/ai.png", "play/ai2.png", 1200, 120, 400, 400);
     btn->SetOnClickCallback(std::bind(&PowersScene::ChooseOnClick, this, 4));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("AI Help", "pirulen.ttf", 36, 200 + 1200, halfH + 125, 255, 255, 255, 255, 0.5, 0.5));
